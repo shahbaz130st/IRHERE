@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 
@@ -77,8 +78,21 @@ import com.android.build.OutputFile
  * ]
  */
 
+// project.ext.react = [
+//     enableHermes: false,  // clean and rebuild if changing
+// ]
+
+// apply from: "../../node_modules/react-native/react.gradle"
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+        bundleAssetName: "index.android.bundle",
+        entryFile: "index.js",
+        bundleInDebug: true, // set false if you want to load js from server
+        bundleInRelease: true,
+        root: "../../",
+        jsBundleDirDebug:    "$buildDir/intermediates/merged_assets/debug/out",
+        resourcesDirDebug:   "$buildDir/intermediates/res/merged/debug",
+        jsBundleDirRelease:  "$buildDir/intermediates/merged_assets/release/out",
+        resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -128,6 +142,7 @@ android {
     defaultConfig {
         applicationId "com.irhere"
         minSdkVersion rootProject.ext.minSdkVersion
+        missingDimensionStrategy 'react-native-camera', 'general'
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
@@ -180,6 +195,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation platform('com.google.firebase:firebase-bom:29.0.0')
+    implementation 'com.google.firebase:firebase-analytics'
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
