@@ -18,7 +18,6 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:requestLegacyExternalStorage="true"
-      android:usesCleartextTraffic="true"
       >
       <activity
         android:name=".MainActivity"
@@ -33,6 +32,6 @@
       </activity>
          <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBosJOS3Vh5CqFhPW58AVdZ0AlZ_eWBE-I"/>
+            android:value="AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU"/>
     </application>
 </manifest>

@@ -18,30 +18,34 @@ const MapInput = (props) => {
                 props.notifyChange(details.geometry.location)
             }
             }
+            onFail={error => console.log(error)}
+
             query={{
-                key: 'AIzaSyBosJOS3Vh5CqFhPW58AVdZ0AlZ_eWBE-I',
+                key: 'AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU',
                 language: 'en'
             }}
 
             nearbyPlacesAPI='GooglePlacesSearch'
             debounce={300}
             styles={{
-                container: {
-                    height: "75%", alignItems: "center", marginTop: 15
-                },
-                textInputContainer: {
+                container: [{
+                    height: "75%", alignItems: "center", marginTop: 15,
+                    paddingHorizontal:20
+                },props.containerStyle],
+                textInputContainer: [
+                   { 
                     flexDirection: 'row',
                     width: "100%",
                     borderColor: "#8B97A8",
                     borderWidth: 0.2,
                     backgroundColor: colors.inputField,
-                    borderRadius: phoneScreen.height * 0.5 / 100,
-                },
-                textInput: {
+                    borderRadius: phoneScreen.height * 0.5 / 100},props.inputFieldStyle]
+                ,
+                textInput: [{
                     backgroundColor: colors.inputField,
                     height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100,
                     color: colors.blackTextColor
-                }
+                },props.inputStyle]
             }}
             textInputProps={{ placeholderTextColor: colors.placeholderColor }}
             renderLeftButton={props.renderLeftButton}

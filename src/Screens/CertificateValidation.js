@@ -12,14 +12,18 @@ import { phoneScreen } from "../Themes/phoneScreen";
 import { useSelector } from "react-redux";
 import Certificate from "../Component/Certificate";
 import Preference from "react-native-preference";
-
+import Header from "../Component/Header";
+import SessionDetailItem from "../Component/SessionDetailItem";
+import moment from "moment";
+import CustomCheckBox from "../Component/CustomCheckBox";
 const certificateValidation = (props) => {
   let user = useSelector(state => state.authenticationReducer.user)
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
+  const [checkBox, setCheckBox] = useState(true)
   const [listOfItems, setListOfItems] = useState([{ date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: false }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }])
   useEffect(() => {
-    listOfCertificates()
+    // listOfCertificates()
   }, [])
   const listOfCertificates = () => {
     setLoading(true)
@@ -50,10 +54,72 @@ const certificateValidation = (props) => {
   return (
     <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
       <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
-        <Certificate
+        <Header
+          iconStyle={{ tintColor: colors.blackTextColor, height: 30, width: 30, resizeMode: "contain" }}
+          leftIcon={images.unboldIcon}
+          backIconPress={() => { props.navigation.goBack() }}
+          /* headerText={"Your Quarantine Address"} */ />
+        <View style={{ justifyContent: "center", height: "90%" }}>
+
+
+          <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, padding: 20, alignItems: "center", justifyContent: "space-evenly" }}>
+            <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontWeight: "bold" }]}>{"Verification Certificate"}</Text>
+            <View style={{ height: 22, backgroundColor: "#479597", width: 120, marginTop: 10, borderRadius: 11, alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+              <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 12, textAlignVertical: "center" }]}>{"Success"}</Text>
+            </View>
+            <SessionDetailItem
+              label={"Name"}
+              value={user.Name}
+
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <View style={{ width: "50%" }}>
+                <SessionDetailItem
+                  label={"Verification Date"}
+                  value={moment(props?.route?.params?.certificate?.date).format("MMM DD, YYYY hh:mm A")}
+                />
+              </View>
+
+              <View style={{ width: "50%" }}>
+                <SessionDetailItem
+                  label={"Quarantine Day"}
+                  value={"Day " + 2}
+                />
+              </View>
+            </View>
+
+          </View>
+          <View style={{ height: 1 }}></View>
+          <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
+            <Image source={{ uri: `data:image/gif;base64,${props?.route?.params?.certificate?.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
+            <Text style={{
+              color: colors.secondaryColor,
+              fontSize: 12,
+              fontWeight: "400",
+              marginTop: 20
+            }}>{"Generated using V&V Technology"}</Text>
+          </View>
+          <View style={{ marginTop: 20, alignItems: "center", width: "100%" }}>
+            <CustomCheckBox
+              checkstyle={{ borderWidth: 1.5, borderColor: colors.blackTextColor, backgroundColor: "white" }}
+              onChange={() => { setCheckBox(!checkBox) }}
+              isChecked={checkBox}
+              tintColor={colors.blackTextColor}
+              labelStyle={[commonStyles.checkLabelStyle, { color: colors.blackTextColor }]}
+              label={"Certificate Successfully Sent"}
+            />
+          </View>
+        </View>
+
+        {/* <Certificate
           outerViewStyle={{ height: Platform.OS === "android" ? phoneScreen.height * 35 / 100 : phoneScreen.height * 25 / 100, }}
           headerViewStyle={[styles.headerViewStyle, { height: "20%" }]}
-          headingText={"Certificate of validation - Location"}
+          headingText={"Certificate of validation - Location"} 
           headingTextStyle={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}
           headingImage={images.greenCheckIcon}
           headingImageStyle={styles.headingImageStyle}
@@ -123,7 +189,7 @@ const certificateValidation = (props) => {
             elevation: 4,
           }}
           listOfItems={listOfItems}
-        />
+        /> */}
 
 
       </View>
@@ -149,7 +215,7 @@ const styles = StyleSheet.create(
       height: "40%",
     },
     headingStyle: {
-      fontSize: 14,
+      fontSize: 20,
       fontWeight: "700",
       fontStyle: "normal",
     },
@@ -158,7 +224,8 @@ const styles = StyleSheet.create(
       borderBottomLeftRadius: 30,
       borderBottomRightRadius: 30,
       paddingHorizontal: 20,
-      justifyContent: "space-evenly"
+      // justifyContent: "space-evenly"
+      // justifyContent: "center"
     },
     headerViewStyle: {
       flexDirection: "row",

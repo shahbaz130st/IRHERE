@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, PermissionsAndroid, FlatList, Alert, Dimensions } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, PermissionsAndroid, FlatList, Alert, Dimensions, Platform } from "react-native";
 import { colors } from "../Themes/colors";
 import ModalOpenField from "../Component/modalOpenField";
 import Button from "../Component/Button";
@@ -53,21 +53,22 @@ const VerifyLocation = (props) => {
   }
 
   useEffect(async () => {
-    Geocoder.init("AIzaSyBosJOS3Vh5CqFhPW58AVdZ0AlZ_eWBE-I");
+    Geocoder.init("AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU");
     await requestLocationPermission()
   }, [])
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
+      
       const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-
       if (res === RESULTS.GRANTED) {
         console.log('You can use locations ');
         getLocation();
-      } else if (res === RESULTS.DENIED) {
+      }else if (res === RESULTS.DENIED) {
         const res2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
         res2 === RESULTS.GRANTED;
       }
-    } else {
+    } 
+    else {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -142,12 +143,13 @@ const VerifyLocation = (props) => {
     setStatus("Uploading.....")
     var config = {
       headers: {
-        "Content-Type": "multipart/form-data"
+        "Content-Type": "multipart/form-data",
+        "Accept":"*/*"
       },
     };
     const data = new FormData();
     data.append('file', file /* filePath */);
-    console.log(constant.upload_video, data)
+    console.log(constant.upload_video, data,file)
     axios
       .post(constant.upload_video, data, config)
       .then(function (response) {
@@ -270,7 +272,6 @@ const VerifyLocation = (props) => {
       }
     } else {
       const res = await check(PERMISSIONS.IOS.CAMERA);
-
       if (res === RESULTS.GRANTED) {
         console.log('You can use camera');
         return res === RESULTS.GRANTED;
@@ -286,10 +287,10 @@ const VerifyLocation = (props) => {
       mediaType: type,
       maxWidth: 300,
       maxHeight: 550,
-      quality: 0.3,
-      videoQuality: 'low',
+      quality: Platform.OS==="ios"?0.8: 0.3,
+      videoQuality: Platform.OS==="ios"?"medium":'low',
       durationLimit: 3, //Video max duration in seconds
-      saveToPhotos: true,
+      saveToPhotos: false,
       cameraType: "front"
     };
     let isCameraPermitted = await requestCameraPermission();
@@ -313,7 +314,7 @@ const VerifyLocation = (props) => {
           setStatus("Video is recorded.Please verify it.")
           // setFilePath({ uri: response.assets[0].uri, type: 'video/mp4', name: response.assets[0].fileName });
         }
-        uploadVideo({ uri: response.assets[0].uri, type: 'video/mp4', name: response.assets[0].fileName })
+        uploadVideo({ uri:Platform.OS==="ios"?response.assets[0].uri.replace('file://', ''): response.assets[0].uri, type: 'video/mp4', name:Platform.OS==="ios"?response.assets[0].uri.split("/").pop(): response.assets[0].fileName })
         // setAvatar(response.assets[0].uri)
         // setFilePath({ uri: response.assets[0].uri, type: 'image/jpeg', name: response.assets[0].fileName });
       });
@@ -485,7 +486,8 @@ const VerifyLocation = (props) => {
           recordVideoPress={() => {
             setShowBottom(false)
             // setShowCamera(true)
-            captureImage('video')
+            setTimeout(()=>{captureImage('video')},500)
+            
           }}
         />
       }

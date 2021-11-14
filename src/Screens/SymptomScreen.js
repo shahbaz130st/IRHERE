@@ -21,7 +21,7 @@ const SymptomScreen = (props) => {
       <View style={{ width: "100%", alignItems: "center" }}>
         <Text style={[styles.headingStyle, { marginTop: Platform.OS === "android" ? 10 : 40, color: state.themeChangeReducer.primaryColor }]}>{"Choose your Symptoms"}</Text>
         <Text style={[styles.heading1Style, { marginTop: 5, color: state.themeChangeReducer.primaryColor }]}>{"Select how you are feeling from the list below"}</Text>
-        <Text style={[styles.heading2Style, { color: colors.blackTextColor, }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
+        <Text style={[styles.heading2Style, { color: colors.blackTextColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
       </View>
       <FlatList
         numColumns={1}
@@ -36,28 +36,28 @@ const SymptomScreen = (props) => {
         renderItem={({ item, index }) => {
           return (
             <CustomCheckBox
-              containerStyle={{
-                height: 33, width: "100%", borderColor: "#8B97A8",
-                borderWidth: 0.2, borderRadius: 6,
-                justifyContent: "center",
-                paddingLeft: 10, marginBottom: 10,
-                justifyContent: "flex-start"
-              }}
-              checkstyle={{ borderWidth: 0.8, borderColor: colors.greyColor }}
-              onChange={() => {
-                let tempArray = listOfItems
-                for (let i = 0; i < tempArray.length; i++) {
-                  if (i === index) {
-                    tempArray[i].checked = !tempArray[i].checked
-                  }
+            containerStyle={{
+              height: 33, width: "100%", borderColor: "#8B97A8",
+              borderWidth: 0.2, borderRadius: 6,
+              justifyContent: "center",
+              paddingLeft: 10, marginBottom: 10,
+              justifyContent: "flex-start"
+            }}
+            checkstyle={{ borderWidth: 1.5, borderColor: colors.blackTextColor, backgroundColor: "white" }}
+            onChange={() => {
+              let tempArray = listOfItems
+              for (let i = 0; i < tempArray.length; i++) {
+                if (i === index) {
+                  tempArray[i].checked = !tempArray[i].checked
                 }
-                setListOfItems([...tempArray])
-              }}
-              isChecked={item.checked}
-              tintColor={colors.checkBoxLightGreyColor}
-              labelStyle={{ fontSize: 12, color: colors.placeholderColor }}
-              label={item.name}
-            />
+              }
+              setListOfItems([...tempArray])
+            }}
+            isChecked={item.checked}
+            tintColor={colors.blackTextColor}
+            labelStyle={[commonStyles.checkLabelStyle, { color: colors.blackTextColor }]}
+            label={item.name}
+          />
           )
         }}
       />
@@ -97,13 +97,13 @@ const styles = StyleSheet.create(
     },
     heading1Style: {
       fontSize: 12,
-      fontWeight: "400",
+      // fontWeight: "400",
       fontStyle: "normal",
       textAlign: "center"
     },
     heading2Style: {
       fontSize: 12,
-      fontWeight: "300",
+      // fontWeight: "300",
       fontStyle: "normal",
       textAlign: "center"
     },

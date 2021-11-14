@@ -11,10 +11,13 @@ import { phoneScreen } from "../Themes/phoneScreen";
 import { useSelector } from "react-redux";
 import BiggerButton from "../Component/BiggerButton";
 import Preference from "react-native-preference";
+
 const Home = (props) => {
+
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const user = useSelector(state => state.authenticationReducer.user)
+
   return (
     <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
       <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >

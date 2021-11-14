@@ -15,6 +15,7 @@ import MapInput from "../Component/MapInput";
 import MapView, { Marker } from 'react-native-maps';
 import { StackActions } from "@react-navigation/native";
 import Preference from 'react-native-preference';
+import Header from "../Component/Header";
 const ModeSelection = (props) => {
   const state = useSelector(state => state)
   let user = useSelector(state => state.authenticationReducer.user)
@@ -89,130 +90,211 @@ const ModeSelection = (props) => {
   }
   const onKeyboardDidShow = (e) => {
     setRegion({})
+    setLocation({})
     setKeyboardHeight(e.endCoordinates.height);
   }
   const onKeyboardDidHide = () => {
     setKeyboardHeight(0);
   }
-  // useEffect(() => {
-  //   Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
-  //   Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
-  //   return () => {
-  //     Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
-  //     Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
-  //   };
-  // }, []);
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
+    };
+  }, []);
   return (
-    <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
-      <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} keyboardShouldPersistTaps='always'>
-        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height:phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>
-          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Quarantine Address"/* "Choose a Mode" */}</Text>
-          <View style={{ width: "100%" }}>
-            <Text style={[styles.subheadingStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 10 }]}>{"Where are you planning to quarantine"/* "How would you like to use this app?" */}</Text>
-            <Text style={[styles.bodyTextStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 5 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
-          </View>
-        </View>
-        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, height:phoneScreen.height * 80 / 100/*  mode === "quarantine" ? phoneScreen.height * 70 / 100 : phoneScreen.height * 65 / 100 */ }]} >
-          {/* <View style={styles.buttonOuterViewStyle}>
-            <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center" }, commonStyles.shadowStyle]}
-              onPress={() => {
-                if (Preference.get("mode") === "notSet") {
-                  mode_Selection(1)
-                } else {
-                  update_mode(1)
-                }
-              }}
-            >
-              <View style={[styles.buttonViewStyle, { backgroundColor: mode === "quarantine" ? state.themeChangeReducer.primaryColor : colors.lightGreyColor, borderRadius: 7 }]}>
-                <Image style={[styles.imageStyle, { tintColor: mode === "quarantine" ? state.themeChangeReducer.secondaryColor : state.themeChangeReducer.primaryColor }]} source={images.quarantineIcon} />
+    <View style={[styles.mainViewStyle, { height: phoneScreen.height /* - keyboardHeight */ }]}>
+      <Header
+        // leftIcon={images.leftArrow}
+        // backIconPress={() => { props.navigation.goBack() }}
+        headerText={"Your Quarantine Address"} />
+      {/* <View style={{ borderColor: "red", borderWidth: 1, justifyContent: "space-between", height: "87%" }}> */}
+      <Text style={{paddingTop:20, paddingHorizontal: 20, color: colors.blackTextColor, fontSize: 12, fontWeight: "600" }}>{"Where are you planning to Quarantine?"}</Text>
+      <View style={Object.keys(location).length === 0 ? styles.inputSearch : styles.inputSearch1}>
+        <MapInput
+          inputFieldStyle={{ borderRadius: 10, borderColor: state.themeChangeReducer.primaryColor, borderWidth: 2, paddingHorizontal: 2 }}
+          inputStyle={{ borderRadius: 10 }}
+          placeholder={"Where To?"}
+          notifyChange={(loc) => {
+            console.log("loc", loc.lat, loc.lng)
+             setLocation({
+              latitude: loc.lat,
+              longitude: loc.lng,
+            })
+            setRegion({
+              latitude: loc.lat,
+              longitude: loc.lng,
+              latitudeDelta: 0.0922,  
+              longitudeDelta: 0.0421,  
+            })
+           
+          }}
+          renderRightButton={() => {
+            return (
+              <View style={{
+                width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.inputField, borderTopRightRadius: 10, borderBottomRightRadius: 10
+              }}>
+                <Image style={{ width: 17, height: 17, resizeMode: "cover" }} source={images.whereTo} />
               </View>
-              <Text style={[styles.bodyTextStyle, { color: colors.greyColor, textAlign: "center" }]}>{"Quarantine Mode"}</Text>
-              <Text style={styles.bodyText1Style}>{"Verify your location to the health authorities while you are isolating or in quarantine."}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center", }, commonStyles.shadowStyle]}
-              onPress={() => {
-                AlertComponent({ msg: "This mode is under development" })
-                setMode("general")
-              }}
-            >
-              <View style={[styles.buttonViewStyle, { backgroundColor: mode === "general" ? state.themeChangeReducer.primaryColor : colors.lightGreyColor, borderRadius: 7 }]}>
-                <Image style={[styles.imageStyle, { tintColor: mode === "general" ? state.themeChangeReducer.secondaryColor : state.themeChangeReducer.primaryColor }]} source={images.generalIcon} />
-              </View>
-              <Text style={[styles.bodyTextStyle, { color: colors.greyColor, textAlign: "center" }]}>{"General Mode"}</Text>
-              <Text style={styles.bodyText1Style}>{"Send and receive location verify from your contacts anytime, anywhere using our Patented V&V technology."}</Text>
-            </TouchableOpacity>
-          </View> */}
-          {
-            mode === "quarantine" &&
-            <View style={{ flex: 1, marginTop: 20 }}>
-              <Text style={{ color: colors.blackTextColor, fontSize: 12 }}>{"Where are you planning to Quarantine?"}</Text>
+            )
+          }}
+        />
+      </View>
+      {
+        region["latitude"] && region["longitude"] &&
+        <View style={{ flex: 1, justifyContent: "center", marginTop: 15 }}>
+          <MapView
+            region={region}
+            style={{ height: Platform.OS === "android" ? phoneScreen.height * 62 / 100 : phoneScreen.height * 64 / 100 }}
+          >
+            {location["latitude"] && location["longitude"] &&
+              <Marker
+                coordinate={{ latitude: parseFloat(location.latitude), longitude: parseFloat(location.longitude) }}
+              />}
+          </MapView>
 
-              <MapInput
-                placeholder={"Where To?"}
-                preProcess={() => {
-                  setRegion({})
-                }}
-                notifyChange={(loc) => {
-                  console.log("loc", loc.lat, loc.lng)
-
-                  setRegion({
-                    latitude: loc.lat,
-                    longitude: loc.lng,
-                    latitudeDelta: 0.1,
-                    longitudeDelta: 0.1
-                  })
-                  setLocation({
-                    latitude: loc.lat,
-                    longitude: loc.lng,
-                  })
-                }}
-                renderRightButton={() => {
-                  return (
-                    <View style={{
-                      width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.inputField
-                    }}>
-                      <Image style={{ width: 17, height: 17, resizeMode: "cover" }} source={images.whereTo} />
-                    </View>
-                  )
-                }}
-              />
-
-              {region["latitude"] && region["longitude"] &&
-                <View style={{ borderColor: state.themeChangeReducer.primaryColor, borderWidth: 1 }}>
-                  <MapView
-                    region={region}
-                    style={{ height: phoneScreen.height * 24 / 100 }}
-                  >
-                    {location["latitude"] && location["longitude"] &&
-                      <Marker
-                        coordinate={{ latitude: parseFloat(location.latitude), longitude: parseFloat(location.longitude) }}
-                      />}
-                  </MapView>
-
-                </View>
-              }
-              <Button
-                buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
-                textStyle={commonStyles.textStyle}
-                text={"Continue"}
-                onPress={() => {
-                  if (Object.keys(location).length == 0) {
-                    alert("Please select your location")
-                  }
-                  else {
-                    let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
-                    console.log(latlng)
-                    props.navigation.navigate("QuarantineWelcom", { location: latlng })
-                  }
-                }}
-              />
-            </View>
-          }
         </View>
+      }
+      {
+        Object.keys(location).length === 0 &&
+        <Text style={[styles.bodyTextStyle, { paddingHorizontal: 20, color: colors.placeholderColor, marginTop: mode === "quarantine" ? 0 : 5, fontSize: 14 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
+      }
 
-        <Loader visible={loading} />
-      </KeyboardAwareScrollView>
-    </View>
+      <View style={{ marginHorizontal: 20 }}>
+        <Button
+          image
+          imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
+          buttonStyle={[commonStyles.buttonStyle, { backgroundColor: Object.keys(location).length > 0 ? state.themeChangeReducer.primaryColor : colors.placeholderColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+          textStyle={commonStyles.textStyle}
+          text={"Continue"}
+          onPress={() => {
+            if (Object.keys(location).length == 0) {
+              AlertComponent({ msg: "Please select your location" })
+
+            }
+            else {
+              let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
+              console.log(latlng)
+              props.navigation.navigate("QuarantineWelcom", { location: latlng })
+            }
+          }}
+        />
+      </View>
+
+    </View >
+    // </View>
+    // <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
+    //   <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} keyboardShouldPersistTaps='always'>
+    //     <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height: phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>
+    //       <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Quarantine Address"/* "Choose a Mode" */}</Text>
+    //       <View style={{ width: "100%" }}>
+    //         <Text style={[styles.subheadingStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 10 }]}>{"Where are you planning to quarantine"/* "How would you like to use this app?" */}</Text>
+    //         <Text style={[styles.bodyTextStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 5 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
+    //       </View>
+    //     </View>
+    //     <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, height: phoneScreen.height * 80 / 100/*  mode === "quarantine" ? phoneScreen.height * 70 / 100 : phoneScreen.height * 65 / 100 */ }]} >
+    //       {/* <View style={styles.buttonOuterViewStyle}>
+    //         <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center" }, commonStyles.shadowStyle]}
+    //           onPress={() => {
+    //             if (Preference.get("mode") === "notSet") {
+    //               mode_Selection(1)
+    //             } else {
+    //               update_mode(1)
+    //             }
+    //           }}
+    //         >
+    //           <View style={[styles.buttonViewStyle, { backgroundColor: mode === "quarantine" ? state.themeChangeReducer.primaryColor : colors.lightGreyColor, borderRadius: 7 }]}>
+    //             <Image style={[styles.imageStyle, { tintColor: mode === "quarantine" ? state.themeChangeReducer.secondaryColor : state.themeChangeReducer.primaryColor }]} source={images.quarantineIcon} />
+    //           </View>
+    //           <Text style={[styles.bodyTextStyle, { color: colors.greyColor, textAlign: "center" }]}>{"Quarantine Mode"}</Text>
+    //           <Text style={styles.bodyText1Style}>{"Verify your location to the health authorities while you are isolating or in quarantine."}</Text>
+    //         </TouchableOpacity>
+    //         <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center", }, commonStyles.shadowStyle]}
+    //           onPress={() => {
+    //             AlertComponent({ msg: "This mode is under development" })
+    //             setMode("general")
+    //           }}
+    //         >
+    //           <View style={[styles.buttonViewStyle, { backgroundColor: mode === "general" ? state.themeChangeReducer.primaryColor : colors.lightGreyColor, borderRadius: 7 }]}>
+    //             <Image style={[styles.imageStyle, { tintColor: mode === "general" ? state.themeChangeReducer.secondaryColor : state.themeChangeReducer.primaryColor }]} source={images.generalIcon} />
+    //           </View>
+    //           <Text style={[styles.bodyTextStyle, { color: colors.greyColor, textAlign: "center" }]}>{"General Mode"}</Text>
+    //           <Text style={styles.bodyText1Style}>{"Send and receive location verify from your contacts anytime, anywhere using our Patented V&V technology."}</Text>
+    //         </TouchableOpacity>
+    //       </View> */}
+    //       {
+    //         mode === "quarantine" &&
+    //         <View style={{ flex: 1, marginTop: 20 }}>
+    //           <Text style={{ color: colors.blackTextColor, fontSize: 12 }}>{"Where are you planning to Quarantine?"}</Text>
+
+    //           <MapInput
+    //             placeholder={"Where To?"}
+    //             preProcess={() => {
+    //               setRegion({})
+    //             }}
+    //             notifyChange={(loc) => {
+    //               console.log("loc", loc.lat, loc.lng)
+
+    //               setRegion({
+    //                 latitude: loc.lat,
+    //                 longitude: loc.lng,
+    //                 latitudeDelta: 0.1,
+    //                 longitudeDelta: 0.1
+    //               })
+    //               setLocation({
+    //                 latitude: loc.lat,
+    //                 longitude: loc.lng,
+    //               })
+    //             }}
+    //             renderRightButton={() => {
+    //               return (
+    //                 <View style={{
+    //                   width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.inputField
+    //                 }}>
+    //                   <Image style={{ width: 17, height: 17, resizeMode: "cover" }} source={images.whereTo} />
+    //                 </View>
+    //               )
+    //             }}
+    //           />
+
+    //           {region["latitude"] && region["longitude"] &&
+    //             <View style={{ borderColor: state.themeChangeReducer.primaryColor, borderWidth: 1 }}>
+    //               <MapView
+    //                 region={region}
+    //                 style={{ height: phoneScreen.height * 24 / 100 }}
+    //               >
+    //                 {location["latitude"] && location["longitude"] &&
+    //                   <Marker
+    //                     coordinate={{ latitude: parseFloat(location.latitude), longitude: parseFloat(location.longitude) }}
+    //                   />}
+    //               </MapView>
+
+    //             </View>
+    //           }
+    //           <Button
+    //             buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
+    //             textStyle={commonStyles.textStyle}
+    //             text={"Continue"}
+    //             onPress={() => {
+    //               if (Object.keys(location).length == 0) {
+    //                 alert("Please select your location")
+    //               }
+    //               else {
+    //                 let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
+    //                 console.log(latlng)
+    //                 props.navigation.navigate("QuarantineWelcom", { location: latlng })
+    //               }
+    //             }}
+    //           />
+    //         </View>
+    //       }
+    //     </View>
+
+    //     <Loader visible={loading} />
+    //   </KeyboardAwareScrollView>
+    // </View>
   )
 }
 export default ModeSelection;
@@ -221,8 +303,13 @@ const styles = StyleSheet.create(
   {
     mainViewStyle: {
       flex: 1,
-      backgroundColor: colors.primaryColor,
-
+      backgroundColor: colors.secondaryColor,
+    },
+    inputSearch: {
+      height: phoneScreen.height * 70 / 100
+    },
+    inputSearch1: {
+      height: "10%"
     },
     innerViewStyle1: {
       height: phoneScreen.height * 30 / 100,

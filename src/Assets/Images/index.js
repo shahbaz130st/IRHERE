@@ -5,6 +5,7 @@ export const images = {
     generalIcon: require("./general.png"),
     whereTo: require("./whereTo.png"),
     welcomImage: require("./welcomImage.png"),
+    leftArrow: require("./leftArrow.png"),
     settingIcon: require("./setting.png"),
     helpIcon: require("./help-circle.png"),
     homeIcon: require("./home.png"),
@@ -24,5 +25,7 @@ export const images = {
     leftArrowIcon: require("./leftArrowIcon.png"),
     crossIcon: require("./crossIcon.png"),
     selfImage:require("./selfImage.jpeg"),
-    tickIcon:require("./check.png")
+    tickIcon:require("./check.png"),
+    rightFullArrow:require("./right-arrow.png"),
+    unboldIcon:require("./left.png")
 }

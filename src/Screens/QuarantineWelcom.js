@@ -24,7 +24,7 @@ const QuarantineWelcom = (props) => {
   let user = useSelector(state => state.authenticationReducer.user)
   const [isolationType, setIsolationType] = useState("")
   const [isolationTime, setIsolationTime] = useState("")
-  const [isolationTimeName,setIsolationTimeName] = useState("")
+  const [isolationTimeName, setIsolationTimeName] = useState("")
   const [otherIsolationTime, setOtherIsolationTime] = useState("")
   const [pickerType, setPickerType] = useState("")
   const [loading, setLoading] = useState(false)
@@ -91,9 +91,10 @@ const QuarantineWelcom = (props) => {
         AlertComponent({ msg: error.message })
       });
   }
-  return (<KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} showsVerticalScrollIndicator={false} >
+  return (
+
     <View style={styles.mainViewStyle}>
-      
+      <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} showsVerticalScrollIndicator={false} >
         <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
           <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Welcome"}</Text>
           <Image source={images.welcomImage} style={styles.imageStyle} />
@@ -141,6 +142,7 @@ const QuarantineWelcom = (props) => {
               inputStyle={commonStyles.inputInnerStyle}
               onChangeText={(text) => setOtherIsolationTime(text)}
               value={otherIsolationTime}
+              keyboardType={"numeric"}
             />
           }
 
@@ -164,83 +166,85 @@ const QuarantineWelcom = (props) => {
           />
 
         </View>
-        {
-          showPicker &&
-          <CustomModal
-            listOfItems={pickerType === "isolationType" ? listOfItems : pickerType === "isolationReason" ? isolationReasonList : isolationTimeList}
-            headingText={pickerType === "isolationType" ? "Choose Isolation Type" : "Choose Isolation Time"}
-            headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-            headingButtonStyle={{ fontSize: 16, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-            okButtonPress={() => {
-              let tempArray = isolationReasonList
-              for (let i = 0; i < tempArray.length; i++) {
-                if (tempArray[i].checked) {
-                  selectedIsolationReason.push(tempArray[i].name)
-                }
-              }
-              setShowPicker(false)
-            }}
-            showOkButton={pickerType === "isolationReason" && true}
-            oKButtonPressStyle={{width:80,height:30,marginTop:0}}
-            ItemSeparatorComponent={() =>
-              <View
-                style={{
-                  height: 1,
-                  backgroundColor: "#E5E5E5",
-                }}
-              />
-            }
-            renderItem={({ item, index }) => {
-              if (pickerType === "isolationReason") {
-                return (
-                  <View style={{ width: "100%", paddingVertical: 7 }}>
-                    <CustomCheckBox
-                      checkstyle={{ borderWidth: 2, borderColor: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor,backgroundColor:item.checked ? state.themeChangeReducer.primaryColor : "white"}}
-                      onChange={() => {
-                        let tempArray = isolationReasonList
-                        for (let i = 0; i < tempArray.length; i++) {
-                          if (i === index) {
-                            tempArray[i].checked = !tempArray[i].checked
-                          }
-                        }
-                        setIsolationReasonList([...tempArray])
-                      }}
-                      isChecked={item.checked}
-                      textStyle={{ flex: 1 }}
-                      tintColor={item.checked ? "white" : colors.placeholderColor}
-                      labelStyle={[commonStyles.checkLabelStyle,{ color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }]}
-                      label={item.name}
-                      label1={index === 0 && "   (likely contact with COVID-19 person)"}
-                      label1Style={{ fontSize: 9, color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }}
-                    />
-                  </View>
-                )
-              }
-              else {
-                return (
-                  <TouchableOpacity
-                    style={{ width: "100%", paddingVertical: 13 }}
-                    onPress={() => {
-                      if (pickerType === "isolationType") {
-                        setIsolationType(item.name)
-                        setShowPicker(false)
-                      }
-                      else if (pickerType === "isolationTime") {
-                        setIsolationTimeName(item.name)
-                        setIsolationTime(item.value)
-                        setShowPicker(false)
-                      }
-                    }}
-                  >
-                    <Text style={commonStyles.checkLabelStyle}>{item.name}</Text>
-                  </TouchableOpacity>
-                );
-              }
-            }} />
-        }
+
         <Loader visible={loading} />
+      </KeyboardAwareScrollView>
+
+      {
+        showPicker &&
+        <CustomModal
+          listOfItems={pickerType === "isolationType" ? listOfItems : pickerType === "isolationReason" ? isolationReasonList : isolationTimeList}
+          headingText={pickerType === "isolationType" ? "Choose Isolation Type" : "Choose Isolation Time"}
+          headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
+          headingButtonStyle={{ fontSize: 16, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
+          okButtonPress={() => {
+            let tempArray = isolationReasonList
+            for (let i = 0; i < tempArray.length; i++) {
+              if (tempArray[i].checked) {
+                selectedIsolationReason.push(tempArray[i].name)
+              }
+            }
+            setShowPicker(false)
+          }}
+          showOkButton={pickerType === "isolationReason" && true}
+          oKButtonPressStyle={{ width: 80, height: 30, marginTop: 0 }}
+          ItemSeparatorComponent={() =>
+            <View
+              style={{
+                height: 1,
+                backgroundColor: "#E5E5E5",
+              }}
+            />
+          }
+          renderItem={({ item, index }) => {
+            if (pickerType === "isolationReason") {
+              return (
+                <View style={{ width: "100%", paddingVertical: 7 }}>
+                  <CustomCheckBox
+                    checkstyle={{ borderWidth: 2, borderColor: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor, backgroundColor: item.checked ? state.themeChangeReducer.primaryColor : "white" }}
+                    onChange={() => {
+                      let tempArray = isolationReasonList
+                      for (let i = 0; i < tempArray.length; i++) {
+                        if (i === index) {
+                          tempArray[i].checked = !tempArray[i].checked
+                        }
+                      }
+                      setIsolationReasonList([...tempArray])
+                    }}
+                    isChecked={item.checked}
+                    textStyle={{ flex: 1 }}
+                    tintColor={item.checked ? "white" : colors.placeholderColor}
+                    labelStyle={[commonStyles.checkLabelStyle, { color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }]}
+                    label={item.name}
+                    label1={index === 0 && "   (likely contact with COVID-19 person)"}
+                    label1Style={{ fontSize: 9, color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }}
+                  />
+                </View>
+              )
+            }
+            else {
+              return (
+                <TouchableOpacity
+                  style={{ width: "100%", paddingVertical: 13 }}
+                  onPress={() => {
+                    if (pickerType === "isolationType") {
+                      setIsolationType(item.name)
+                      setShowPicker(false)
+                    }
+                    else if (pickerType === "isolationTime") {
+                      setIsolationTimeName(item.name)
+                      setIsolationTime(item.value)
+                      setShowPicker(false)
+                    }
+                  }}
+                >
+                  <Text style={commonStyles.checkLabelStyle}>{item.name}</Text>
+                </TouchableOpacity>
+              );
+            }
+          }} />
+      }
     </View>
-    </KeyboardAwareScrollView>
   )
 }
 export default QuarantineWelcom;

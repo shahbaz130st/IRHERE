@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>IRHERE</string>
+	<string>IRHere</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -35,8 +35,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This permission is not needed by the app, but it is required by an underlying API. If you see this dialog, contact us.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>IRHERE require camera access to capture age photo card,driving licence,passport.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>IRHERE require contact library access to send certificate of user verification on his number.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>IRHERE require location access for real time user location verification.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -44,9 +48,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>IRHERE require microphone access to record vedio for face verification.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>IRHERE require photo library access to upload age photo card,driving licence,passport</string>
-	<key>NSPrincipalClass</key>
-	<string></string>
+	<string>IRHERE require photo library access to upload age photo card,driving licence,passport.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>IRHERE require photo library access to upload age photo card,driving licence,passport.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

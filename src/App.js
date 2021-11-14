@@ -11,18 +11,17 @@ import Preference from 'react-native-preference';
 import * as RootNavigation from './Utils/RootNavigation';
 const App = () => {
     LogBox.ignoreAllLogs();
-    // const navigationRef = createNavigationContainerRef()
-    const popupRef = useRef(null)
-    useEffect(async() => {
+    const popupRef = useRef(null);
+    useEffect(async () => {
         const authStatus = await messaging().requestPermission();
         const enabled =
-          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
         if (enabled) {
             onAppBootstrap()
             createNotificationListeners()
         }
-  
+
     })
     const onAppBootstrap = async () => {
         // Register the device with FCM
@@ -39,17 +38,26 @@ const App = () => {
         messaging().onMessage(async remoteMessage => {
             // const { notification } = remoteMessage;
             // console.log(remoteMessage)
-            showNotification("Verify your location","You have received a request to verify your location. You have 20 minutes to respond."/* notification.title, notification.body */);
+            showNotification("Verify your location", "You have received a request to verify your location. You have 20 minutes to respond."/* notification.title, notification.body */);
             onNotificationRecieve()
         });
         messaging().setBackgroundMessageHandler(async remoteMessage => {
             const { notification } = remoteMessage;
             console.log(remoteMessage)
+
             // showNotification("Verify your location","You have received a request to verify your location. You have 20 minutes to respond.");
-            onNotificationRecieve(notification)
-           
+            onNotificationRecieve()
+
             // console.log("GotNotification", "Title: " + JSON.stringify(title), "Body: " + body, "data: " + JSON.stringify(data))
             // showNotification(notification.title, notification.body);
+        });
+        messaging().getInitialNotification().then(async remoteMessage => {
+
+            if (remoteMessage) {
+                const { notification } = remoteMessage
+                // const { title } = notification
+                onNotificationRecieve()
+            }
         });
     }
     const showNotification = (title, body) => {
@@ -67,9 +75,14 @@ const App = () => {
             });
         }
     }
-    const onNotificationRecieve = (data) => {
-        console.log("onNotificationRecieve",RootNavigation)
-        RootNavigation.navigate('Home',{ screen: 'mainHome' });
+    const onNotificationRecieve = () => {
+        console.log("onNotificationRecieve", /* RootNavigation, */Preference.get("isLogin"))
+        if (Preference.get("isLogin") === "done") {
+            RootNavigation.navigate('Home', { screen: 'verifyLocation' });
+        }
+        else {
+            RootNavigation.navigate("Login");
+        }
         // if (navigationRef) {
         //     alert(":gcgfc")
         //     navigationRef.current?.navigate('verifyLocation');
@@ -119,7 +132,7 @@ const App = () => {
                         translucent={true}
                         hidden={true}
                     />
-                    <Routing/>
+                    <Routing />
                     <NotificationPopup
                         ref={popupRef}
                         style={{ zIndex: 99 }}

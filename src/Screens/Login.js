@@ -83,6 +83,7 @@ const Login = (props) => {
         setLoading(false)
         if (response.data.code === "1") {
           dispatch(signIn({ userData: response.data, isLogin: true }))
+          Preference.set("isLogin","done")
           check_mode(response.data.id)
         }
         else {

@@ -1,7 +1,8 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, Image } from "react-native";
 import _ from "lodash";
 import { colors } from "../Themes/colors"
+import { images } from "../Assets/Images";
 const Button = (props) => {
     return (
         <TouchableOpacity
@@ -9,7 +10,7 @@ const Button = (props) => {
             style={[{
                 width: "100%",
                 alignItems: "center",
-                justifyContent:!_.isNil(props.isButton)?"space-between": "center",
+                justifyContent: !_.isNil(props.isButton) ? "space-between" : "center",
                 flexDirection: "row",
                 backgroundColor: colors.primaryColor
             }, props.buttonStyle]} onPress={props.onPress}>
@@ -31,6 +32,10 @@ const Button = (props) => {
                     </Text>
 
                 </TouchableOpacity>
+            }
+            {
+                !_.isNil(props.image) &&
+                <Image source={images.rightFullArrow} style={ props.imageStyle} />
             }
 
 
