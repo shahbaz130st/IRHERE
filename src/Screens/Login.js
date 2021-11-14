@@ -120,9 +120,9 @@ const Login = (props) => {
             props.navigation.dispatch(mainApp)
           }
           else if (response.data.user_mode === "1") {
-            // props.navigation.dispatch(modeSelection)
-            Preference.set("mode", "quarantine")
             props.navigation.dispatch(modeSelection)
+            // Preference.set("mode", "quarantine")
+            // props.navigation.dispatch(modeSelection)
           }
           else {
             Preference.set("mode", "general")
@@ -130,9 +130,9 @@ const Login = (props) => {
           }
         }
         else if (response.data.code === "0" && response.data.desc === "User mode not created yet.") {
-          mode_Selection(1,id)
-          // Preference.set("mode", "notSet")
-          // props.navigation.dispatch(modeSelection)
+          // mode_Selection(1,id)
+          Preference.set("mode", "notSet")
+          props.navigation.dispatch(modeSelection)
         }
         else {
           setShowAlert(true)

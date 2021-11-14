@@ -28,7 +28,7 @@ const SettingScreen = (props) => {
   return (
     <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
       <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
-        {/* <View style={{ width: "100%", alignItems: "flex-end" }}>
+        <View style={{ width: "100%", alignItems: "flex-end" }}>
           <SwitchToggle
             onChange={() => setSwitchValue(!switchValue)}
             value={switchValue}
@@ -63,7 +63,7 @@ const SettingScreen = (props) => {
             title={"Add Relevant Addresses"}
             rightIcon={images.rightArrowIcon}
           />
-        </View> */}
+        </View>
         <View style={{ flex: 1, width: "100%", alignItems: "center", marginBottom: 10, justifyContent: "flex-end" }}>
           <TouchableOpacity style={{ flexDirection: "row" }}
             onPress={() => {

@@ -70,7 +70,7 @@ function TabGroup() {
                         <Image style={style.iconStyle} source={images.settingIcon} />
                     )
                 }} />
-           {/* {Preference.get("mode") === "general" ?
+            {Preference.get("mode") === "general" ?
                 <Tab.Screen name="Contacts" component={Home} options={{
                     tabBarLabel: 'Contacts',
                     tabBarIcon: () => (
@@ -85,7 +85,7 @@ function TabGroup() {
                         <Image style={style.iconStyle} source={images.helpIcon} />
                     )
                 }} />
-            } */}
+            } 
             <Tab.Screen name="Home" component={HomeScreenStack}
                 options={{
                     tabBarLabel: 'Home',
@@ -94,7 +94,7 @@ function TabGroup() {
                     )
                 }}
             />
-            {/* <Tab.Screen name="History" component={HistoryScreen}
+            <Tab.Screen name="History" component={HistoryScreen}
                 options={{
                     tabBarLabel: 'History',
                     tabBarIcon: () => (
@@ -108,7 +108,7 @@ function TabGroup() {
                     tabBarIcon: () => (
                         <Image style={style.iconStyle} source={images.notificationIcon} />
                     )
-                }} /> */}
+                }} /> 
         </Tab.Navigator>
     )
 }

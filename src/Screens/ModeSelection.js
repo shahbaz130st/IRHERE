@@ -15,6 +15,7 @@ import MapInput from "../Component/MapInput";
 import MapView, { Marker } from 'react-native-maps';
 import { StackActions } from "@react-navigation/native";
 import Preference from 'react-native-preference';
+const mainApp = StackActions.replace("TabGroup")
 const ModeSelection = (props) => {
   const state = useSelector(state => state)
   let user = useSelector(state => state.authenticationReducer.user)
@@ -39,9 +40,14 @@ const ModeSelection = (props) => {
       .then(function (response) {
         console.log(response.data)
         setLoading(false)
-        if (response.data.code === "1") {
-          Preference.set("mode", "quarantine")
-          setMode("quarantine")
+        if (response.data.code === 1) {
+          if (mode === "1") {
+            Preference.set("mode", "quarantine")
+            setMode("quarantine")
+          }
+          else if (mode === 0) {
+            props.navigation.dispatch(mainApp)
+          }
         }
         else {
           setShowAlert(true)
@@ -72,8 +78,14 @@ const ModeSelection = (props) => {
         console.log(response.data)
         setLoading(false)
         if (response.data.code === "1") {
-          Preference.set("mode", "quarantine")
-          setMode("quarantine")
+          if (mode === 1) {
+            Preference.set("mode", "quarantine")
+            setMode("quarantine")
+          }
+          else if (mode === 0) {
+            props.navigation.dispatch(mainApp)
+            setMode("general")
+          }
         }
         else {
           setShowAlert(true)
@@ -105,15 +117,15 @@ const ModeSelection = (props) => {
   return (
     <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
       <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} keyboardShouldPersistTaps='always'>
-        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height:phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>
+        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height: phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>
           <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Quarantine Address"/* "Choose a Mode" */}</Text>
           <View style={{ width: "100%" }}>
             <Text style={[styles.subheadingStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 10 }]}>{"Where are you planning to quarantine"/* "How would you like to use this app?" */}</Text>
             <Text style={[styles.bodyTextStyle, { color: state.themeChangeReducer.secondaryColor, marginTop: mode === "quarantine" ? 0 : 5 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
           </View>
         </View>
-        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, height:phoneScreen.height * 80 / 100/*  mode === "quarantine" ? phoneScreen.height * 70 / 100 : phoneScreen.height * 65 / 100 */ }]} >
-          {/* <View style={styles.buttonOuterViewStyle}>
+        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, height: phoneScreen.height * 80 / 100/*  mode === "quarantine" ? phoneScreen.height * 70 / 100 : phoneScreen.height * 65 / 100 */ }]} >
+          <View style={styles.buttonOuterViewStyle}>
             <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center" }, commonStyles.shadowStyle]}
               onPress={() => {
                 if (Preference.get("mode") === "notSet") {
@@ -131,8 +143,13 @@ const ModeSelection = (props) => {
             </TouchableOpacity>
             <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 5, justifyContent: "center", alignItems: "center", }, commonStyles.shadowStyle]}
               onPress={() => {
-                AlertComponent({ msg: "This mode is under development" })
-                setMode("general")
+                // AlertComponent({ msg: "This mode is under development" })
+
+                if (Preference.get("mode") === "notSet") {
+                  mode_Selection(0)
+                } else {
+                  update_mode(0)
+                }
               }}
             >
               <View style={[styles.buttonViewStyle, { backgroundColor: mode === "general" ? state.themeChangeReducer.primaryColor : colors.lightGreyColor, borderRadius: 7 }]}>
@@ -141,7 +158,7 @@ const ModeSelection = (props) => {
               <Text style={[styles.bodyTextStyle, { color: colors.greyColor, textAlign: "center" }]}>{"General Mode"}</Text>
               <Text style={styles.bodyText1Style}>{"Send and receive location verify from your contacts anytime, anywhere using our Patented V&V technology."}</Text>
             </TouchableOpacity>
-          </View> */}
+          </View>
           {
             mode === "quarantine" &&
             <View style={{ flex: 1, marginTop: 20 }}>

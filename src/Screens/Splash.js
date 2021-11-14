@@ -14,8 +14,8 @@ const Splash = (props) => {
         console.log(Preference.get("mode"),Preference.get("CompleteQuestionaire"))
         if (authToken) {
             if (Preference.get("CompleteQuestionaire")==="done" && Preference.get("mode") === "quarantine") {
-                props.navigation.dispatch(modeSelection)
-                // props.navigation.dispatch(mainApp)
+                // props.navigation.dispatch(modeSelection)
+                props.navigation.dispatch(mainApp)
             } else if (Preference.get("mode") && Preference.get("mode") === "general") {
                 props.navigation.dispatch(mainApp)
             }
