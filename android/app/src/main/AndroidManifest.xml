@@ -14,9 +14,10 @@
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
+      android:roundIcon="@mipmap/ic_launcher"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
+      android:preserveLegacyExternalStorage="true"
       android:requestLegacyExternalStorage="true"
       >
       <activity
@@ -31,7 +32,7 @@
         </intent-filter>
       </activity>
          <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU"/>
+     android:name="com.google.android.geo.API_KEY"
+     android:value="AIzaSyD4IakOtTxg5Ds4GhNEaHE03MQtFRE7tkE"/>
     </application>
 </manifest>

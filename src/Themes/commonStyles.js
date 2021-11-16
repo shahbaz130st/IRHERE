@@ -6,7 +6,7 @@ const styles = StyleSheet.create(
         buttonStyle: {
             marginTop: 20,
             width: "100%",
-            height: Platform.OS === "android" ? phoneScreen.height * 6 / 100 : phoneScreen.height * 4.5 / 100,
+            height: Platform.OS === "android" ? phoneScreen.height * 8 / 100 : phoneScreen.height * 6 / 100,
             alignItems: "center",
             borderRadius: phoneScreen.height * 1 / 100,
         },
@@ -27,19 +27,19 @@ const styles = StyleSheet.create(
             elevation: 14,
         },
         inputContainerStyle: {
-            backgroundColor: colors.inputField,
+            backgroundColor: colors.whiteColor,
             width: "100%",
             height: Platform.OS === "android" ? phoneScreen.height * 8 / 100 : phoneScreen.height * 6 / 100,
             justifyContent: "center",
-            borderRadius: phoneScreen.height * 0.5 / 100,
-            paddingLeft: 10,
-            borderColor: "#8B97A8",
-            borderWidth: 0.2
+            borderRadius: phoneScreen.height * 1 / 100,
+            paddingHorizontal: 10,
+            borderColor: colors.greyColor,
+            borderWidth: 1.5
         },
         inputInnerStyle: {
             padding: 0,
-            color: colors.blackTextColor,
-            fontSize: 14
+            color: colors.greyColor,
+            fontSize: 16
         },
         checkLabelStyle: {
             color: colors.blackTextColor,

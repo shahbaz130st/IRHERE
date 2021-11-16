@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform, PermissionsAndroid } from "react-native";
 import { colors } from "../Themes/colors";
 import constant from "../Utils/ApiConstants";
 import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
 import axios from "axios";
 import Button from "../Component/Button";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import RNSettings from 'react-native-settings';
+import { KeyboardAwareScrollrView } from 'react-native-keyboard-aware-scrollview';
 import { phoneScreen } from "../Themes/phoneScreen";
 import { useSelector } from "react-redux";
 import commonStyles from "../Themes/commonStyles";
 import { images } from "../Assets/Images/index";
 import MapInput from "../Component/MapInput";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StackActions } from "@react-navigation/native";
 import Preference from 'react-native-preference';
 import Header from "../Component/Header";
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';
+import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 const ModeSelection = (props) => {
   const state = useSelector(state => state)
   let user = useSelector(state => state.authenticationReducer.user)
@@ -24,6 +28,80 @@ const ModeSelection = (props) => {
   const [region, setRegion] = useState({})
   const [location, setLocation] = useState({})
   const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const [currentAddress, setCurrentAddress] = useState("")
+  let displayAddress = ""
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+
+      const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      if (res === RESULTS.GRANTED) {
+        console.log('You can use locations ');
+        getLocation();
+      } else if (res === RESULTS.DENIED) {
+        const res2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        res2 === RESULTS.GRANTED;
+        if (res2 === RESULTS.GRANTED) {
+          getLocation();
+        }
+      }
+    }
+    else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            'title': 'Location Permission',
+            'message': 'This App needs access to your location ' +
+              'so we can know where you are.'
+          }
+        )
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("You can use locations ")
+          getLocation()
+        } else {
+          console.log("Location permission denied")
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+  }
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(async info => {
+      console.log(info)
+      setLocation({
+        latitude: parseFloat(info.coords.latitude,),
+        longitude: parseFloat(info.coords.longitude),
+      })
+      setRegion({
+        latitude: parseFloat(info.coords.latitude,),
+        longitude: parseFloat(info.coords.longitude),
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      })
+      const response = await Geocoder.from(info.coords.latitude, info.coords.longitude);
+      const address = response.results[0].formatted_address;
+      console.log(address)
+      setCurrentAddress(address)
+    },
+      e => {
+        console.log("Error=", e),
+          { enableHighAccuracy: true, timeout: 25000, maximumAge: 3600000 }
+        if (e.code == 2) {
+          RNSettings.openSetting(RNSettings.ACTION_LOCATION_SOURCE_SETTINGS).then(
+            result => {
+              if (result === RNSettings.ENABLED) {
+                getLocation();
+              }
+            },
+          );
+        }
+        if (e.code == 3) {
+          getLocation();
+        }
+      });
+  }
   const mode_Selection = (mode) => {
     setLoading(true)
     var config = {
@@ -107,37 +185,39 @@ const ModeSelection = (props) => {
   return (
     <View style={[styles.mainViewStyle, { height: phoneScreen.height /* - keyboardHeight */ }]}>
       <Header
-        // leftIcon={images.leftArrow}
-        // backIconPress={() => { props.navigation.goBack() }}
+        containerStyle={{ justifyContent: "center" }}
         headerText={"Your Quarantine Address"} />
-      {/* <View style={{ borderColor: "red", borderWidth: 1, justifyContent: "space-between", height: "87%" }}> */}
-      <Text style={{paddingTop:20, paddingHorizontal: 20, color: colors.blackTextColor, fontSize: 12, fontWeight: "600" }}>{"Where are you planning to Quarantine?"}</Text>
+      <Text style={{ paddingTop: 20, paddingHorizontal: 20, color: colors.blackTextColor, fontSize: 12, fontWeight: "600" }}>{"Where are you planning to Quarantine?"}</Text>
       <View style={Object.keys(location).length === 0 ? styles.inputSearch : styles.inputSearch1}>
         <MapInput
-          inputFieldStyle={{ borderRadius: 10, borderColor: state.themeChangeReducer.primaryColor, borderWidth: 2, paddingHorizontal: 2 }}
+          inputFieldStyle={{ borderRadius: 10, borderColor: colors.greyColor, borderWidth: 1.5 }}
           inputStyle={{ borderRadius: 10 }}
-          placeholder={"Where To?"}
-          notifyChange={(loc) => {
-            console.log("loc", loc.lat, loc.lng)
-             setLocation({
-              latitude: loc.lat,
-              longitude: loc.lng,
+          placeholder={currentAddress === "" ? "Type Address here" : currentAddress}
+          notifyChange={(loc, details) => {
+            console.log("loc", loc.lat, loc.lng, details)
+            setLocation({
+              latitude: parseFloat(loc.lat),
+              longitude: parseFloat(loc.lng),
             })
             setRegion({
-              latitude: loc.lat,
-              longitude: loc.lng,
-              latitudeDelta: 0.0922,  
-              longitudeDelta: 0.0421,  
+              latitude: parseFloat(loc.lat),
+              longitude: parseFloat(loc.lng),
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             })
-           
+
           }}
           renderRightButton={() => {
             return (
-              <View style={{
-                width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.inputField, borderTopRightRadius: 10, borderBottomRightRadius: 10
-              }}>
-                <Image style={{ width: 17, height: 17, resizeMode: "cover" }} source={images.whereTo} />
-              </View>
+              <TouchableOpacity style={{
+                width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 8 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: 10, borderBottomRightRadius: 10
+              }}
+                onPress={async () => {
+                  Geocoder.init(Platform.OS === "ios" ? constant.ios_map_key : constant.android_map_key);
+                  await requestLocationPermission()
+                }}>
+                <Image style={{ width: 30, height: 30, resizeMode: "cover", tintColor: colors.greyColor }} source={images.location/* images.whereTo */} />
+              </TouchableOpacity>
             )
           }}
         />
@@ -146,8 +226,9 @@ const ModeSelection = (props) => {
         region["latitude"] && region["longitude"] &&
         <View style={{ flex: 1, justifyContent: "center", marginTop: 15 }}>
           <MapView
+
             region={region}
-            style={{ height: Platform.OS === "android" ? phoneScreen.height * 62 / 100 : phoneScreen.height * 64 / 100 }}
+            style={{ height: Platform.OS === "android" ? phoneScreen.height * 50 / 100 : phoneScreen.height * 55 / 100 }}
           >
             {location["latitude"] && location["longitude"] &&
               <Marker
@@ -155,13 +236,13 @@ const ModeSelection = (props) => {
               />}
           </MapView>
 
+
         </View>
       }
       {
         Object.keys(location).length === 0 &&
         <Text style={[styles.bodyTextStyle, { paddingHorizontal: 20, color: colors.placeholderColor, marginTop: mode === "quarantine" ? 0 : 5, fontSize: 14 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
       }
-
       <View style={{ marginHorizontal: 20 }}>
         <Button
           image
@@ -182,9 +263,7 @@ const ModeSelection = (props) => {
           }}
         />
       </View>
-
     </View >
-    // </View>
     // <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
     //   <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} keyboardShouldPersistTaps='always'>
     //     <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height: phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>
@@ -306,7 +385,7 @@ const styles = StyleSheet.create(
       backgroundColor: colors.secondaryColor,
     },
     inputSearch: {
-      height: phoneScreen.height * 70 / 100
+      height: Platform.OS === "ios" ? phoneScreen.height * 66 / 100 : phoneScreen.height * 60 / 100
     },
     inputSearch1: {
       height: "10%"

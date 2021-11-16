@@ -4,12 +4,16 @@ let link = "api/";
 
 let image_base_url = "https://35.189.61.110/";
 
+let android_map_key = "AIzaSyD4IakOtTxg5Ds4GhNEaHE03MQtFRE7tkE";
+let ios_map_key = "AIzaSyBY2LBx91fNz4tvI4e1Gtu8ZGXJ0nTI43o";
 
 let google_map_api_key = "&sensor=false&key=AIzaSyBosJOS3Vh5CqFhPW58AVdZ0AlZ_eWBE-I"
 
 const constants =
 {
     google_map_api_key: google_map_api_key,
+    android_map_key: android_map_key,
+    ios_map_key: ios_map_key,
     image_base_url: image_base_url,
     googleSignin: Base_url + link + "oauth/google/sign-in",
     registration: Base_url + link + "sign_up",
@@ -20,9 +24,9 @@ const constants =
     process_video: Base_url + link + "process_video_thread_two_single",
     set_user_mode: Base_url + link + "set_user_mode",
     check_mode_status: Base_url + link + "check_mode_status",
-    update_user_mode:Base_url + link + "update_user_mode",
-    add_questionnaire:Base_url + link + "add_questionnaire",
-    get_certificate_list:Base_url + link + "get_certificate_list",
+    update_user_mode: Base_url + link + "update_user_mode",
+    add_questionnaire: Base_url + link + "add_questionnaire",
+    get_certificate_list: Base_url + link + "get_certificate_list",
     verifyEmail: Base_url + link + "reset.php",
     total_miles: Base_url + link + "rides.php",
     total_rides: Base_url + link + "rides.php",

@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Text, TouchableOpacity } from "react-native";
+import { View, Image, Text, TouchableOpacity } from "react-native";
 import _ from "lodash";
 const ModalOpenField = (props) => {
     return (
@@ -17,6 +17,11 @@ const ModalOpenField = (props) => {
             <Text style={props.inputStyle}>
                 {props.value}
             </Text>
+            {!_.isNil(props.rightImage) &&
+                <View style={props.rightImageViewStyle}>
+                    <Image style={props.rightImageStyle} source={props.rightImage} />
+                </View>
+            }
         </TouchableOpacity>
     )
 }

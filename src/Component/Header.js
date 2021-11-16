@@ -14,17 +14,17 @@ const Header = (props) => {
         //         "#9DF1F1"
         //     ]}
         //     style={{ height: 105, width: "100%" }}>
-        <View style={{ height: 105, width: "100%" },props.containerStyle}>
+        <View style={[{ height: 105, width: "100%" }, props.containerStyle]}>
             {
                 !_.isNil(props.leftIcon) &&
-                <TouchableOpacity style={{ paddingTop: 30 }} onPress={props.backIconPress}>
+                <TouchableOpacity style={{ paddingTop: 20 }} onPress={props.backIconPress}>
                     <Image style={{ height: 20, width: 20, resizeMode: "contain" }, props.iconStyle} source={props.leftIcon} />
                 </TouchableOpacity>
             }
             {
                 !_.isNil(props.headerText) &&
-                <View style={{ width: "100%", alignItems: "center", marginTop: 30 }}>
-                    <Text style={{ fontWeight: "700", fontSize: 25, lineHeight: 30, color: colors.whiteColor }}>{props.headerText}</Text>
+                <View style={[{ width: "100%", alignItems: "center", marginTop: 20 }, props.headerTextStyle]}>
+                    <Text style={[{ fontWeight: "700", fontSize: 25, lineHeight: 30, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
                 </View>
             }
         </View>

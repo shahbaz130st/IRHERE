@@ -8,6 +8,7 @@ import commonStyles from "../Themes/commonStyles";
 import { images } from "../Assets/Images";
 import { reg } from "../Utils/ValidationConstants";
 import constant from "../Utils/ApiConstants";
+import Header from "../Component/Header";
 import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
 import CustomCheckBox from "../Component/CustomCheckBox";
@@ -251,7 +252,14 @@ const Register = (props) => {
     <View style={styles.mainViewStyle}>
       <KeyboardAwareScrollView containerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
         <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
-          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Sign Up"}</Text>
+
+          <Header
+            iconStyle={{ tintColor: colors.whiteColor, height: 30, width: 30, resizeMode: "contain" }}
+            leftIcon={images.unboldIcon}
+            backIconPress={() => { props.navigation.goBack() }}
+            headerText={"Sign Up"}
+            headerTStyle={styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }}
+            containerStyle={{ paddingHorizontal: 30 }} />
           {/* <Image source={images.logo} style={styles.imageStyle} /> */}
         </View>
         <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >

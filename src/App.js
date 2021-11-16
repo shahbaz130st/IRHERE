@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, StatusBar, LogBox } from "react-native";
+import { View, StatusBar, LogBox,AppState } from "react-native";
 import 'react-native-gesture-handler';
 import Routing from "./Routing";
 import { Provider } from "react-redux";

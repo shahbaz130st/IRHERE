@@ -35,7 +35,7 @@ const Button = (props) => {
             }
             {
                 !_.isNil(props.image) &&
-                <Image source={images.rightFullArrow} style={ props.imageStyle} />
+                <Image source={ props.rightImage?props.rightImage:images.rightFullArrow} style={ props.imageStyle} />
             }
 
 

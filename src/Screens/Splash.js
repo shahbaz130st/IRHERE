@@ -2,21 +2,22 @@ import React, { useEffect } from "react";
 import { View, Image } from "react-native";
 import { images } from "../Assets/Images/index";
 import { StackActions } from "@react-navigation/native";
-import { useSelector,useDispatch  } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Preference from "react-native-preference";
-import {setPrimaryColor} from "../Store/ActionsCreator";
+import { setPrimaryColor } from "../Store/ActionsCreator";
 const mainApp = StackActions.replace("TabGroup")
 const modeSelection = StackActions.replace("ModeSelection")
 const Splash = (props) => {
     const authToken = useSelector(state => state.authenticationReducer.isLogin)
     const state = useSelector(state => state)
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
     useEffect(() => {
         dispatch(setPrimaryColor("#5c80e1"))
         console.log(Preference.get("mode"), Preference.get("CompleteQuestionaire"))
         if (authToken) {
             if (Preference.get("CompleteQuestionaire") === "done" && Preference.get("mode") === "quarantine") {
-             props.navigation.dispatch(mainApp)
+                props.navigation.dispatch(mainApp)
+                // props.navigation.dispatch(modeSelection)
             } else if (Preference.get("mode") && Preference.get("mode") === "general") {
                 props.navigation.dispatch(mainApp)
             }

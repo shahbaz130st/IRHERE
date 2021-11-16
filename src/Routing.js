@@ -22,7 +22,8 @@ import SettingScreen from "./Screens/SettingScreen";
 import { useSelector } from "react-redux";
 import { images } from "./Assets/Images";
 import Preference from "react-native-preference";
-import {navigationRef} from './Utils/RootNavigation';
+import { navigationRef } from './Utils/RootNavigation';
+import VerificationRules from "./Screens/VerificationRules";
 
 const SignInStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -63,14 +64,14 @@ function TabGroup() {
             tabBarLabelStyle: { fontSize: 8, fontWeight: "500" },
 
         }} initialRouteName={"Home"}>
-             <Tab.Screen name="Setting" component={SettingScreen}
+            <Tab.Screen name="Setting" component={SettingScreen}
                 options={{
                     tabBarLabel: 'Setting',
                     tabBarIcon: () => (
                         <Image style={style.iconStyle} source={images.settingIcon} />
                     )
                 }} />
-           {/* {Preference.get("mode") === "general" ?
+            {/* {Preference.get("mode") === "general" ?
                 <Tab.Screen name="Contacts" component={Home} options={{
                     tabBarLabel: 'Contacts',
                     tabBarIcon: () => (
@@ -118,6 +119,7 @@ const Routing = () => {
             <RootStack.Navigator screenOptions={{ headerShown: false }}>
                 <RootStack.Screen name="OnBoarding" component={OnBoardingStack} />
                 <RootStack.Screen name="TabGroup" component={TabGroup} />
+                <HomeStack.Screen name="VerificationRules" component={VerificationRules} />
                 <RootStack.Screen name="SymptomScreen" component={SymptomScreen} />
                 <SignInStack.Screen name="ModeSelection" component={ModeSelection} />
                 <SignInStack.Screen name="QuarantineWelcom" component={QuarantineWelcom} />

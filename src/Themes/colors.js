@@ -1,6 +1,7 @@
 export const colors={
     primaryColor:"#7C9FFC",
     secondaryColor:"#FFFFFF",
+    whiteColor:"#FFFFFF",
     gradient1:"#ED6578",
     gradiant2:"#ADDBDE",
     inputField:"#F6F6F6",
