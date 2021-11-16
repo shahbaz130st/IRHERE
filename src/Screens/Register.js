@@ -26,6 +26,7 @@ const mainApp = StackActions.replace("DrawerGroup")
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
 import CustomModal from "../Component/CustomModal";
+import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 
 const Register = (props) => {
   const [fullName, setFullName] = useState("")
@@ -104,7 +105,7 @@ const Register = (props) => {
 
       } else if (res === RESULTS.DENIED) {
         const res2 = await request(PERMISSIONS.IOS.CAMERA);
-        res2 === RESULTS.GRANTED;
+        return res2 === RESULTS.GRANTED;
       }
     }
   };
@@ -334,7 +335,34 @@ const Register = (props) => {
           </View>
 
         </View>
+       
+        {imageModalVisible && (
+          <BottomSheet
+            visible={imageModalVisible}
+            customHeaderText={verification}
+            onDragDown={() => setImageModalVisible(false)}
+            fromCamera={() => {
+              setImageModalVisible(false);
+              captureImage("photo");
+            }}
+            fromGallery={() => {
+              setImageModalVisible(false);
+              chooseFile("photo");
+            }}
+          />
+        )}
         {
+          showAlert &&
+          <AlertModal
+            showAlert={showAlert}
+            ok_Button={() => { setShowAlert(false) }}
+            header={alertHeader}
+            body={alertBody}
+          />
+        }
+        <Loader visible={loading} />
+      </KeyboardAwareScrollView>
+      {
           showPicker &&
           <CustomModal
             listOfItems={listOfItems}
@@ -363,32 +391,6 @@ const Register = (props) => {
               );
             }} />
         }
-        {imageModalVisible && (
-          <BottomSheet
-            visible={imageModalVisible}
-            customHeaderText={verification}
-            onDragDown={() => setImageModalVisible(false)}
-            fromCamera={() => {
-              setImageModalVisible(false);
-              captureImage("photo");
-            }}
-            fromGallery={() => {
-              setImageModalVisible(false);
-              chooseFile("photo");
-            }}
-          />
-        )}
-        {
-          showAlert &&
-          <AlertModal
-            showAlert={showAlert}
-            ok_Button={() => { setShowAlert(false) }}
-            header={alertHeader}
-            body={alertBody}
-          />
-        }
-        <Loader visible={loading} />
-      </KeyboardAwareScrollView>
     </View>
     //   }
 
