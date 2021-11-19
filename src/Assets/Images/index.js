@@ -29,5 +29,7 @@ export const images = {
     rightFullArrow: require("./right-arrow.png"),
     unboldIcon: require("./left.png"),
     location: require("./location.png"),
-    cameraImage: require("./camera.png")
+    cameraImage: require("./camera.png"),
+    hidePasswordIcon: require("./hidePasswordIcon.png"),
+    bottomArrowIcon: require("./bottomArrow.png")
 }

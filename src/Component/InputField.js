@@ -1,7 +1,10 @@
-import React from "react";
-import { View, TextInput, Image,Text,TouchableOpacity } from "react-native";
+import React,{useState} from "react";
+import { View, TextInput, Image, Text, TouchableOpacity } from "react-native";
 import _ from "lodash";
+import {images} from "../Assets/Images/index"
+import { colors } from "../Themes/colors";
 const InputField = (props) => {
+    const [hidePass, setHidePass] = useState(true);
     return (
         <View style={props.containerStyle}>
             {!_.isNil(props.image) &&
@@ -21,11 +24,17 @@ const InputField = (props) => {
                 onChangeText={props.onChangeText}
                 value={props.value}
                 keyboardType={props.keyboardType}
-                secureTextEntry={props.secureTextEntry}
+                secureTextEntry={hidePass ? true : false}
                 editable={props.editable}
                 maxLength={props.maxLength}
                 onEndEditing={props.onEndEditing}
             />
+            {!_.isNil(props.secureTextEntry) &&
+                <TouchableOpacity style={{ height: "100%", width: "15%",alignItems:"flex-end",justifyContent:"center" }}
+                onPress={()=>{setHidePass(!hidePass)}}>
+                    <Image style={{height:"60%",width:"60%",resizeMode:"contain",tintColor:colors.placeholderColor}} source={images.hidePasswordIcon} />
+                </TouchableOpacity>
+            }
         </View>
     )
 }

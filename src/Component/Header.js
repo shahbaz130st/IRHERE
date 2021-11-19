@@ -1,34 +1,25 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { colors } from "../Themes/colors";
 import _ from "lodash";
+import { StatusBarHeight, HeaderHeight } from '../Utils/Dimensions';
 const Header = (props) => {
     return (
-        // <LinearGradient
-        //     start={{ x: 1.0, y: 0.0 }}
-        //     end={{ x: 1.1, y: 1.5 }}
-        //     colors={[
-        //         colors.gradient1,
-        //         "#D1ADB6",
-        //         "#9DF1F1"
-        //     ]}
-        //     style={{ height: 105, width: "100%" }}>
-        <View style={[{ height: 105, width: "100%" }, props.containerStyle]}>
+        <View style={[{ height: HeaderHeight, width: "100%" }, props.containerStyle]}>
             {
                 !_.isNil(props.leftIcon) &&
-                <TouchableOpacity style={{ paddingTop: 20 }} onPress={props.backIconPress}>
-                    <Image style={{ height: 20, width: 20, resizeMode: "contain" }, props.iconStyle} source={props.leftIcon} />
+                <TouchableOpacity style={{ paddingTop: StatusBarHeight, paddingHorizontal: 20, paddingBottom: 20, width: 70 }} onPress={props.backIconPress}>
+                    <Image style={[{ height: 30, width: 30, resizeMode: "contain" }, props.iconStyle]} source={props.leftIcon} />
                 </TouchableOpacity>
             }
             {
                 !_.isNil(props.headerText) &&
-                <View style={[{ width: "100%", alignItems: "center", marginTop: 20 }, props.headerTextStyle]}>
-                    <Text style={[{ fontWeight: "700", fontSize: 25, lineHeight: 30, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
+                <View style={[{ width: "100%", alignItems: "center" }, props.headerTextStyle]}>
+                    <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 30 : 25, lineHeight: 30, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
                 </View>
             }
         </View>
-        // </LinearGradient>
     )
 }
 export default Header;

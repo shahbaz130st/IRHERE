@@ -250,25 +250,18 @@ const Register = (props) => {
     //         </View>
     //       </View>
     //       :
-    <View style={styles.mainViewStyle}>
-      <KeyboardAwareScrollView containerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
-
-          <Header
-            iconStyle={{ tintColor: colors.whiteColor, height: 30, width: 30, resizeMode: "contain" }}
-            leftIcon={images.unboldIcon}
-            backIconPress={() => { props.navigation.goBack() }}
-            headerText={"Sign Up"}
-            headerTStyle={styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }}
-            containerStyle={{ paddingHorizontal: 30 }} />
-          {/* <Image source={images.logo} style={styles.imageStyle} /> */}
-        </View>
-        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+        <Header
+          leftIcon={images.unboldIcon}
+          backIconPress={() => { props.navigation.goBack() }}
+          headerText={"Create an Account"} />
+        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
 
           <InputField
             placeholder={"Full Name"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
+            containerStyle={commonStyles.inputContainerStyle}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setFullName(text)}
             value={fullName}
@@ -276,7 +269,7 @@ const Register = (props) => {
           <InputField
             placeholder={"Email"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setEmail(text)}
             value={email}
@@ -285,8 +278,8 @@ const Register = (props) => {
           <InputField
             placeholder={"Password"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
-            inputStyle={commonStyles.inputInnerStyle}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 20 }]}
+            inputStyle={commonStyles.passwordInputinnerStyle}
             secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
             value={password}
@@ -294,48 +287,48 @@ const Register = (props) => {
           <InputField
             placeholder={"Mobile Number"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, flexDirection: "row", alignItems: "center" }]}
-            inputStyle={[commonStyles.inputInnerStyle, { flex: 1 }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, flexDirection: "row", alignItems: "center" }]}
+            inputStyle={commonStyles.mobileInputInnerStyle}
             onChangeText={(text) => setNumber(text)}
             value={number}
             maxLength={8}
             image={images.auFlag}
-            imageStyle={{ width: 18, height: 10, resizeMode: "contain" }}
-            imageViewStyle={{ width: 30 }}
+            imageStyle={{ width: 21, height: 13, resizeMode: "contain" }}
+            imageViewStyle={commonStyles.mobileFlagStyle}
             countryCode={"+61"}
-            countryCodeStyle={{ fontSize: 14, color: number == "" ? colors.placeholderColor : colors.blackTextColor }}
-            textViewStyle={{ width: 30 }}
+            countryCodeStyle={{ fontSize: 16, color: colors.blackTextColor, fontWeight: "400" }}
+            textViewStyle={commonStyles.mobileCountryCodeStyle}
           />
           <ModalOpenField
-            value={verification === "" ? "Verification" : verification}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
-            inputStyle={[commonStyles.inputInnerStyle, { color: verification === "" ? colors.placeholderColor : colors.greyColor }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            textViewStyle={commonStyles.selectionInputTextStyle}
+            value={verification === "" ? "Verification Document" : verification}
+            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+            rightImage={images.bottomArrowIcon}
+            rightImageViewStyle={commonStyles.selectionRightArrowView}
+            rightImageStyle={commonStyles.selectionRightArrow}
             onPress={() => { setShowPicker(true) }}
           />
+          <TouchableOpacity style={{ marginVertical: 20 }} onPress={props.onResetPress}>
+            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 14, fontWeight: "400" }} >{"Why do I need a verification Document?"}</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }} />
+          <View style={{ width: "100%" }}>
+            <Text style={{ color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }} >{"By signing up, you agree to our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Terms of use"}</Text>{" as well as our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Privacy"}</Text>{" , and "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Cookies policies"}</Text></Text>
+          </View>
           <Button
             buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
             textStyle={commonStyles.textStyle}
             text={"Sign Up"}
-            onPress={() => { validation()/* props.navigation.navigate("ModeSelection") */ }}
+            onPress={() => { validation() }}
           />
-          <View style={{ marginTop: 10, alignItems: "center", width: "100%" }}>
-            <CustomCheckBox
-              checkstyle={{ borderWidth: 0.8, borderColor: colors.greyColor }}
-              onChange={() => { setCheckBox(!checkBox) }}
-              isChecked={checkBox}
-              tintColor={colors.checkBoxLightGreyColor}
-              labelStyle={{ fontSize: 12, color: colors.placeholderColor }}
-              label={"By signing in you agree to our "}
-              label1={"Terms & Conditions"}
-              label1Style={{ textDecorationLine: "underline", fontSize: 12, color: colors.placeholderColor }}
-            />
-            <TouchableOpacity style={{ marginVertical: 5 }} onPress={() => { props.navigation.navigate("Login") }}>
-              <Text style={{ color: colors.greyColor, fontSize: 12, fontWeight: "400" }} ><Text style={{ color: colors.placeholderColor, fontSize: 12, }}>{"Don’t have an account? "}</Text>{"Login"}</Text>
+          <View style={{ alignItems: "center", width: "100%" }}>
+            <TouchableOpacity style={{ marginTop: 15 }} onPress={() => { props.navigation.navigate("Login") }}>
+              <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "500" }} >{"Login Instead"}</Text>
             </TouchableOpacity>
           </View>
-
         </View>
-       
+
         {imageModalVisible && (
           <BottomSheet
             visible={imageModalVisible}
@@ -363,34 +356,34 @@ const Register = (props) => {
         <Loader visible={loading} />
       </KeyboardAwareScrollView>
       {
-          showPicker &&
-          <CustomModal
-            listOfItems={listOfItems}
-            headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-            ItemSeparatorComponent={() =>
-              <View
-                style={{
-                  height: 1,
-                  backgroundColor: "#E5E5E5",
+        showPicker &&
+        <CustomModal
+          listOfItems={listOfItems}
+          headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
+          ItemSeparatorComponent={() =>
+            <View
+              style={{
+                height: 1,
+                backgroundColor: "#E5E5E5",
+              }}
+            />
+          }
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={{ width: "100%", paddingVertical: 13 }}
+                onPress={() => {
+                  setVerification(item.name)
+                  setverificationNumber(item.number)
+                  setShowPicker(false)
+                  setImageModalVisible(true)
                 }}
-              />
-            }
-            renderItem={({ item, index }) => {
-              return (
-                <TouchableOpacity
-                  style={{ width: "100%", paddingVertical: 13 }}
-                  onPress={() => {
-                    setVerification(item.name)
-                    setverificationNumber(item.number)
-                    setShowPicker(false)
-                    setImageModalVisible(true)
-                  }}
-                >
-                  <Text style={{ fontSize: 14, fontWeight: "400" }}>{item.name}</Text>
-                </TouchableOpacity>
-              );
-            }} />
-        }
+              >
+                <Text style={{ fontSize: 14, fontWeight: "400" }}>{item.name}</Text>
+              </TouchableOpacity>
+            );
+          }} />
+      }
     </View>
     //   }
 
@@ -432,7 +425,6 @@ const styles = StyleSheet.create(
       height: phoneScreen.height * 80 / 100 + 20,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      marginTop: -20,
       paddingHorizontal: 30,
       paddingTop: 30
     },

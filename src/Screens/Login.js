@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, SafeAreaView } from "react-native";
 import { colors } from "../Themes/colors";
 import InputField from "../Component/InputField";
 import Button from "../Component/Button";
@@ -11,6 +11,7 @@ import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
 import CustomCheckBox from "../Component/CustomCheckBox";
 import axios from "axios";
+
 import { StackActions } from "@react-navigation/native";
 import { phoneScreen } from "../Themes/phoneScreen";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
@@ -22,6 +23,8 @@ const modeSelection = StackActions.replace("ModeSelection")
 const mainApp = StackActions.replace("TabGroup")
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
+import Header from "../Component/Header";
+import { StatusBarHeight, HeaderHeight } from '../Utils/Dimensions';
 const Login = (props) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -83,7 +86,7 @@ const Login = (props) => {
         setLoading(false)
         if (response.data.code === "1") {
           dispatch(signIn({ userData: response.data, isLogin: true }))
-          Preference.set("isLogin","done")
+          Preference.set("isLogin", "done")
           check_mode(response.data.id)
         }
         else {
@@ -131,7 +134,7 @@ const Login = (props) => {
           }
         }
         else if (response.data.code === "0" && response.data.desc === "User mode not created yet.") {
-          mode_Selection(1,id)
+          mode_Selection(1, id)
           // Preference.set("mode", "notSet")
           // props.navigation.dispatch(modeSelection)
         }
@@ -148,7 +151,7 @@ const Login = (props) => {
       });
   }
 
-  const mode_Selection = (mode,id) => {
+  const mode_Selection = (mode, id) => {
     setLoading(true)
     var config = {
       headers: {
@@ -182,15 +185,16 @@ const Login = (props) => {
       });
   }
   return (
-    <View style={styles.mainViewStyle}>
-      <KeyboardAwareScrollView containerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
-          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Sign In"}</Text>
-          {/* <Image source={images.logo} style={styles.imageStyle} /> */}
-        </View>
-        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+        <Header
+          leftIcon={images.unboldIcon}
+          backIconPress={() => { props.navigation.goBack() }}
+          headerText={"Login"} />
+
+        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
           <InputField
-            placeholder={"Email/Mobile Number"}
+            placeholder={"Email"}
             placeholderTextColor={colors.placeholderColor}
             containerStyle={commonStyles.inputContainerStyle}
             inputStyle={commonStyles.inputInnerStyle}
@@ -202,33 +206,25 @@ const Login = (props) => {
             placeholder={"Password"}
             placeholderTextColor={colors.placeholderColor}
             containerStyle={[commonStyles.inputContainerStyle, { marginTop: 20 }]}
-            inputStyle={commonStyles.inputInnerStyle}
+            inputStyle={commonStyles.passwordInputinnerStyle}
             secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
             value={password}
           />
+
           <TouchableOpacity style={{ marginVertical: 20 }} onPress={props.onResetPress}>
-            <Text style={{ color: colors.bodyTextColor, fontSize: 12, fontWeight: "400" }} ><Text style={{ color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Forgot password? "}</Text>{"Reset"}</Text>
+            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 14,fontWeight:"400" }} >{"Forgot password? "}</Text>
           </TouchableOpacity>
+          <View style={{ flex: 1 }} />
           <Button
-            buttonStyle={[commonStyles.buttonStyle, { marginTop: 0, backgroundColor: state.themeChangeReducer.primaryColor }, commonStyles.shadowStyle]}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor }, commonStyles.shadowStyle]}
             textStyle={commonStyles.textStyle}
-            text={"Sign In"}
+            text={"Log In"}
             onPress={() => { loginValidation() }}
           />
-          <View style={{ marginTop: 20, alignItems: "center", width: "100%" }}>
-            <CustomCheckBox
-              checkstyle={{ borderWidth: 0.8, borderColor: colors.greyColor }}
-              onChange={() => { setCheckBox(!checkBox) }}
-              isChecked={checkBox}
-              tintColor={colors.checkBoxLightGreyColor}
-              labelStyle={{ fontSize: 12, color: colors.placeholderColor }}
-              label={"By signing in you agree to our "}
-              label1={"Terms & Conditions"}
-              label1Style={{ textDecorationLine: "underline", fontSize: 12, color: colors.placeholderColor }}
-            />
-            <TouchableOpacity style={{ marginVertical: 5 }} onPress={() => { props.navigation.navigate("Register") }}>
-              <Text style={{ color: colors.greyColor, fontSize: 12, fontWeight: "400" }} ><Text style={{ color: colors.placeholderColor, fontSize: 12 }}>{"Don’t have an account? "}</Text>{"Register"}</Text>
+          <View style={{  alignItems: "center", width: "100%" }}>
+            <TouchableOpacity style={{marginTop:20}}  onPress={() => { props.navigation.navigate("Register") }}>
+              <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "500" }} >{"Create an Account"}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -269,10 +265,8 @@ const styles = StyleSheet.create(
       fontStyle: "normal",
     },
     innerViewStyle2: {
-      height: phoneScreen.height * 80 / 100 + 20,
-      borderTopLeftRadius: 30,
-      borderTopRightRadius: 30,
-      marginTop: -20,
+      height: phoneScreen.height - HeaderHeight,
+      paddingBottom: 50,
       padding: 30
     }
   }
