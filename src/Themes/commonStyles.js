@@ -8,8 +8,7 @@ const styles = StyleSheet.create(
             flex: 1
         },
         innerViewStyle: {
-            // height: phoneScreen.height - HeaderHeight,
-            flex:1,
+            height: phoneScreen.height - HeaderHeight,
             paddingBottom: 50,
             padding: 30
         },

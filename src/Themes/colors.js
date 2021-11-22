@@ -13,7 +13,7 @@ export const colors={
     shadowColor:"rgba(53,73,82,0.6)",
     bodyTextColor:"#858585",
     greyColor:"#E3E5E5",
-    lightGreyColor:"#F7F6F6",
+    lightGreyColor:"#F2F4F5",
     biggerButtonColor:"#F4F7FF",
     greanColor:"#02935F",
     redColor:"#FF5648",

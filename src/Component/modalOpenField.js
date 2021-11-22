@@ -3,10 +3,10 @@ import { View, Image, Text, TouchableOpacity } from "react-native";
 import _ from "lodash";
 const ModalOpenField = (props) => {
     return (
-        <TouchableOpacity style={props.containerStyle} onPress={props.onPress}>
+        <TouchableOpacity style={props.containerStyle} onPress={props.onPress} disabled={props.disabled}>
             {!_.isNil(props.value) &&
                 <View style={props.textViewStyle}>
-                    <Text style={props.valueStyle}>{props.value}</Text>
+                    <Text style={props.valueStyle} numberOfLines={props.numberOfLines}>{props.value}</Text>
                 </View>
             }
             {!_.isNil(props.rightImage) &&

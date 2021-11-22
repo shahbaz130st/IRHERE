@@ -14,7 +14,7 @@ import commonStyles from "../Themes/commonStyles";
 import { useSelector } from "react-redux";
 import DeviceInfo from 'react-native-device-info';
 
-const CustomRadioButtonBottomSheet = ({
+const CustomCheckBoxBottomSheet = ({
     visible,
     listOfItems,
     onDragDown = () => { },
@@ -64,30 +64,30 @@ const CustomRadioButtonBottomSheet = ({
                     height: 5
                 },
             }}
-            height={360}>
+            height={448}>
             <View
                 style={{
-                    height: 337,
+                    height: 410,
                     backgroundColor: colors.whiteColor,
                     width: "100%",
                     paddingHorizontal: 24,
-                    paddingTop: 24,
+                    paddingTop: 24
                 }}>
                 <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 25 : 25, color: colors.blackTextColor }, headerTextStyle]}>{headerText}</Text>
                 <Text style={[{ fontWeight: "400", fontSize: 14, color: colors.placeholderColor }]}>{subHeaderText}</Text>
                 <FlatList
+                    showsVerticalScrollIndicator={true}
                     numColumns={1}
                     data={listOfItems}
                     keyExtractor={(item, index) => index.toString()}
                     extraData={{ list: listOfItems }}
-                    showsVerticalScrollIndicator={false}
                     removeClippedSubviews={false}
-                    style={{ width: "100%",paddingTop:10}}
+                    style={{ width: "100%", marginVertical: 15 }}
                     renderItem={renderItem}
                     ItemSeparatorComponent={ItemSeparatorComponent}
                 />
                 <Button
-                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor,marginTop:0 }, commonStyles.shadowStyle]}
+                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0 }, commonStyles.shadowStyle]}
                     textStyle={commonStyles.textStyle}
                     text={"Select"}
                     onPress={onSelectPress}
@@ -104,4 +104,4 @@ const CustomRadioButtonBottomSheet = ({
     );
 };
 
-export default CustomRadioButtonBottomSheet;
+export default CustomCheckBoxBottomSheet;

@@ -19,57 +19,55 @@ const Home = (props) => {
   const user = useSelector(state => state.authenticationReducer.user)
 
   return (
-    <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
-      <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
-        <Text style={[styles.headingStyle, { marginTop: Platform.OS === "android" ? 20 : 40, color: state.themeChangeReducer.primaryColor }]}>{"Hello, " + user?.Name + " !"}</Text>
-        <Text style={[styles.bodyStyle, { marginTop: 20, color: colors.blackTextColor }]}>{"What do you need?"}</Text>
-        {(Preference.get("mode") === "general" || Preference.get("mode") === "quarantine") &&
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, padding: 30 }]}>
+      <Text style={[styles.headingStyle, { marginTop: Platform.OS === "android" ? 20 : 40, color: state.themeChangeReducer.primaryColor }]}>{"Hello, " + user?.Name + " !"}</Text>
+      <Text style={[styles.bodyStyle, { marginTop: 20, color: colors.blackTextColor }]}>{"What do you need?"}</Text>
+      {(Preference.get("mode") === "general" || Preference.get("mode") === "quarantine") &&
+        <BiggerButton
+          buttonStyle={styles.biggerButtonStyle}
+          leftImage={images.locationIcon}
+          leftImageStyle={styles.lImageStyle}
+          rightImage={images.rightArrowIcon}
+          rightImageStyle={styles.rImageStyle}
+          textViewStyle={{ flex: 1, marginHorizontal: 5 }}
+          text={"Verify Your Location"}
+          textStyle={[styles.textStyle, { color: state.themeChangeReducer.primaryColor }]}
+          text1={"Let authorities know that you are self isolating by sending them your location."}
+          text1Style={[styles.text1Style, { color: state.themeChangeReducer.primaryColor }]}
+          onPress={() => { props.navigation.navigate("verifyLocation") }}
+        />
+      }
+      {
+        Preference.get("mode") === "general" &&
+        <View>
           <BiggerButton
             buttonStyle={styles.biggerButtonStyle}
-            leftImage={images.locationIcon}
+            leftImage={images.requestLocationIcon}
             leftImageStyle={styles.lImageStyle}
             rightImage={images.rightArrowIcon}
             rightImageStyle={styles.rImageStyle}
             textViewStyle={{ flex: 1, marginHorizontal: 5 }}
-            text={"Verify Your Location"}
+            text={"Request Someone’s Location"}
             textStyle={[styles.textStyle, { color: state.themeChangeReducer.primaryColor }]}
-            text1={"Let authorities know that you are self isolating by sending them your location."}
+            text1={"Tap here to ask someone to verify their location."}
             text1Style={[styles.text1Style, { color: state.themeChangeReducer.primaryColor }]}
             onPress={() => { props.navigation.navigate("verifyLocation") }}
           />
-        }
-        {
-          Preference.get("mode") === "general" &&
-          <View>
-            <BiggerButton
-              buttonStyle={styles.biggerButtonStyle}
-              leftImage={images.requestLocationIcon}
-              leftImageStyle={styles.lImageStyle}
-              rightImage={images.rightArrowIcon}
-              rightImageStyle={styles.rImageStyle}
-              textViewStyle={{ flex: 1, marginHorizontal: 5 }}
-              text={"Request Someone’s Location"}
-              textStyle={[styles.textStyle, { color: state.themeChangeReducer.primaryColor }]}
-              text1={"Tap here to ask someone to verify their location."}
-              text1Style={[styles.text1Style, { color: state.themeChangeReducer.primaryColor }]}
-              onPress={() => { props.navigation.navigate("verifyLocation") }}
-            />
-            <BiggerButton
-              buttonStyle={styles.biggerButtonStyle}
-              leftImage={images.contactIcon}
-              leftImageStyle={[styles.lImageStyle, { tintColor: state.themeChangeReducer.primaryColor }]}
-              rightImage={images.rightArrowIcon}
-              rightImageStyle={styles.rImageStyle}
-              textViewStyle={{ flex: 1, marginHorizontal: 5 }}
-              text={"Trusted Contacts"}
-              textStyle={[styles.textStyle, { color: state.themeChangeReducer.primaryColor }]}
-              text1={"Add people to your trusted contacts so that they can ask you for verification."}
-              text1Style={[styles.text1Style, { color: state.themeChangeReducer.primaryColor }]}
-              onPress={() => { props.navigation.navigate("verifyLocation") }}
-            />
-          </View>
-        }
-      </View>
+          <BiggerButton
+            buttonStyle={styles.biggerButtonStyle}
+            leftImage={images.contactIcon}
+            leftImageStyle={[styles.lImageStyle, { tintColor: state.themeChangeReducer.primaryColor }]}
+            rightImage={images.rightArrowIcon}
+            rightImageStyle={styles.rImageStyle}
+            textViewStyle={{ flex: 1, marginHorizontal: 5 }}
+            text={"Trusted Contacts"}
+            textStyle={[styles.textStyle, { color: state.themeChangeReducer.primaryColor }]}
+            text1={"Add people to your trusted contacts so that they can ask you for verification."}
+            text1Style={[styles.text1Style, { color: state.themeChangeReducer.primaryColor }]}
+            onPress={() => { props.navigation.navigate("verifyLocation") }}
+          />
+        </View>
+      }
       <Loader visible={loading} />
     </View>
   )

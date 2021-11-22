@@ -92,21 +92,23 @@ const QuarantineWelcom = (props) => {
       });
   }
   return (
-
     <View style={styles.mainViewStyle}>
-      <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} showsVerticalScrollIndicator={false} >
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
         <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
           <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Welcome"}</Text>
           <Image source={images.welcomImage} style={styles.imageStyle} />
         </View>
         <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
-
-          <Text style={[styles.heading1Style, { color: colors.greyColor }]}>{"Tell us a little about your situation"}</Text>
+          <Text style={[styles.heading1Style, { color: colors.blackTextColor }]}>{"Tell us a little about your situation"}</Text>
           <Text style={styles.bodyStyle}>{"How are you isolating?"}</Text>
           <ModalOpenField
             value={isolationType === "" ? "Select Isolation type" : isolationType}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
-            inputStyle={[commonStyles.inputInnerStyle, { color: isolationType === "" ? colors.placeholderColor : colors.greyColor }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            textViewStyle={commonStyles.selectionInputTextStyle}
+            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+            rightImage={images.bottomArrowIcon}
+            rightImageViewStyle={commonStyles.selectionRightArrowView}
+            rightImageStyle={commonStyles.selectionRightArrow}
             onPress={() => {
               setPickerType("isolationType")
               setShowPicker(true)
@@ -115,8 +117,12 @@ const QuarantineWelcom = (props) => {
           <Text style={styles.bodyStyle}>{"Why are you isolating?"}</Text>
           <ModalOpenField
             value={selectedIsolationReason.length === 0 ? "Select Reasons of Isolation" : selectedIsolationReason.toString()}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
-            inputStyle={[commonStyles.inputInnerStyle, { color: selectedIsolationReason.length === 0 ? colors.placeholderColor : colors.greyColor }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            textViewStyle={commonStyles.selectionInputTextStyle}
+            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+            rightImage={images.bottomArrowIcon}
+            rightImageViewStyle={commonStyles.selectionRightArrowView}
+            rightImageStyle={commonStyles.selectionRightArrow}
             onPress={() => {
               setPickerType("isolationReason")
               setSelectedIsolationReason([])
@@ -126,8 +132,12 @@ const QuarantineWelcom = (props) => {
           <Text style={styles.bodyStyle}>{"How long are you isolating for?"}</Text>
           <ModalOpenField
             value={isolationTimeName === "" ? "Select Isolation Period" : isolationTimeName}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
-            inputStyle={[commonStyles.inputInnerStyle, { color: isolationTime === "" ? colors.placeholderColor : colors.greyColor }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            textViewStyle={commonStyles.selectionInputTextStyle}
+            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+            rightImage={images.bottomArrowIcon}
+            rightImageViewStyle={commonStyles.selectionRightArrowView}
+            rightImageStyle={commonStyles.selectionRightArrow}
             onPress={() => {
               setPickerType("isolationTime")
               setShowPicker(true)
@@ -276,9 +286,9 @@ const styles = StyleSheet.create(
       fontStyle: "normal",
     },
     bodyStyle: {
-      marginTop: 15,
-      fontSize: 12,
-      fontWeight: "500",
+      marginTop: 12,
+      fontSize: 14,
+      fontWeight: "400",
       fontStyle: "normal",
     },
     innerViewStyle2: {

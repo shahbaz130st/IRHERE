@@ -3,6 +3,7 @@ import { Image, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import DeviceInfo from 'react-native-device-info';
 
 import Splash from "./Screens/Splash";
 import Welcom from "./Screens/Welcom";
@@ -24,6 +25,7 @@ import { images } from "./Assets/Images";
 import Preference from "react-native-preference";
 import { navigationRef } from './Utils/RootNavigation';
 import VerificationRules from "./Screens/VerificationRules";
+import { colors } from "./Themes/colors";
 
 const SignInStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -45,7 +47,7 @@ function HomeScreenStack() {
     return (
         <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="mainHome" component={Home} />
-            <HomeStack.Screen name="verifyLocation" component={VerifyLocation} />
+            {/* <HomeStack.Screen name="verifyLocation" component={VerifyLocation} /> */}
             <HomeStack.Screen name="certificateValidation" component={certificateValidation} />
         </HomeStack.Navigator>
     )
@@ -56,19 +58,27 @@ function TabGroup() {
     return (
         <Tab.Navigator screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: state.themeChangeReducer.secondaryColor,
-            tabBarInactiveTintColor: state.themeChangeReducer.secondaryColor,
-            tabBarActiveBackgroundColor: "#98B6F1",
-            tabBarStyle: { backgroundColor: state.themeChangeReducer.primaryColor, height: phoneScreen.height * 12 / 100, borderTopColor: state.themeChangeReducer.primaryColor, paddingHorizontal: 30 },
-            tabBarItemStyle: { height: phoneScreen.height * 9 / 100, borderRadius: 10, paddingVertical: 7 },
-            tabBarLabelStyle: { fontSize: 8, fontWeight: "500" },
+            tabBarActiveTintColor: state.themeChangeReducer.primaryColor,
+            tabBarInactiveTintColor: colors.placeholderColor,
+            // tabBarActiveBackgroundColor: "#98B6F1",
+            tabBarStyle: { backgroundColor: colors.whiteColor, height: DeviceInfo.hasNotch() ? 90 : Platform.OS === "ios" ? 60 : 70,/*  borderTopColor: state.themeChangeReducer.primaryColor */ },
+            tabBarItemStyle: { height: "100%", paddingVertical: !DeviceInfo.hasNotch() ? 7 : 0 },
+            tabBarLabelStyle: { fontSize: 12, fontWeight: "400" },
 
         }} initialRouteName={"Home"}>
+            <Tab.Screen name="Home" component={HomeScreenStack}
+                options={{
+                    tabBarLabel: 'Home',
+                    tabBarIcon: ({ tintColor, focused }) => (
+                        <Image style={[style.iconStyle, { tintColor: focused ? state.themeChangeReducer.primaryColor : colors.placeholderColor }]} source={images.homeIcon} />
+                    )
+                }}
+            />
             <Tab.Screen name="Setting" component={SettingScreen}
                 options={{
                     tabBarLabel: 'Setting',
-                    tabBarIcon: () => (
-                        <Image style={style.iconStyle} source={images.settingIcon} />
+                    tabBarIcon: ({ tintColor, focused }) => (
+                        <Image style={[style.iconStyle, { tintColor: focused ? state.themeChangeReducer.primaryColor : colors.placeholderColor }]} source={images.settingIcon} />
                     )
                 }} />
             {/* {Preference.get("mode") === "general" ?
@@ -87,14 +97,7 @@ function TabGroup() {
                     )
                 }} />
             } */}
-            <Tab.Screen name="Home" component={HomeScreenStack}
-                options={{
-                    tabBarLabel: 'Home',
-                    tabBarIcon: () => (
-                        <Image style={style.iconStyle} source={images.homeIcon} />
-                    )
-                }}
-            />
+
             {/* <Tab.Screen name="History" component={HistoryScreen}
                 options={{
                     tabBarLabel: 'History',
@@ -123,6 +126,7 @@ const Routing = () => {
                 <RootStack.Screen name="SymptomScreen" component={SymptomScreen} />
                 <SignInStack.Screen name="ModeSelection" component={ModeSelection} />
                 <SignInStack.Screen name="QuarantineWelcom" component={QuarantineWelcom} />
+                <SignInStack.Screen name="verifyLocation" component={VerifyLocation} />
             </RootStack.Navigator>
         </NavigationContainer>
     )
@@ -130,5 +134,5 @@ const Routing = () => {
 export default Routing;
 
 const style = StyleSheet.create({
-    iconStyle: { height: 20, width: 20 }
+    iconStyle: { height: 24, width: 24 }
 })

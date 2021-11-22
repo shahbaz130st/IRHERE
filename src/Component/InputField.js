@@ -24,7 +24,7 @@ const InputField = (props) => {
                 onChangeText={props.onChangeText}
                 value={props.value}
                 keyboardType={props.keyboardType}
-                secureTextEntry={hidePass ? true : false}
+                secureTextEntry={props.secureTextEntry?hidePass ? true : false:false}
                 editable={props.editable}
                 maxLength={props.maxLength}
                 onEndEditing={props.onEndEditing}
@@ -32,7 +32,7 @@ const InputField = (props) => {
             {!_.isNil(props.secureTextEntry) &&
                 <TouchableOpacity style={{ height: "100%", width: "15%",alignItems:"flex-end",justifyContent:"center" }}
                 onPress={()=>{setHidePass(!hidePass)}}>
-                    <Image style={{height:"60%",width:"60%",resizeMode:"contain",tintColor:colors.placeholderColor}} source={images.hidePasswordIcon} />
+                    <Image style={{height:"60%",width:"60%",resizeMode:"contain",tintColor:colors.placeholderColor}} source={hidePass? images.hidePasswordIcon:images.unhidePasswordIcon} />
                 </TouchableOpacity>
             }
         </View>

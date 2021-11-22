@@ -7,7 +7,7 @@ export default function SessionDetailItem(props) {
   return (
     <View
       style={[
-        { height: 50, width: "100%", marginBottom: 20 },
+        { height: 44, width: "100%" },
         props.containerStyle,
       ]}
     >
@@ -15,7 +15,8 @@ export default function SessionDetailItem(props) {
         style={{
           color: colors.secondaryColor,
           fontSize: 14,
-          fontWeight:"bold"
+          lineHeight: 24,
+          fontWeight: "700"
         }}
       >
         {props.label}
@@ -23,7 +24,6 @@ export default function SessionDetailItem(props) {
       <View
         style={{
           flexDirection: "row",
-          marginTop: 10,
           alignItems: "center",
           width: "100%",
         }}
@@ -33,7 +33,7 @@ export default function SessionDetailItem(props) {
             {
               color: colors.secondaryColor,
               fontSize: 12,
-              fontWeight:"400"
+              fontWeight: "400"
             },
             props.valueStyle,
           ]}

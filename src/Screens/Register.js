@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
 import CustomModal from "../Component/CustomModal";
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
+import CustomRadioButtonBottomSheet from "../Component/CustomRadioButtonBottomSheet";
 
 const Register = (props) => {
   const [fullName, setFullName] = useState("")
@@ -38,12 +39,13 @@ const Register = (props) => {
   const [loading, setLoading] = useState(false)
   const [checkBox, setCheckBox] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
-  const [listOfItems, setListOfItems] = useState([{ name: "Passport", number: 2 }, { name: "Driver’s License", number: 3 }, { name: "Photo ID", number: 4 }])
+  const [listOfItems, setListOfItems] = useState([{ name: "Passport", number: 2, isChecked: false }, { name: "Photo ID", number: 3, isChecked: false }, { name: "Driver’s License", number: 4, isChecked: false },])
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [filePath, setFilePath] = useState(null);
   const [showAlert, setShowAlert] = useState(false)
   const [alertHeader, setAlertHeader] = useState("")
   const [alertBody, setAlertBody] = useState("")
+  const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
 
   const dispatch = useDispatch()
   const state = useSelector(state => state)
@@ -256,7 +258,7 @@ const Register = (props) => {
           leftIcon={images.unboldIcon}
           backIconPress={() => { props.navigation.goBack() }}
           headerText={"Create an Account"} />
-        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
+        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,flex:1,height:"100%" }]} >
 
           <InputField
             placeholder={"Full Name"}
@@ -307,7 +309,7 @@ const Register = (props) => {
             rightImage={images.bottomArrowIcon}
             rightImageViewStyle={commonStyles.selectionRightArrowView}
             rightImageStyle={commonStyles.selectionRightArrow}
-            onPress={() => { setShowPicker(true) }}
+            onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
           />
           <TouchableOpacity style={{ marginVertical: 20 }} onPress={props.onResetPress}>
             <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 14, fontWeight: "400" }} >{"Why do I need a verification Document?"}</Text>
@@ -356,33 +358,83 @@ const Register = (props) => {
         <Loader visible={loading} />
       </KeyboardAwareScrollView>
       {
-        showPicker &&
-        <CustomModal
+        showRadioBottomSheet &&
+        <CustomRadioButtonBottomSheet
+          visible={showRadioBottomSheet}
           listOfItems={listOfItems}
-          headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
+          headerText={"Verification Document"}
+          subHeaderText={"Choose one"}
           ItemSeparatorComponent={() =>
             <View
               style={{
                 height: 1,
-                backgroundColor: "#E5E5E5",
+                backgroundColor: colors.lightGreyColor
               }}
             />
           }
           renderItem={({ item, index }) => {
             return (
               <TouchableOpacity
-                style={{ width: "100%", paddingVertical: 13 }}
+                style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", height: 48, alignItems: "center" }}
                 onPress={() => {
-                  setVerification(item.name)
-                  setverificationNumber(item.number)
-                  setShowPicker(false)
-                  setImageModalVisible(true)
+                  let tempArray = listOfItems
+                  for (let i = 0; i < tempArray.length; i++) {
+                    if (i === index) {
+                      tempArray[i].isChecked = true
+                      setVerification(tempArray[i].name)
+                      setverificationNumber(tempArray[i].number)
+                    }
+                    else {
+                      tempArray[i].isChecked = false
+                    }
+                  }
+                  setListOfItems([...tempArray])
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: "400" }}>{item.name}</Text>
+                <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{item.name}</Text>
+                <View style={{ borderColor: item.isChecked ? state.themeChangeReducer.primaryColor : "#CDCFD0", backgroundColor: item.isChecked ? state.themeChangeReducer.primaryColor : colors.whiteColor, width: 24, height: 24, borderWidth: 1, borderRadius: 12, alignItems: "center", justifyContent: "center" }}>
+                  <View style={{ height: 8, width: 8, backgroundColor: colors.whiteColor, borderRadius: 4 }}></View>
+                </View>
               </TouchableOpacity>
             );
-          }} />
+          }}
+          onSelectPress={() => {
+            if (verification === "") {
+              AlertComponent({ msg: "Please select one option" })
+            }
+            else {
+              setShowRadioBottomSheet(false)
+              console.log(verification)
+              setImageModalVisible(true)
+            }
+          }}
+        />
+        // <CustomModal
+        //   listOfItems={listOfItems}
+        //   headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
+        //   ItemSeparatorComponent={() =>
+        //     <View
+        //       style={{
+        //         height: 1,
+        //         backgroundColor: "#E5E5E5",
+        //       }}
+        //     />
+        //   }
+        //   renderItem={({ item, index }) => {
+        //     return (
+        //       <TouchableOpacity
+        //         style={{ width: "100%", paddingVertical: 13 }}
+        //         onPress={() => {
+        //           setVerification(item.name)
+        //           setverificationNumber(item.number)
+        //           setShowPicker(false)
+        //           setImageModalVisible(true)
+        //         }}
+        //       >
+        //         <Text style={{ fontSize: 14, fontWeight: "400" }}>{item.name}</Text>
+        //       </TouchableOpacity>
+        //     );
+        //   }} />
       }
     </View>
     //   }

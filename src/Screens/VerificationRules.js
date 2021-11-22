@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, PermissionsAndroid, FlatList, Alert, Dimensions, Platform } from "react-native";
 import { colors } from "../Themes/colors";
 import ModalOpenField from "../Component/modalOpenField";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import Button from "../Component/Button";
 import commonStyles from "../Themes/commonStyles";
 import { images } from "../Assets/Images";
@@ -304,75 +305,103 @@ const VerifyLocation = (props) => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 20, }}>
-            <Header
-                iconStyle={{ tintColor: colors.blackTextColor, height: 30, width: 30, resizeMode: "contain" }}
-                leftIcon={images.unboldIcon}
-                backIconPress={() => { props.navigation.goBack() }}
-                headerText={"Verify Your Identity"} />
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "center" }}>
+        <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+            <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+                <Header
+                    leftIcon={images.unboldIcon}
+                    backIconPress={() => { props.navigation.goBack() }}
+                    headerText={"Verify Your Identity"} />
+                <View style={{ flex: 1, justifyContent: "space-between", alignItems: "center", paddingHorizontal: 30,paddingBottom: 10  }}>
+                    <View style={{ alignItems: "center", paddingTop: "10%",marginBottom: 60 }}>
+                        <Text style={[styles.bodyStyle, { color: colors.blackTextColor, fontWeight: "700", fontSize: 18 }]}>{"Record a video"}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: "400", marginTop: 10 }}>{"To make sure its really you, please"}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: "400" }}>{"record 3 seconds video of yourself"}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: "400" }}>{"while performing the following actions"}</Text>
 
-
-                <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
-
-                    <View style={{ alignItems: "center", width: "65%", marginTop: 30 }}>
-                        <Text style={[styles.bodyStyle, { color: colors.blackTextColor, fontWeight: "bold", fontSize: 16 }]}>{"Record a video"}</Text>
-                        <Text style={{ fontSize: 12, fontWeight: "500", textAlign: "center", marginTop: 10 }}>{"To make sure its really you, please record 3 seconds video of yourself while performing the following actions"}</Text>
                     </View>
-                    <View style={{ flex: 1 }} />
-                    <View style={[{ backgroundColor: colors.whiteColor, alignItems: "center", paddingBottom: 30, width: "100%" }, commonStyles.shadowStyle]}>
-                        <Image source={images.selfImage} style={{ height: 120, width: 120, resizeMode: "contain", marginTop: -60 }} />
-                        <View style={{ flexDirection: "row", alignItems: "center", width: "70%", paddingTop: 60, }}>
-                            <View style={styles.countViewStyle}>
-                                <Text style={{ color: colors.whiteColor, fontSize: 14 }}>1</Text>
-                            </View>
-                            <Text style={{ fontSize: 12, fontWeight: "500" }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
+
+                    <View style={[{
+                        backgroundColor: colors.whiteColor,
+                        width: "100%",
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                        borderRadius: 5,
+                        paddingHorizontal: "10%",
+                        paddingBottom:"10%",
+                        marginBottom:"10%"
+                    }]}>
+                        <View style={{ alignItems: "center", width: "100%", marginTop: -60 }}>
+                            <Image source={images.selfImage} style={{ height: 120, width: 120, resizeMode: "contain" }} />
                         </View>
-                        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, width: "70%" }}>
-                            <View style={styles.countViewStyle}>
-                                <Text style={{ color: colors.whiteColor, fontSize: 14 }}>2</Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <View style={{ width: "20%", alignItems: "center", justifyContent: "center" }}>
+                                <View style={styles.countViewStyle}>
+                                    <Text style={{ color: colors.whiteColor, fontSize: 14 }}>1</Text>
+                                </View>
                             </View>
-                            <Text style={{ fontSize: 12, fontWeight: "500" }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
+                            <View style={{ width: "80%" }}>
+                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
+                            </View>
                         </View>
-                        <View style={{ flexDirection: "row", alignItems: "center", paddingTop: 10, width: "70%" }}>
-                            <View style={styles.countViewStyle}>
-                                <Text style={{ color: colors.whiteColor, fontSize: 14 }}>3</Text>
+                        <View style={{ flexDirection: "row", paddingTop: 10 }}>
+                            <View style={{ width: "20%", alignItems: "center", justifyContent: "center" }}>
+                                <View style={styles.countViewStyle}>
+                                    <Text style={{ color: colors.whiteColor, fontSize: 14 }}>2</Text>
+                                </View>
                             </View>
-                            <Text style={{ fontSize: 12, fontWeight: "500" }}>{"Shoulder must be visible."}</Text>
+                            <View style={{ width: "80%" }}>
+                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
+                            </View>
+                        </View>
+                        <View style={{ flexDirection: "row", paddingTop: 10 }}>
+                            <View style={{ width: "20%", alignItems: "center", justifyContent: "center" }}>
+                                <View style={styles.countViewStyle}>
+                                    <Text style={{ color: colors.whiteColor, fontSize: 14 }}>3</Text>
+                                </View>
+                            </View>
+                            <View style={{ width: "80%" }}>
+                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{"Shoulder must be visible."}</Text>
+                            </View>
                         </View>
                     </View>
-                    <View style={{ flex: 1.3 }} />
+
+
+                    <View style={{ width: "100%" }}>
+                        <Text style={{ fontSize: 12, textAlign: "center", color: colors.placeholderColor }}>{"We never store any of your video.Only your encrypted facial data is stored for verification purposes."}</Text>
+                        <Button
+                            image
+                            rightImage={images.cameraImage}
+                            imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
+                            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+                            textStyle={commonStyles.textStyle}
+                            text={"Open Camera"}
+                            onPress={() => {
+                                captureImage('video')
+                            }}
+                        />
+                    </View>
                 </View>
-
-                <View style={{ width: "100%" }}>
-                    <Text style={{ fontSize: 12, textAlign: "center", color: colors.greyColor }}>{"We never store any of your video.Only your encrypted facial data is stored for verification purposes."}</Text>
-                    <Button
-                        image
-                        rightImage={images.cameraImage}
-                        imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-                        buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
-                        textStyle={commonStyles.textStyle}
-                        text={"Open Camera"}
-                        onPress={() => {
-                            captureImage('video')
+                {
+                    showAlert &&
+                    <AlertModal
+                        showAlert={showAlert}
+                        ok_Button={() => {
+                            setShowAlert(false)
+                            props.navigation.goBack()
                         }}
+                        header={alertHeader}
+                        body={alertBody}
                     />
-                </View>
-            </View>
-            {
-                showAlert &&
-                <AlertModal
-                    showAlert={showAlert}
-                    ok_Button={() => {
-                        setShowAlert(false)
-                        props.navigation.goBack()
-                    }}
-                    header={alertHeader}
-                    body={alertBody}
-                />
-            }
-            <Loader visible={loading}  styleLoader={{  elevation: 14,}}
-            statusText={status}/>
+                }
+                <Loader visible={loading} styleLoader={{ elevation: 6, }}
+                    statusText={status} />
+            </KeyboardAwareScrollView>
         </View>
     )
 }
@@ -390,7 +419,6 @@ const styles = StyleSheet.create(
             backgroundColor: "#7bd22c",
             alignItems: "center",
             justifyContent: "center",
-            marginRight: 20
         },
         imageStyle: {
             resizeMode: "contain",

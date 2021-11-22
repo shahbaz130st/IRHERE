@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, PermissionsAndroid, FlatList, Alert, Dimensions, Platform } from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { colors } from "../Themes/colors";
 import ModalOpenField from "../Component/modalOpenField";
 import Button from "../Component/Button";
@@ -26,6 +27,7 @@ import CustomBottomSheet from "../Component/CustomBottomSheet";
 import { RNCamera } from 'react-native-camera';
 import Header from "../Component/Header";
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
+import CustomCheckBoxBottomSheet from "../Component/CustomCheckBoxBottomSheet";
 import DropDownPicker from 'react-native-dropdown-picker';
 const login = StackActions.replace("OnBoarding")
 let called_pattern = {}
@@ -53,6 +55,7 @@ const VerifyLocation = (props) => {
   // const [listOfItems, setListOfItems] = useState([{ checked: false, name: "Congestion or Running Nose" }, { checked: false, name: "Cough" }, { checked: false, name: "Diarrhea" }, { checked: false, name: "Fatigue" }, { checked: false, name: "Fever or Chills" }, { checked: false, name: "Headache" }, { checked: false, name: "Muscle or Body Aches" }, { checked: false, name: "Nausea or Vomiting" }, { checked: false, name: "New loss or taste or smell" }, { checked: false, name: "Shortness or breath or difficulty breathing" }, { checked: false, name: "Soar Throat" }, { checked: false, name: "None of the above" }])
   const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Soar Throat", value: "Soar Throat" }, { checked: false, label: "None of the above", value: "None of the above" }]);
   const user = useSelector(state => state.authenticationReducer.user)
+  const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
   const dispatch = useDispatch()
   const logOut = () => {
     dispatch(signOut())
@@ -333,27 +336,61 @@ const VerifyLocation = (props) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
-      <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, justifyContent: "space-between" }]} >
-
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+        <Header
+          leftIcon={images.unboldIcon}
+          backIconPress={() => { props.navigation.goBack() }}
+          headerText={"Verify Your Location"} />
         {
           Preference.get("mode") === "quarantine" &&
-          <View>
-            <Header
-              iconStyle={{ tintColor: colors.blackTextColor, height: 30, width: 30, resizeMode: "contain" }}
-              leftIcon={images.unboldIcon}
-              backIconPress={() => { props.navigation.goBack() }}
-              headerText={"Verify Your Location"} />
-            <Text style={[styles.bodyStyle, { marginTop: 30, color: colors.blackTextColor }]}>{"Your current location"}</Text>
+          <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingBottom: 10 }]} >
+            <Text style={styles.bodyStyle}>{"Your current location"}</Text>
             <ModalOpenField
+              // disabled={true}
+              onPress={async () => { await requestLocationPermission() }}
+              numberOfLines={1}
               value={currentAddress === "" ? "Location" : currentAddress}
-              containerStyle={[commonStyles.inputContainerStyle, { marginTop: 10, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100, flexDirection: "row", alignItems: "center" }]}
-              inputStyle={[commonStyles.inputInnerStyle, { width: "90%" }]}
+              valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+              containerStyle={[commonStyles.inputContainerStyle, { marginTop: 10, flexDirection: "row", paddingHorizontal: 0 }]}
+              textViewStyle={[commonStyles.passwordInputinnerStyle, { paddingLeft: 15, justifyContent: "center" }]}
+              rightImageViewStyle={{
+                width: "15%", height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: phoneScreen.height * 1 / 100, borderBottomRightRadius: phoneScreen.height * 1 / 100
+              }}
               rightImage={images.location}
-              rightImageStyle={{ height: 30, width: 30, resizeMode: "contain", tintColor: colors.greyColor }}
+              rightImageStyle={{ width: "60%", height: "60%", resizeMode: "contain" }}
             />
-            <Text style={[styles.bodyStyle, { marginTop: 10, color: colors.blackTextColor }]}>{"Do you have any Symptoms"}</Text>
-            <DropDownPicker
+            <Text style={[styles.bodyStyle, { marginTop: 10 }]}>{"Do you have any Symptoms"}</Text>
+            <ModalOpenField
+              numberOfLines={1}
+              containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+              textViewStyle={commonStyles.selectionInputTextStyle}
+              value={value.length === 0 ? "Choose Symptoms" : value.toString()}
+              valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+              rightImage={images.bottomArrowIcon}
+              rightImageViewStyle={commonStyles.selectionRightArrowView}
+              rightImageStyle={commonStyles.selectionRightArrow}
+              onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
+            />
+            <Text style={[styles.bodyStyle, { marginTop: 10, fontSize: 12, color: colors.placeholderColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
+
+            <View style={{ flex: 1 }} />
+            <Button
+              image
+              imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
+              buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+              textStyle={commonStyles.textStyle}
+              text={"Continue"}
+              onPress={() => {
+                if (value.length == 0) {
+                  AlertComponent({ msg: "Please select symptoms" })
+                } else {
+                  setResultImage("")
+                  generate_Pattern()
+                }
+              }}
+            />
+            {/* <DropDownPicker
               multiple={true}
               containerStyle={{
                 marginTop: 10,
@@ -385,7 +422,7 @@ const VerifyLocation = (props) => {
               setOpen={setOpen}
               setValue={setValue}
               setItems={setItems}
-            />
+            /> */}
 
             {/*  <ModalOpenField
                 value={props?.route?.params?.list && props.route.params.list.length > 0 ? props.route.params.list.toString() : "Choose your Symptoms (multiple)"}
@@ -451,23 +488,7 @@ const VerifyLocation = (props) => {
               <Text style={{ fontSize: 16, fontWeight: "600", marginTop: 5 }}>{"Take a Selfi"}</Text>
             </View>
         } */}
-        <View>
-          <Button
-            image
-            imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
-            textStyle={commonStyles.textStyle}
-            text={"Continue"}
-            onPress={() => {
-              if (value.length == 0) {
-                AlertComponent({ msg: "Please select symptoms" })
-              } else {
-                setResultImage("")
-                generate_Pattern()
-              }
-            }}
-          />
-        </View>
+
         {/* <Button
           buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
           textStyle={commonStyles.textStyle}
@@ -482,71 +503,149 @@ const VerifyLocation = (props) => {
             }
           }}
         /> */}
-      </View>
-      {showItem &&
-        <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "#090A0A36", alignItems: "center", justifyContent: "center", width: phoneScreen.width }}>
-          <View style={{ height: 206, width: "90%", backgroundColor: state.themeChangeReducer.secondaryColor, borderRadius: 24, padding: 20 }}>
-            <Text style={{ fontSize: 13, fontWeight: "600" }}>{"Select From known Address"}</Text>
-            <FlatList
-              numColumns={1}
-              data={listOfItems}
-              keyExtractor={(item, index) => {
-                return index.toString();
-              }}
-              extraData={{ list: listOfItems }}
-              showsVerticalScrollIndicator={false}
-              removeClippedSubviews={false}
-              style={{ flex: 1, width: "100%" }}
-              renderItem={({ item, index }) => {
-                return (
-                  <TouchableOpacity
-                    style={{ flexDirection: "row", width: "100%", alignItems: "center", padding: 5 }}
-                  >
-                    <View style={{ height: 12, width: 12, borderRadius: 6, borderColor: colors.blackTextColor, borderWidth: 1, alignItems: "center", justifyContent: "center", marginRight: 5 }}>
-                      <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.blackTextColor }}>
+        {showItem &&
+          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "#090A0A36", alignItems: "center", justifyContent: "center", width: phoneScreen.width }}>
+            <View style={{ height: 206, width: "90%", backgroundColor: state.themeChangeReducer.secondaryColor, borderRadius: 24, padding: 20 }}>
+              <Text style={{ fontSize: 13, fontWeight: "600" }}>{"Select From known Address"}</Text>
+              <FlatList
+                numColumns={1}
+                data={listOfItems}
+                keyExtractor={(item, index) => {
+                  return index.toString();
+                }}
+                extraData={{ list: listOfItems }}
+                showsVerticalScrollIndicator={false}
+                removeClippedSubviews={false}
+                style={{ flex: 1, width: "100%" }}
+                renderItem={({ item, index }) => {
+                  return (
+                    <TouchableOpacity
+                      style={{ flexDirection: "row", width: "100%", alignItems: "center", padding: 5 }}
+                    >
+                      <View style={{ height: 12, width: 12, borderRadius: 6, borderColor: colors.blackTextColor, borderWidth: 1, alignItems: "center", justifyContent: "center", marginRight: 5 }}>
+                        <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.blackTextColor }}>
+                        </View>
                       </View>
-                    </View>
-                    <Text style={{ fontSize: 10, fontWeight: "400" }}>{item.name}</Text>
-                  </TouchableOpacity>
-                );
-              }}
-            />
-            <View style={{ width: "100%" }}>
-              <Button
-                buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0, width: 70, height: 30 }, commonStyles.shadowStyle]}
-                textStyle={commonStyles.textStyle}
-                text={"Ok"}
-                onPress={() => { setShowItem(false) }}
+                      <Text style={{ fontSize: 10, fontWeight: "400" }}>{item.name}</Text>
+                    </TouchableOpacity>
+                  );
+                }}
               />
+              <View style={{ width: "100%" }}>
+                <Button
+                  buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0, width: 70, height: 30 }, commonStyles.shadowStyle]}
+                  textStyle={commonStyles.textStyle}
+                  text={"Ok"}
+                  onPress={() => { setShowItem(false) }}
+                />
+              </View>
             </View>
           </View>
-        </View>
-      }
-      {
-        showBottom &&
-        <CustomBottomSheet
-          visible={showBottom}
-          crossIcon={() => { setShowBottom(false) }}
-          fingers={called_pattern.fingers}
-          headPositon={called_pattern.head_pose === 0 ? "left" : "right"}
-          recordVideoPress={() => {
-            setShowBottom(false)
-            // setShowCamera(true)
-            setTimeout(() => { captureImage('video') }, 500)
+        }
+        {
+          showBottom &&
+          <CustomBottomSheet
+            visible={showBottom}
+            crossIcon={() => { setShowBottom(false) }}
+            fingers={called_pattern.fingers}
+            headPositon={called_pattern.head_pose === 0 ? "left" : "right"}
+            recordVideoPress={() => {
+              setShowBottom(false)
+              // setShowCamera(true)
+              setTimeout(() => { captureImage('video') }, 500)
 
+            }}
+          />
+        }
+        {
+          showAlert &&
+          <AlertModal
+            showAlert={showAlert}
+            ok_Button={() => { setShowAlert(false) }}
+            header={alertHeader}
+            body={alertBody}
+          />
+        }
+        <Loader visible={loading} />
+
+      </KeyboardAwareScrollView>
+      {
+        showRadioBottomSheet &&
+        <CustomCheckBoxBottomSheet
+          visible={showRadioBottomSheet}
+          listOfItems={items}
+          headerText={"Symptoms"}
+          subHeaderText={"Choose multiple"}
+          ItemSeparatorComponent={() =>
+            <View
+              style={{
+                height: 1,
+                backgroundColor: colors.lightGreyColor
+              }}
+            />
+          }
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity
+                style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", height: 48, alignItems: "center" }}
+                onPress={() => {
+                  let tempArray = items
+                  for (let i = 0; i < tempArray.length; i++) {
+                    if (i === index) {
+                      tempArray[i].checked = !tempArray[i].checked
+                    }
+                  }
+                  setItems([...tempArray])
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{item.label}</Text>
+                {
+                  item.checked &&
+                  <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
+                    <Image source={images.tickBlueIcon} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
+                  </View>
+                }
+
+              </TouchableOpacity>
+            );
+          }}
+          onSelectPress={() => {
+            let tempArray = items, result = [];
+            for (let i = 0; i < tempArray.length; i++) {
+              if (tempArray[i].checked) {
+                result.push(tempArray[i].label + " ")
+              }
+            }
+            if (result.length === 0) {
+              AlertComponent({ msg: "Please select symptoms" })
+            }
+            else {
+              setValue([...result])
+              setShowRadioBottomSheet(false)
+              console.log(result)
+            }
+          }}
+          onDragDown={() => {
+            let tempArray = items, result = [];
+            for (let i = 0; i < tempArray.length; i++) {
+              if (tempArray[i].checked) {
+                result.push(tempArray[i].label + " ")
+              }
+            }
+            if (result.length === 0) {
+              setValue([...result])
+              setShowRadioBottomSheet(false)
+              AlertComponent({ msg: "Please select symptoms" })
+            }
+            else {
+              setValue([...result])
+              setShowRadioBottomSheet(false)
+              console.log(result)
+            }
           }}
         />
+
       }
-      {
-        showAlert &&
-        <AlertModal
-          showAlert={showAlert}
-          ok_Button={() => { setShowAlert(false) }}
-          header={alertHeader}
-          body={alertBody}
-        />
-      }
-      <Loader visible={loading} />
     </View>
   )
 }
@@ -614,7 +713,9 @@ const styles = StyleSheet.create(
       zIndex: 111
     },
     bodyStyle: {
-      fontSize: 14
+      fontSize: 14,
+      fontWeight: "400",
+      color: colors.blackTextColor
     }
   }
 )

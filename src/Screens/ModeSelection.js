@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform, PermissionsAndroid } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform, PermissionsAndroid, BackHandler } from "react-native";
 import { colors } from "../Themes/colors";
 import constant from "../Utils/ApiConstants";
 import { AlertComponent } from "../Utils/Alert";
@@ -19,7 +19,9 @@ import Preference from 'react-native-preference';
 import Header from "../Component/Header";
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
+import { HeaderHeight } from '../Utils/Dimensions';
 const ModeSelection = (props) => {
   const state = useSelector(state => state)
   let user = useSelector(state => state.authenticationReducer.user)
@@ -30,6 +32,11 @@ const ModeSelection = (props) => {
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   const [currentAddress, setCurrentAddress] = useState("")
   let displayAddress = ""
+  const childRef = useRef();
+
+  useEffect(() => {
+    childRef.current?.setAddressText(currentAddress)
+  }, [currentAddress])
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
@@ -174,94 +181,97 @@ const ModeSelection = (props) => {
   const onKeyboardDidHide = () => {
     setKeyboardHeight(0);
   }
-  useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
-    return () => {
-      Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
-    };
-  }, []);
+  // useEffect(() => {
+  //   Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
+  //   Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
+  //   return () => {
+  //     Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
+  //     Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
+  //   };
+  // }, []);
   return (
-    <View style={[styles.mainViewStyle, { height: phoneScreen.height /* - keyboardHeight */ }]}>
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <Header
-        containerStyle={{ justifyContent: "center" }}
+        leftIcon={images.unboldIcon}
+        backIconPress={() => { BackHandler.exitApp() }}
         headerText={"Your Quarantine Address"} />
-      <Text style={{ paddingTop: 20, paddingHorizontal: 20, color: colors.blackTextColor, fontSize: 12, fontWeight: "600" }}>{"Where are you planning to Quarantine?"}</Text>
-      <View style={Object.keys(location).length === 0 ? styles.inputSearch : styles.inputSearch1}>
-        <MapInput
-          inputFieldStyle={{ borderRadius: 10, borderColor: colors.greyColor, borderWidth: 1.5 }}
-          inputStyle={{ borderRadius: 10 }}
-          placeholder={currentAddress === "" ? "Type Address here" : currentAddress}
-          notifyChange={(loc, details) => {
-            console.log("loc", loc.lat, loc.lng, details)
-            setLocation({
-              latitude: parseFloat(loc.lat),
-              longitude: parseFloat(loc.lng),
-            })
-            setRegion({
-              latitude: parseFloat(loc.lat),
-              longitude: parseFloat(loc.lng),
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            })
+      <View style={{ height: phoneScreen.height - HeaderHeight }} >
+        <Text style={{ paddingHorizontal: 30, paddingTop: 20, paddingBottom: 5, color: colors.blackTextColor, fontSize: 14, fontWeight: "400" }}>{"Where are you planning to Quarantine?"}</Text>
+        <View style={Object.keys(location).length === 0 ? styles.inputSearch : styles.inputSearch1}>
+          <MapInput
+            ref={childRef}
+            inputFieldStyle={[commonStyles.inputContainerStyle, { paddingHorizontal: 0, borderColor: Object.keys(location).length === 0 ? colors.greyColor : state.themeChangeReducer.primaryColor }]}
+            inputStyle={[commonStyles.passwordInputinnerStyle]}
+            placeholder={"Type Address here"}
+            notifyChange={(loc, details) => {
+              console.log("loc", loc.lat, loc.lng, details)
+              setLocation({
+                latitude: parseFloat(loc.lat),
+                longitude: parseFloat(loc.lng),
+              })
+              setRegion({
+                latitude: parseFloat(loc.lat),
+                longitude: parseFloat(loc.lng),
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              })
 
-          }}
-          renderRightButton={() => {
-            return (
-              <TouchableOpacity style={{
-                width: "15%", height: Platform.OS === "android" ? phoneScreen.height * 8 / 100 : phoneScreen.height * 6 / 100, alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: 10, borderBottomRightRadius: 10
-              }}
-                onPress={async () => {
-                  Geocoder.init(Platform.OS === "ios" ? constant.ios_map_key : constant.android_map_key);
-                  await requestLocationPermission()
-                }}>
-                <Image style={{ width: 30, height: 30, resizeMode: "cover", tintColor: colors.greyColor }} source={images.location/* images.whereTo */} />
-              </TouchableOpacity>
-            )
-          }}
-        />
-      </View>
-      {
-        region["latitude"] && region["longitude"] &&
-        <View style={{ flex: 1, justifyContent: "center", marginTop: 15 }}>
-          <MapView
-
-            region={region}
-            style={{ height: Platform.OS === "android" ? phoneScreen.height * 50 / 100 : phoneScreen.height * 55 / 100 }}
-          >
-            {location["latitude"] && location["longitude"] &&
-              <Marker
-                coordinate={{ latitude: parseFloat(location.latitude), longitude: parseFloat(location.longitude) }}
-              />}
-          </MapView>
-
-
+            }}
+            renderRightButton={() => {
+              return (
+                <TouchableOpacity style={{
+                  width: "15%", height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: phoneScreen.height * 1 / 100, borderBottomRightRadius: phoneScreen.height * 1 / 100
+                }}
+                  onPress={async () => {
+                    Geocoder.init(Platform.OS === "ios" ? constant.ios_map_key : constant.android_map_key);
+                    await requestLocationPermission()
+                  }}>
+                  <Image style={{ width: "60%", height: "60%", resizeMode: "contain" }} source={images.location} />
+                </TouchableOpacity>
+              )
+            }}
+          />
         </View>
-      }
-      {
-        Object.keys(location).length === 0 &&
-        <Text style={[styles.bodyTextStyle, { paddingHorizontal: 20, color: colors.placeholderColor, marginTop: mode === "quarantine" ? 0 : 5, fontSize: 14 }]}>{"This address will be matched against your location for verification."/* "You can always switch between these modes later on from the app settings." */}</Text>
-      }
-      <View style={{ marginHorizontal: 20 }}>
-        <Button
-          image
-          imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-          buttonStyle={[commonStyles.buttonStyle, { backgroundColor: Object.keys(location).length > 0 ? state.themeChangeReducer.primaryColor : colors.placeholderColor, marginVertical: 20 }, commonStyles.shadowStyle]}
-          textStyle={commonStyles.textStyle}
-          text={"Continue"}
-          onPress={() => {
-            if (Object.keys(location).length == 0) {
-              AlertComponent({ msg: "Please select your location" })
+        {
+          region["latitude"] && region["longitude"] &&
+          <View style={{ flex: 1 }}>
+            <MapView
+              region={region}
+              style={{ flex: 1 }}
+            >
+              {location["latitude"] && location["longitude"] &&
+                <Marker
+                  coordinate={{ latitude: parseFloat(location.latitude), longitude: parseFloat(location.longitude) }}
+                />}
+            </MapView>
 
-            }
-            else {
-              let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
-              console.log(latlng)
-              props.navigation.navigate("QuarantineWelcom", { location: latlng })
-            }
-          }}
-        />
+
+          </View>
+        }
+        <View style={{ paddingHorizontal: 30 }}>
+          {
+            Object.keys(location).length === 0 &&
+            <Text style={[styles.bodyTextStyle, { color: colors.placeholderColor, marginTop: mode === "quarantine" ? 0 : 5, fontSize: 14 }]}>{"This address will be matched against your location for verification."}</Text>
+          }
+          <Button
+            image
+            imageStyle={{ height: 25, width: 25, tintColor: Object.keys(location).length === 0 ? colors.placeholderColor : state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: Object.keys(location).length > 0 ? state.themeChangeReducer.primaryColor : colors.greyColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+            textStyle={[commonStyles.textStyle, { color: Object.keys(location).length === 0 ? colors.placeholderColor : state.themeChangeReducer.secondaryColor }]}
+            text={"Continue"}
+            onPress={() => {
+              if (Object.keys(location).length == 0) {
+                AlertComponent({ msg: "Please select your location" })
+
+              }
+              else {
+                let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
+                console.log(latlng)
+                props.navigation.navigate("QuarantineWelcom", { location: latlng })
+              }
+            }}
+          />
+        </View>
       </View>
     </View >
     // <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
@@ -385,10 +395,13 @@ const styles = StyleSheet.create(
       backgroundColor: colors.secondaryColor,
     },
     inputSearch: {
-      height: Platform.OS === "ios" ? phoneScreen.height * 66 / 100 : phoneScreen.height * 60 / 100
+      flex: 1,
+      paddingHorizontal: 30
     },
     inputSearch1: {
-      height: "10%"
+      paddingHorizontal: 30,
+      height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100,
+      marginBottom: 20
     },
     innerViewStyle1: {
       height: phoneScreen.height * 30 / 100,

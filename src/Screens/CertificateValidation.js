@@ -52,71 +52,61 @@ const certificateValidation = (props) => {
 
 
   return (
-    <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
-      <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
-        <Header
-          iconStyle={{ tintColor: colors.blackTextColor, height: 30, width: 30, resizeMode: "contain" }}
-          leftIcon={images.unboldIcon}
-          backIconPress={() => { props.navigation.goBack() }}
-          /* headerText={"Your Quarantine Address"} */ />
-        <View style={{ justifyContent: "center", height: "90%" }}>
-
-
-          <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, padding: 20, alignItems: "center", justifyContent: "space-evenly" }}>
-            <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontWeight: "bold" }]}>{"Verification Certificate"}</Text>
-            <View style={{ height: 22, backgroundColor: "#479597", width: 120, marginTop: 10, borderRadius: 11, alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
-              <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 12, textAlignVertical: "center" }]}>{"Success"}</Text>
-            </View>
-            <SessionDetailItem
-              label={"Name"}
-              value={user.Name}
-
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <View style={{ width: "50%" }}>
-                <SessionDetailItem
-                  label={"Verification Date"}
-                  value={moment(props?.route?.params?.certificate?.date).format("MMM DD, YYYY hh:mm A")}
-                />
-              </View>
-
-              <View style={{ width: "50%" }}>
-                <SessionDetailItem
-                  label={"Quarantine Day"}
-                  value={"Day " + 2}
-                />
-              </View>
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <Header
+        leftIcon={images.unboldIcon}
+        backIconPress={() => { props.navigation.goBack() }}
+        headerText={""} />
+      <View style={{ flex: 1, paddingHorizontal: 30 }}>
+        <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, paddingHorizontal: "5%", alignItems: "center", justifyContent: "space-evenly" }}>
+          <View style={{ height: 22, backgroundColor: "#479597", width: 120, marginTop: 10, borderRadius: 11, alignItems: "center", justifyContent: "center" }}>
+            <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 12, textAlignVertical: "center" }]}>{"Success"}</Text>
+          </View>
+          <SessionDetailItem
+            label={"Name"}
+            value={user.Name}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+            }}
+          >
+            <View style={{ width: "50%" }}>
+              <SessionDetailItem
+                label={"Verification Date"}
+                value={moment(props?.route?.params?.certificate?.date).format("MMM DD, YYYY hh:mm A")}
+              />
             </View>
 
+            <View style={{ width: "50%" }}>
+              <SessionDetailItem
+                label={"Quarantine Day"}
+                value={"Day " + 2}
+              />
+            </View>
           </View>
-          <View style={{ height: 1 }}></View>
-          <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
-            <Image source={{ uri: `data:image/gif;base64,${props?.route?.params?.certificate?.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
-            <Text style={{
-              color: colors.secondaryColor,
-              fontSize: 12,
-              fontWeight: "400",
-              marginTop: 20
-            }}>{"Generated using V&V Technology"}</Text>
-          </View>
-          <View style={{ marginTop: 20, alignItems: "center", width: "100%" }}>
-            <CustomCheckBox
-              checkstyle={{ borderWidth: 1.5, borderColor: colors.blackTextColor, backgroundColor: "white" }}
-              onChange={() => { setCheckBox(!checkBox) }}
-              isChecked={checkBox}
-              tintColor={colors.blackTextColor}
-              labelStyle={[commonStyles.checkLabelStyle, { color: colors.blackTextColor }]}
-              label={"Certificate Successfully Sent"}
-            />
-          </View>
+
         </View>
+        <View style={{ height: 1, width: "100%", color: colors.whiteColor }} />
+        <View style={{ height: "45%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
+          <Image source={{ uri: `data:image/gif;base64,${props?.route?.params?.certificate?.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
+          <Text style={{
+            color: colors.whiteColor,
+            fontSize: 10,
+            fontWeight: "400",
+            marginTop: 20
+          }}>{"Generated using V&V Technology"}</Text>
+        </View>
+        <View style={{ marginTop: 20, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+          <View style={{ height: 24, width: 24, borderRadius: 12, borderColor: colors.greyColor, borderWidth: 1, marginRight: 10 }}>
+            <Image source={images.tickBlueIcon} style={{ width: "150%", height: "150%", resizeMode: "contain", bottom: 10 }} />
+          </View>
+          <Text style={[commonStyles.checkLabelStyle, { color: colors.placeholderColor }]}>{"Certificate Successfully Sent"}</Text>
+        </View>
+      </View>
 
-        {/* <Certificate
+      {/* <Certificate
           outerViewStyle={{ height: Platform.OS === "android" ? phoneScreen.height * 35 / 100 : phoneScreen.height * 25 / 100, }}
           headerViewStyle={[styles.headerViewStyle, { height: "20%" }]}
           headingText={"Certificate of validation - Location"} 
@@ -190,9 +180,6 @@ const certificateValidation = (props) => {
           }}
           listOfItems={listOfItems}
         /> */}
-
-
-      </View>
       <Loader visible={loading} />
     </View>
   )

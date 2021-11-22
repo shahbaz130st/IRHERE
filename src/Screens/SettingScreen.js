@@ -26,7 +26,7 @@ const SettingScreen = (props) => {
     props.navigation.dispatch(login)
   }
   return (
-    <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.primaryColor }}>
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
         {/* <View style={{ width: "100%", alignItems: "flex-end" }}>
           <SwitchToggle

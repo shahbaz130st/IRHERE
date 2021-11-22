@@ -6,7 +6,9 @@ import {
     Image
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
-import {images} from "../Assets/Images/index"
+import { images } from "../Assets/Images/index";
+import DeviceInfo from 'react-native-device-info';
+import { colors } from "../Themes/colors";
 
 const LoginOptionsBottomSheet = ({
     visible,
@@ -40,56 +42,48 @@ const LoginOptionsBottomSheet = ({
                     backgroundColor: "#0000001A",
                 },
                 draggableIcon: {
-                    marginTop: 25,
-                    backgroundColor: "rgb(57,57,68)",
-                    width: 91
+                    marginTop: 8,
+                    backgroundColor: "#CDCFD0",
+                    width: 48,
+                    height: 5
                 },
             }}
-            height={229}>
+            height={218}>
             <View
                 style={{
-                    flex: 1,
-                    backgroundColor: "white",
-                    width: "80%",
-                    marginTop: 25
+                    height: 195,
+                    backgroundColor: colors.whiteColor,
+                    width: "100%",
+                    paddingHorizontal: 24,
+                    paddingTop: 24
                 }}>
-
-                <Text
+                <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 25 : 25, color: colors.blackTextColor }]}>{customHeaderText ? customHeaderText : "Change profile picture"}</Text>
+                <TouchableOpacity
                     style={{
-                        fontSize: 24,
-                        lineHeight: 27,
-                        color: "rgb(39,45,59)",
-                        fontWeight: "bold",
-                    }}>
-                    {customHeaderText?customHeaderText:"Change profile picture"}
-                </Text>
-                <View style={{ backgroundColor: "rgb(215,222,240)", width: "100%", height: 1, marginTop: 8 }} />
+                        flexDirection: "row",
+                        height: 50,
+                        alignItems: "center",marginTop:10
+                    }}
+                    onPress={fromGallery}>
+                    <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{"From Gallery"}</Text>
+                </TouchableOpacity>
+                <View style={{ backgroundColor: "rgb(215,222,240)", width: "100%", height: 1 }} />
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
                         height: 50,
                         alignItems: "center",
                     }}
-                    onPress={fromGallery}
-                >
-                    <Image style={{ width: 15, height: 15 }} source={images.galleryIcon} resizeMode="contain" />
-                    <Text style={{ fontSize: 14, marginLeft: 15, lineHeight: 21 }}>{"From Gallery"}</Text>
+                    onPress={fromCamera}>
+                    <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{"Take a photo"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={{
-                        flexDirection: "row",
-                        height: 50,
-                        alignItems: "center",
-                    }}
-                    onPress={fromCamera}
-                >
-                    <Image style={{ width: 15, height: 15 }} source={images.cameraIcon} resizeMode="contain" />
-                    <Text style={{ fontSize: 14, marginLeft: 15, lineHeight: 21 }}>{"Take a photo"}</Text>
-                </TouchableOpacity>
-
-            </View>
-            <View style={{ width: "100%", alignItems: "center", marginBottom: 11 }}>
-                <View style={{ width: 135, height: 5, borderRadius: 3, backgroundColor: "rgb(57,57,68)" }} />
+                {!DeviceInfo.hasNotch() ?
+                    <View style={{ flex: 1, width: "100%", alignItems: "center", justifyContent: "center" }}>
+                        <View style={{ width: 135, height: 5, borderRadius: 3, backgroundColor: "rgb(57,57,68)" }} />
+                    </View> :
+                    <View style={{ flex: 1, width: "100%", alignItems: "center", justifyContent: "center" }}>
+                    </View>
+                }
             </View>
         </RBSheet>
     );
