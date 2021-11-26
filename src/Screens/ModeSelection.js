@@ -181,14 +181,14 @@ const ModeSelection = (props) => {
   const onKeyboardDidHide = () => {
     setKeyboardHeight(0);
   }
-  // useEffect(() => {
-  //   Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
-  //   Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
-  //   return () => {
-  //     Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
-  //     Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
-  //   };
-  // }, []);
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', onKeyboardDidHide);
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
+    };
+  }, []);
   return (
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <Header
@@ -256,12 +256,12 @@ const ModeSelection = (props) => {
           <Button
             image
             imageStyle={{ height: 25, width: 25, tintColor: Object.keys(location).length === 0 ? colors.placeholderColor : state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: Object.keys(location).length > 0 ? state.themeChangeReducer.primaryColor : colors.greyColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: Object.keys(location).length > 0 ? state.themeChangeReducer.primaryColor : colors.greyColor, marginVertical: 18 }]}
             textStyle={[commonStyles.textStyle, { color: Object.keys(location).length === 0 ? colors.placeholderColor : state.themeChangeReducer.secondaryColor }]}
             text={"Continue"}
             onPress={() => {
               if (Object.keys(location).length == 0) {
-                AlertComponent({ msg: "Please select your location" })
+                AlertComponent({ msg: "Please select your location", title: "Error", type: "error" })
 
               }
               else {

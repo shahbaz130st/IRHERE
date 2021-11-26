@@ -40,7 +40,7 @@ const CustomRadioButtonBottomSheet = ({
     return (
         <RBSheet
             ref={refRBSheet}
-            closeOnPressMask={false}
+            closeOnPressMask={true}
             closeOnDragDown={true}
             onClose={onDragDown}
             customStyles={{
@@ -73,7 +73,7 @@ const CustomRadioButtonBottomSheet = ({
                     paddingHorizontal: 24,
                     paddingTop: 24,
                 }}>
-                <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 25 : 25, color: colors.blackTextColor }, headerTextStyle]}>{headerText}</Text>
+                <Text style={[{ fontWeight: "700", fontSize: 24, color: colors.blackTextColor }, headerTextStyle]}>{headerText}</Text>
                 <Text style={[{ fontWeight: "400", fontSize: 14, color: colors.placeholderColor }]}>{subHeaderText}</Text>
                 <FlatList
                     numColumns={1}
@@ -87,7 +87,7 @@ const CustomRadioButtonBottomSheet = ({
                     ItemSeparatorComponent={ItemSeparatorComponent}
                 />
                 <Button
-                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor,marginTop:0 }, commonStyles.shadowStyle]}
+                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor,marginTop:0 }]}
                     textStyle={commonStyles.textStyle}
                     text={"Select"}
                     onPress={onSelectPress}

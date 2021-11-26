@@ -9,14 +9,14 @@ const Header = (props) => {
         <View style={[{ height: HeaderHeight, width: "100%" }, props.containerStyle]}>
             {
                 !_.isNil(props.leftIcon) &&
-                <TouchableOpacity style={{ paddingTop: StatusBarHeight, paddingHorizontal: 20, paddingBottom: 20, width: 70 }} onPress={props.backIconPress}>
-                    <Image style={[{ height: 30, width: 30, resizeMode: "contain" }, props.iconStyle]} source={props.leftIcon} />
+                <TouchableOpacity style={{ paddingTop: StatusBarHeight, paddingHorizontal: 24, paddingBottom: 20, width: 70 }} onPress={props.backIconPress}>
+                    <Image style={[{ height: 24, width: 24, resizeMode: "contain" }, props.iconStyle]} source={props.leftIcon} />
                 </TouchableOpacity>
             }
             {
                 !_.isNil(props.headerText) &&
                 <View style={[{ width: "100%", alignItems: "center" }, props.headerTextStyle]}>
-                    <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 30 : 25, lineHeight: 36, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
+                    <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
                 </View>
             }
         </View>

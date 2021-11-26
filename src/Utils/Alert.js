@@ -1,11 +1,17 @@
 import {Alert} from "react-native";
 import _ from 'lodash';
-
-export const AlertComponent = (props) =>
+import Toast from 'react-native-toast-message'
+export const AlertComponent = (props) => {
+  Toast.show({
+    type:  props?.type?props.type:"success",
+    text1: props?.title?props.title:"Hello",
+    text2: props?.msg&&props.msg
+  });
+} /* const AlertComponent = (props) =>
     Alert.alert(
       props?.title?props.title:"",
       props?.msg&&props.msg,
       [
         { text: "OK", onPress: props?.onOkPress&&props.onOkPress }
       ]
-    );
+    ); */

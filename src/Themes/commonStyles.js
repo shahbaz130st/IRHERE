@@ -9,11 +9,12 @@ const styles = StyleSheet.create(
         },
         innerViewStyle: {
             height: phoneScreen.height - HeaderHeight,
+            paddingHorizontal: 24,
             paddingBottom: 50,
             padding: 30
         },
         buttonStyle: {
-            marginTop: 20,
+            marginTop: 18,
             width: "100%",
             height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100,
             alignItems: "center",
@@ -22,6 +23,7 @@ const styles = StyleSheet.create(
         buttonTextStyle: {
             textAlign: "center",
             color: colors.secondaryColor,
+            fontWeight: "500",
             fontSize: 16
         },
         shadowStyle: {

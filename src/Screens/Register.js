@@ -39,7 +39,7 @@ const Register = (props) => {
   const [loading, setLoading] = useState(false)
   const [checkBox, setCheckBox] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
-  const [listOfItems, setListOfItems] = useState([{ name: "Passport", number: 2, isChecked: false }, { name: "Photo ID", number: 3, isChecked: false }, { name: "Driver’s License", number: 4, isChecked: false },])
+  const [listOfItems, setListOfItems] = useState([{ name: "Passport", number: 3, isChecked: false }, { name: "Photo ID", number: 1, isChecked: false }, { name: "Driver’s License", number: 2, isChecked: false },])
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [filePath, setFilePath] = useState(null);
   const [showAlert, setShowAlert] = useState(false)
@@ -52,31 +52,31 @@ const Register = (props) => {
 
   const validation = () => {
     if (fullName === "") {
-      AlertComponent({ msg: "Full name is required" })
+      AlertComponent({ msg: "Full name is required", title: "Error", type: "error" })
     }
     else if (email === "") {
-      AlertComponent({ msg: "Email is required" })
+      AlertComponent({ msg: "Email is required", title: "Error", type: "error" })
     }
     else if (reg.test(email) == false) {
-      AlertComponent({ msg: "Email is invalid" })
+      AlertComponent({ msg: "Email is invalid", title: "Error", type: "error" })
     }
     else if (password == "") {
-      AlertComponent({ msg: "Password is required" })
+      AlertComponent({ msg: "Password is required", title: "Error", type: "error" })
     }
     else if (password.length <= 7) {
-      AlertComponent({ msg: "Password must be 8 characters" })
+      AlertComponent({ msg: "Password must be 8 characters", title: "Error", type: "error" })
     }
     else if (number.length == "") {
-      AlertComponent({ msg: "Mobile number is required" })
+      AlertComponent({ msg: "Mobile number is required", title: "Error", type: "error" })
     }
-    else if (number.length <= 7) {
+    else if (number.length <= 8) {
       AlertComponent({ msg: "Mobile number is invalid" })
     }
     else if (verificationNumber === 1) {
-      AlertComponent({ msg: "Select verification type" })
+      AlertComponent({ msg: "Select verification type", title: "Error", type: "error" })
     }
     else if (!filePath) {
-      AlertComponent({ msg: "Select image for verficiation" })
+      AlertComponent({ msg: "Select image for verficiation", title: "Error", type: "error" })
     }
     else {
       register()
@@ -129,7 +129,8 @@ const Register = (props) => {
         alert('Write permission err', err);
       }
       return false;
-    } else return true;
+    }
+    else return true;
   };
 
   const captureImage = async (type) => {
@@ -162,10 +163,12 @@ const Register = (props) => {
   };
 
   const chooseFile = (type) => {
+
     let options = {
       mediaType: type,
     };
     launchImageLibrary(options, (response) => {
+
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -211,18 +214,18 @@ const Register = (props) => {
           // props.navigation.dispatch(mainApp)
         }
         else {
-          // AlertComponent({ msg: response.data.desc })
-          setFilePath(null)
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
+          // setFilePath(null)
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
 
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   return (
@@ -253,34 +256,66 @@ const Register = (props) => {
     //       </View>
     //       :
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <Header
+        leftIcon={images.unboldIcon}
+        backIconPress={() => { props.navigation.goBack() }}
+        headerText={"Create an Account"} />
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <Header
-          leftIcon={images.unboldIcon}
-          backIconPress={() => { props.navigation.goBack() }}
-          headerText={"Create an Account"} />
-        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,flex:1,height:"100%" }]} >
+        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,  /* flex: 1, height: "100%" */ }]} >
 
           <InputField
             placeholder={"Full Name"}
+            autoComplete={"name"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={commonStyles.inputContainerStyle}
+            containerStyle={{
+              flex: 1, backgroundColor: colors.whiteColor,
+              width: "100%",
+              borderRadius: phoneScreen.height * 1 / 100,
+              paddingHorizontal: 15,
+              borderColor: colors.greyColor,
+              borderWidth: 2,
+              flexDirection: "row",
+            }/* commonStyles.inputContainerStyle */}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setFullName(text)}
             value={fullName}
           />
           <InputField
             placeholder={"Email"}
+            autoComplete={"email"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            // containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            containerStyle={{
+              flex: 1, backgroundColor: colors.whiteColor,
+              width: "100%",
+              borderRadius: phoneScreen.height * 1 / 100,
+              paddingHorizontal: 15,
+              borderColor: colors.greyColor,
+              borderWidth: 2,
+              flexDirection: "row",
+              marginTop: 12
+            }/* commonStyles.inputContainerStyle */}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setEmail(text)}
+            keyboardType={"email-address"}
             value={email}
             onEndEditing={() => setEmail(email.trim())}
           />
           <InputField
             placeholder={"Password"}
+            autoComplete={"password"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 20 }]}
+            // containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            containerStyle={{
+              flex: 1, backgroundColor: colors.whiteColor,
+              width: "100%",
+              borderRadius: phoneScreen.height * 1 / 100,
+              paddingHorizontal: 15,
+              borderColor: colors.greyColor,
+              borderWidth: 2,
+              flexDirection: "row",
+              marginTop: 12
+            }/* commonStyles.inputContainerStyle */}
             inputStyle={commonStyles.passwordInputinnerStyle}
             secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
@@ -289,11 +324,22 @@ const Register = (props) => {
           <InputField
             placeholder={"Mobile Number"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15, flexDirection: "row", alignItems: "center" }]}
+            // containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18, flexDirection: "row", alignItems: "center" }]}
+            containerStyle={{
+              flex: 1, backgroundColor: colors.whiteColor,
+              width: "100%",
+              borderRadius: phoneScreen.height * 1 / 100,
+              paddingHorizontal: 15,
+              borderColor: colors.greyColor,
+              borderWidth: 2,
+              flexDirection: "row", marginTop: 12
+            }/* commonStyles.inputContainerStyle */}
             inputStyle={commonStyles.mobileInputInnerStyle}
             onChangeText={(text) => setNumber(text)}
+            keyboardType={"phone-pad"}
+            autoComplete={"tel"}
             value={number}
-            maxLength={8}
+            maxLength={10}
             image={images.auFlag}
             imageStyle={{ width: 21, height: 13, resizeMode: "contain" }}
             imageViewStyle={commonStyles.mobileFlagStyle}
@@ -302,7 +348,16 @@ const Register = (props) => {
             textViewStyle={commonStyles.mobileCountryCodeStyle}
           />
           <ModalOpenField
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            // containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            containerStyle={{
+              flex: 1, backgroundColor: colors.whiteColor,
+              width: "100%",
+              borderRadius: phoneScreen.height * 1 / 100,
+              paddingHorizontal: 15,
+              borderColor: colors.greyColor,
+              borderWidth: 2,
+              flexDirection: "row", marginTop: 12
+            }/* commonStyles.inputContainerStyle */}
             textViewStyle={commonStyles.selectionInputTextStyle}
             value={verification === "" ? "Verification Document" : verification}
             valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
@@ -311,21 +366,21 @@ const Register = (props) => {
             rightImageStyle={commonStyles.selectionRightArrow}
             onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
           />
-          <TouchableOpacity style={{ marginVertical: 20 }} onPress={props.onResetPress}>
-            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 14, fontWeight: "400" }} >{"Why do I need a verification Document?"}</Text>
+          <TouchableOpacity style={{ flex: 1, marginVertical: 18 }} onPress={props.onResetPress}>
+            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "400" }} >{"Why do I need a verification Document?"}</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
-          <View style={{ width: "100%" }}>
+          <View style={{ flex: 1, width: "100%" }}>
             <Text style={{ color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }} >{"By signing up, you agree to our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Terms of use"}</Text>{" as well as our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Privacy"}</Text>{" , and "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Cookies policies"}</Text></Text>
           </View>
           <Button
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
+            buttonStyle={[commonStyles.buttonStyle, { flex: 1, backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 18 }]}
             textStyle={commonStyles.textStyle}
             text={"Sign Up"}
             onPress={() => { validation() }}
           />
           <View style={{ alignItems: "center", width: "100%" }}>
-            <TouchableOpacity style={{ marginTop: 15 }} onPress={() => { props.navigation.navigate("Login") }}>
+            <TouchableOpacity style={{ marginTop: 34 }} onPress={() => { props.navigation.navigate("Login") }}>
               <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "500" }} >{"Login Instead"}</Text>
             </TouchableOpacity>
           </View>
@@ -335,6 +390,10 @@ const Register = (props) => {
           <BottomSheet
             visible={imageModalVisible}
             customHeaderText={verification}
+            backIconPress={() => {
+              setImageModalVisible(false)
+              setShowRadioBottomSheet(true)
+            }}
             onDragDown={() => setImageModalVisible(false)}
             fromCamera={() => {
               setImageModalVisible(false);
@@ -342,7 +401,9 @@ const Register = (props) => {
             }}
             fromGallery={() => {
               setImageModalVisible(false);
-              chooseFile("photo");
+              setTimeout(() => {
+                chooseFile("photo");
+              }, 500)
             }}
           />
         )}
@@ -363,6 +424,7 @@ const Register = (props) => {
           visible={showRadioBottomSheet}
           listOfItems={listOfItems}
           headerText={"Verification Document"}
+          onDragDown={() => setShowRadioBottomSheet(false)}
           subHeaderText={"Choose one"}
           ItemSeparatorComponent={() =>
             <View

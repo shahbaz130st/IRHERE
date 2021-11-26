@@ -32,7 +32,6 @@ import DropDownPicker from 'react-native-dropdown-picker';
 const login = StackActions.replace("OnBoarding")
 let called_pattern = {}
 const VerifyLocation = (props) => {
-
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const [avatar, setAvatar] = useState("")
@@ -53,7 +52,7 @@ const VerifyLocation = (props) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState([]);
   // const [listOfItems, setListOfItems] = useState([{ checked: false, name: "Congestion or Running Nose" }, { checked: false, name: "Cough" }, { checked: false, name: "Diarrhea" }, { checked: false, name: "Fatigue" }, { checked: false, name: "Fever or Chills" }, { checked: false, name: "Headache" }, { checked: false, name: "Muscle or Body Aches" }, { checked: false, name: "Nausea or Vomiting" }, { checked: false, name: "New loss or taste or smell" }, { checked: false, name: "Shortness or breath or difficulty breathing" }, { checked: false, name: "Soar Throat" }, { checked: false, name: "None of the above" }])
-  const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Soar Throat", value: "Soar Throat" }, { checked: false, label: "None of the above", value: "None of the above" }]);
+  const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Soar Throat", value: "Soar Throat" }]);
   const user = useSelector(state => state.authenticationReducer.user)
   const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
   const dispatch = useDispatch()
@@ -149,7 +148,7 @@ const VerifyLocation = (props) => {
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
   const uploadVideo = (file) => {
@@ -173,16 +172,16 @@ const VerifyLocation = (props) => {
           convertVideo(file.name)
         }
         else {
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
   const convertVideo = (name) => {
@@ -206,16 +205,16 @@ const VerifyLocation = (props) => {
           processVideo(name)
         }
         else {
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
   const processVideo = (name) => {
@@ -254,18 +253,18 @@ const VerifyLocation = (props) => {
 
         }
         else {
-          setFilePath("")
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setFilePath("")
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
           setStatus("Verification Failed.Make a video again")
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
   const requestCameraPermission = async () => {
@@ -334,6 +333,7 @@ const VerifyLocation = (props) => {
       });
     }
   };
+  
 
   return (
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
@@ -365,7 +365,7 @@ const VerifyLocation = (props) => {
               numberOfLines={1}
               containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
               textViewStyle={commonStyles.selectionInputTextStyle}
-              value={value.length === 0 ? "Choose Symptoms" : value.toString()}
+              value={value.length === 0 ? "Choose Symptoms (optional)" : value.join(", ")}
               valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
               rightImage={images.bottomArrowIcon}
               rightImageViewStyle={commonStyles.selectionRightArrowView}
@@ -378,16 +378,12 @@ const VerifyLocation = (props) => {
             <Button
               image
               imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-              buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+              buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 18 }]}
               textStyle={commonStyles.textStyle}
               text={"Continue"}
               onPress={() => {
-                if (value.length == 0) {
-                  AlertComponent({ msg: "Please select symptoms" })
-                } else {
                   setResultImage("")
                   generate_Pattern()
-                }
               }}
             />
             {/* <DropDownPicker
@@ -613,17 +609,17 @@ const VerifyLocation = (props) => {
             let tempArray = items, result = [];
             for (let i = 0; i < tempArray.length; i++) {
               if (tempArray[i].checked) {
-                result.push(tempArray[i].label + " ")
+                result.push(tempArray[i].label)
               }
             }
-            if (result.length === 0) {
-              AlertComponent({ msg: "Please select symptoms" })
-            }
-            else {
+            // if (result.length === 0) {
+            //   AlertComponent({ msg: "Please select symptoms" })
+            // }
+            // else {
               setValue([...result])
               setShowRadioBottomSheet(false)
               console.log(result)
-            }
+            // }
           }}
           onDragDown={() => {
             let tempArray = items, result = [];
@@ -632,16 +628,16 @@ const VerifyLocation = (props) => {
                 result.push(tempArray[i].label + " ")
               }
             }
-            if (result.length === 0) {
-              setValue([...result])
-              setShowRadioBottomSheet(false)
-              AlertComponent({ msg: "Please select symptoms" })
-            }
-            else {
+            // if (result.length === 0) {
+            //   setValue([...result])
+            //   setShowRadioBottomSheet(false)
+            //   AlertComponent({ msg: "Please select symptoms" })
+            // }
+            // else {
               setValue([...result])
               setShowRadioBottomSheet(false)
               console.log(result)
-            }
+            // }
           }}
         />
 

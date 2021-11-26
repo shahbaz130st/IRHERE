@@ -23,12 +23,12 @@ import { StatusBar } from "react-native";
 export const isIPhoneX = DeviceInfo.hasNotch();
 
 export const StatusBarHeight = Platform.select({
-    ios: DeviceInfo.hasNotch() ? 30 : 20,
-    android: StatusBar.currentHeight,
+    ios: DeviceInfo.hasNotch() ? 40 : 30,
+    android: StatusBar.currentHeight+16,
     default: 0
 })
 export const HeaderHeight = Platform.select({
-    ios: 84 + StatusBarHeight,
-    android: 84 + StatusBarHeight,
-    default: 84 + StatusBarHeight,
+    ios: 94 + StatusBarHeight,
+    android: 100 + StatusBarHeight,
+    default: 94 + StatusBarHeight,
 })

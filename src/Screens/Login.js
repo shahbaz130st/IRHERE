@@ -25,7 +25,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
 import Header from "../Component/Header";
 import { StatusBarHeight, HeaderHeight } from '../Utils/Dimensions';
+import Toast from 'react-native-toast-message';
 const Login = (props) => {
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -52,16 +54,17 @@ const Login = (props) => {
   }
   const loginValidation = () => {
     if (email === "") {
-      AlertComponent({ msg: "Email is required" })
+      // showToast()
+       AlertComponent({msg:"Email is required",title:"Error",type:"error"})
     }
     else if (reg.test(email) == false) {
-      AlertComponent({ msg: "Email is invalid" })
+      AlertComponent({ msg: "Email is invalid",type:"error" })
     }
     else if (password == "") {
-      AlertComponent({ msg: "Password is required" })
+      AlertComponent({ msg: "Password is required",type:"error",title:"Error" })
     }
     else if (password.length <= 7) {
-      AlertComponent({ msg: "Password must be 8 characters" })
+      AlertComponent({ msg: "Password must be 8 characters",type:"error",title:"Error" })
     }
     else {
       Login_Auth();
@@ -90,16 +93,16 @@ const Login = (props) => {
           check_mode(response.data.id)
         }
         else {
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,type:"error",title:"Error" })
         }
       })
       .catch(function (error) {
         console.log(error)
         setLoading(false)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,type:"error",title:"Error" })
       });
   }
   const check_mode = (id) => {
@@ -139,15 +142,15 @@ const Login = (props) => {
           // props.navigation.dispatch(modeSelection)
         }
         else {
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ title:"Error",msg: response.data.desc ,type:"error",title:"Error"})
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,type:"error",title:"Error" })
       });
   }
 
@@ -173,15 +176,15 @@ const Login = (props) => {
           // setMode("quarantine")
         }
         else {
-          setShowAlert(true)
-          setAlertHeader("Error")
-          setAlertBody(response.data.desc)
-          // AlertComponent({ msg: response.data.desc })
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,type:"error",title:"Error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,type:"error",title:"Error" })
       });
   }
   return (
@@ -199,31 +202,35 @@ const Login = (props) => {
             containerStyle={commonStyles.inputContainerStyle}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setEmail(text)}
+            keyboardType={"email-address"}
+            autoComplete={"email"}
             value={email}
             onEndEditing={() => setEmail(email.trim())}
           />
           <InputField
             placeholder={"Password"}
+            autoComplete={"password"}
             placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 20 }]}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
             inputStyle={commonStyles.passwordInputinnerStyle}
             secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
             value={password}
           />
 
-          <TouchableOpacity style={{ marginVertical: 20 }} onPress={props.onResetPress}>
-            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 14,fontWeight:"400" }} >{"Forgot password? "}</Text>
+          <TouchableOpacity style={{ marginVertical: 18 }} onPress={props.onResetPress}>
+            <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "400" }} >{"Forgot password? "}</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
           <Button
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor }, commonStyles.shadowStyle]}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor }]}
             textStyle={commonStyles.textStyle}
             text={"Log In"}
-            onPress={() => { loginValidation() }}
+            onPress={()=>{
+              loginValidation() }}
           />
-          <View style={{  alignItems: "center", width: "100%" }}>
-            <TouchableOpacity style={{marginTop:20}}  onPress={() => { props.navigation.navigate("Register") }}>
+          <View style={{ alignItems: "center", width: "100%" }}>
+            <TouchableOpacity style={{ marginTop: 34 }} onPress={() => { props.navigation.navigate("Register") }}>
               <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "500" }} >{"Create an Account"}</Text>
             </TouchableOpacity>
           </View>

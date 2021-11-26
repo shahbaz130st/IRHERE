@@ -9,6 +9,8 @@ import messaging from '@react-native-firebase/messaging';
 import NotificationPopup from 'react-native-push-notification-popup';
 import Preference from 'react-native-preference';
 import * as RootNavigation from './Utils/RootNavigation';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { colors } from "./Themes/colors";
 const App = () => {
     LogBox.ignoreAllLogs();
     const popupRef = useRef(null);
@@ -23,6 +25,46 @@ const App = () => {
         }
 
     })
+    const toastConfig = {
+        success: ({ text1, ...rest }) => (
+          <BaseToast
+            {...rest}
+            style={{ borderLeftColor: 'pink' }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{
+              fontSize: 15,
+              fontWeight: 'bold'
+            }}
+            text2Style={{
+                fontSize: 25,
+                fontWeight: 'bold'
+              }}
+            text1={'TIME UPDATE'}
+            text2={"sdfgsf"}
+          />
+        ),
+        error: ({ text1,text2, ...rest }) => (
+            <BaseToast
+              {...rest}
+              style={{ borderLeftColor: "red"}}
+              contentContainerStyle={{ paddingHorizontal: 15 }}
+              text1Style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color:"red"
+             
+              }}
+              text2Style={{
+                  fontSize: 15,
+                  fontWeight: 'bold',
+                  color:colors.placeholderColor
+                }}
+              text1={text1}
+              text2={text2}
+            />
+          )
+        
+      };
     const onAppBootstrap = async () => {
         // Register the device with FCM
         // await messaging().registerDeviceForRemoteMessages();
@@ -137,6 +179,7 @@ const App = () => {
                         ref={popupRef}
                         style={{ zIndex: 99 }}
                     />
+                    <Toast config={toastConfig} ref={(ref) => Toast.setRef(ref)}  />
                 </View>
             </PersistGate>
         </Provider>

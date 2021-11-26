@@ -107,12 +107,12 @@ const styles = StyleSheet.create(
       resizeMode: "contain"
     },
     textStyle: {
-      fontSize: 14,
-      fontWeight: "600",
+      fontSize: 17,
+      fontWeight: "700",
       fontStyle: "normal",
     },
     text1Style: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: "400",
       fontStyle: "normal",
     },

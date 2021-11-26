@@ -15,7 +15,8 @@ const LoginOptionsBottomSheet = ({
     onDragDown = () => { },
     fromGallery = () => { },
     fromCamera = () => { },
-    customHeaderText
+    customHeaderText,
+    backIconPress = () =>{ }
 }) => {
     const refRBSheet = useRef();
     const [sheetVisible, setSheetVisible] = useState(visible);
@@ -28,7 +29,7 @@ const LoginOptionsBottomSheet = ({
     return (
         <RBSheet
             ref={refRBSheet}
-            closeOnPressMask={false}
+            closeOnPressMask={true}
             closeOnDragDown={true}
             onClose={onDragDown}
             customStyles={{
@@ -57,12 +58,17 @@ const LoginOptionsBottomSheet = ({
                     paddingHorizontal: 24,
                     paddingTop: 24
                 }}>
-                <Text style={[{ fontWeight: "700", fontSize: Platform.OS === "android" ? 25 : 25, color: colors.blackTextColor }]}>{customHeaderText ? customHeaderText : "Change profile picture"}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                    <TouchableOpacity style={{ position: "absolute", left: 0 }} onPress={backIconPress}>
+                        <Image style={[{ height: 24, width: 24, resizeMode: "contain" }]} source={images.unboldIcon} />
+                    </TouchableOpacity>
+                    <Text style={[{ fontWeight: "700", fontSize: 24, color: colors.blackTextColor }]}>{customHeaderText ? customHeaderText : "Change profile picture"}</Text>
+                </View>
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
                         height: 50,
-                        alignItems: "center",marginTop:10
+                        alignItems: "center", marginTop: 10
                     }}
                     onPress={fromGallery}>
                     <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{"From Gallery"}</Text>

@@ -18,7 +18,7 @@ const Welcom = (props) => {
                 <Text style={styles.bodyStyle}><Text style={[styles.bodyStyle,{color:colors.headingTextColor}]}>{"IRHere"}</Text>{" is NOT A TRACKING System, it is system that allows the User to verify their current location at any time, and ONLY records that specific moment in time. Only the User can send or share or delete that data, or alternately it remains on the IRHere system for as long as the User wants, or until IRHere."}</Text>
                <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between"}}>
                 <Button
-                    buttonStyle={[commonStyles.buttonStyle, { width: phoneScreen.width * 40 / 100,marginTop:0,backgroundColor:state.themeChangeReducer.primaryColor },commonStyles.shadowStyle]}
+                    buttonStyle={[commonStyles.buttonStyle, { width: phoneScreen.width * 40 / 100,marginTop:0,backgroundColor:state.themeChangeReducer.primaryColor }]}
                     textStyle={commonStyles.textStyle}
                     text={"Sign in"}
                     onPress={()=>{props.navigation.navigate("Login")}}

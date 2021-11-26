@@ -142,16 +142,16 @@ const VerifyLocation = (props) => {
                     convertVideo(file.name)
                 }
                 else {
-                    setShowAlert(true)
-                    setAlertHeader("Error")
-                    setAlertBody(response.data.desc)
-                    // AlertComponent({ msg: response.data.desc })
+                    // setShowAlert(true)
+                    // setAlertHeader("Error")
+                    // setAlertBody(response.data.desc)
+                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message })
+                AlertComponent({ msg: error.message,title:"Error",type:"error" })
             });
     }
     const convertVideo = (name) => {
@@ -175,16 +175,16 @@ const VerifyLocation = (props) => {
                     processVideo(name)
                 }
                 else {
-                    setShowAlert(true)
-                    setAlertHeader("Error")
-                    setAlertBody(response.data.desc)
-                    // AlertComponent({ msg: response.data.desc })
+                    // setShowAlert(true)
+                    // setAlertHeader("Error")
+                    // setAlertBody(response.data.desc)
+                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message })
+                AlertComponent({ msg: error.message,title:"Error",type:"error" })
             });
     }
     const processVideo = (name) => {
@@ -223,18 +223,18 @@ const VerifyLocation = (props) => {
 
                 }
                 else {
-                    setFilePath("")
-                    setShowAlert(true)
-                    setAlertHeader("Error")
-                    setAlertBody(response.data.desc)
-                    // AlertComponent({ msg: response.data.desc })
+                    // setFilePath("")
+                    // setShowAlert(true)
+                    // setAlertHeader("Error")
+                    // setAlertBody(response.data.desc)
+                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                     setStatus("Verification Failed.Make a video again")
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message })
+                AlertComponent({ msg: error.message,title:"Error",type:"error" })
             });
     }
     const requestCameraPermission = async () => {
@@ -378,7 +378,7 @@ const VerifyLocation = (props) => {
                             image
                             rightImage={images.cameraImage}
                             imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-                            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }, commonStyles.shadowStyle]}
+                            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20 }]}
                             textStyle={commonStyles.textStyle}
                             text={"Open Camera"}
                             onPress={() => {

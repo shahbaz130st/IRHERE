@@ -1,12 +1,16 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { View, TextInput, Image, Text, TouchableOpacity } from "react-native";
 import _ from "lodash";
-import {images} from "../Assets/Images/index"
+import { images } from "../Assets/Images/index"
 import { colors } from "../Themes/colors";
 const InputField = (props) => {
     const [hidePass, setHidePass] = useState(true);
+    const [isFocused, setIsFocused] = useState(false)
+    const handleInputFocus = () => setIsFocused(true)
+
+    const handleInputBlur = () => setIsFocused(false)
     return (
-        <View style={props.containerStyle}>
+        <View style={[props.containerStyle, { borderColor: isFocused ? colors.primaryColor : colors.greyColor }]}>
             {!_.isNil(props.image) &&
                 <View style={props.imageViewStyle}>
                     <Image style={props.imageStyle} source={props.image} />
@@ -24,15 +28,18 @@ const InputField = (props) => {
                 onChangeText={props.onChangeText}
                 value={props.value}
                 keyboardType={props.keyboardType}
-                secureTextEntry={props.secureTextEntry?hidePass ? true : false:false}
+                secureTextEntry={props.secureTextEntry ? hidePass ? true : false : false}
                 editable={props.editable}
                 maxLength={props.maxLength}
+                autoComplete={props.autoComplete}
                 onEndEditing={props.onEndEditing}
+                onFocus={() => handleInputFocus()}
+                onBlur={() => handleInputBlur()}
             />
             {!_.isNil(props.secureTextEntry) &&
-                <TouchableOpacity style={{ height: "100%", width: "15%",alignItems:"flex-end",justifyContent:"center" }}
-                onPress={()=>{setHidePass(!hidePass)}}>
-                    <Image style={{height:"60%",width:"60%",resizeMode:"contain",tintColor:colors.placeholderColor}} source={hidePass? images.hidePasswordIcon:images.unhidePasswordIcon} />
+                <TouchableOpacity style={{ height: "100%", width: "15%", alignItems: "flex-end", justifyContent: "center" }}
+                    onPress={() => { setHidePass(!hidePass) }}>
+                    <Image style={{ height: "45%", width: "45%", resizeMode: "contain", tintColor: colors.placeholderColor }} source={hidePass ? images.hidePasswordIcon : images.unhidePasswordIcon} />
                 </TouchableOpacity>
             }
         </View>

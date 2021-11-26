@@ -36,16 +36,16 @@ const QuarantineWelcom = (props) => {
   const [selectedIsolationReason, setSelectedIsolationReason] = useState([])
   const validation = () => {
     if (isolationType === "") {
-      AlertComponent({ msg: "Please select isolation type" })
+      AlertComponent({ msg: "Please select isolation type",title:"Error",type:"error" })
     }
     else if (selectedIsolationReason.length === 0) {
-      AlertComponent({ msg: "Please select isolation reason" })
+      AlertComponent({ msg: "Please select isolation reason",title:"Error",type:"error" })
     }
     else if (isolationTime == "") {
-      AlertComponent({ msg: "Please select isolation duration" })
+      AlertComponent({ msg: "Please select isolation duration",title:"Error",type:"error" })
     }
     else if (isolationTime == "Other (Please type Below)" && otherIsolationTime == "") {
-      AlertComponent({ msg: "Please add other isolation duration" })
+      AlertComponent({ msg: "Please add other isolation duration",title:"Error",type:"error" })
     }
     else {
       addQuestion()
@@ -83,12 +83,12 @@ const QuarantineWelcom = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ msg: response.data.desc })
+          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
   return (
@@ -169,7 +169,7 @@ const QuarantineWelcom = (props) => {
             />
           </View>
           <Button
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 15 }, commonStyles.shadowStyle]}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 15 }]}
             textStyle={commonStyles.textStyle}
             text={"Start my Isolation"}
             onPress={() => { validation() }}

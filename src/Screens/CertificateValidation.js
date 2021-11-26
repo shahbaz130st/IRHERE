@@ -46,7 +46,7 @@ const certificateValidation = (props) => {
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message })
+        AlertComponent({ msg: error.message,title:"Error",type:"error" })
       });
   }
 

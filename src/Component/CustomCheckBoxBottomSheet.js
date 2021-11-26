@@ -40,7 +40,7 @@ const CustomCheckBoxBottomSheet = ({
     return (
         <RBSheet
             ref={refRBSheet}
-            closeOnPressMask={false}
+            closeOnPressMask={true}
             closeOnDragDown={true}
             onClose={onDragDown}
             customStyles={{
@@ -87,7 +87,7 @@ const CustomCheckBoxBottomSheet = ({
                     ItemSeparatorComponent={ItemSeparatorComponent}
                 />
                 <Button
-                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0 }, commonStyles.shadowStyle]}
+                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0 }]}
                     textStyle={commonStyles.textStyle}
                     text={"Select"}
                     onPress={onSelectPress}
