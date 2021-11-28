@@ -36,6 +36,7 @@ const App = () => {
               fontWeight: 'bold'
             }}
             text2Style={{
+               
                 fontSize: 25,
                 fontWeight: 'bold'
               }}
@@ -55,12 +56,14 @@ const App = () => {
              
               }}
               text2Style={{
+                  
                   fontSize: 15,
                   fontWeight: 'bold',
                   color:colors.placeholderColor
                 }}
               text1={text1}
               text2={text2}
+              text2NumberOfLines={2}
             />
           )
         
@@ -120,7 +123,7 @@ const App = () => {
     const onNotificationRecieve = () => {
         console.log("onNotificationRecieve", /* RootNavigation, */Preference.get("isLogin"))
         if (Preference.get("isLogin") === "done") {
-            RootNavigation.navigate('Home', { screen: 'verifyLocation' });
+            RootNavigation.navigate(/* 'Home', { screen: */ 'verifyLocation'/*  } */);
         }
         else {
             RootNavigation.navigate("Login");

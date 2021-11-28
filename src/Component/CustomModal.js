@@ -43,7 +43,7 @@ const CustomModal = (props) => {
                     props.showOkButton &&
                     <View style={{ alignItems: "flex-end", marginTop: 5 }}>
                         <Button
-                            buttonStyle={[commonStyles.buttonStyle, props.oKButtonPressStyle, commonStyles.shadowStyle]}
+                            buttonStyle={[commonStyles.buttonStyle, props.oKButtonPressStyle]}
                             textStyle={[commonStyles.buttonTextStyle]}
                             text={"Choose"}
                             onPress={props.okButtonPress}

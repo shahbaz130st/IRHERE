@@ -33,5 +33,6 @@ export const images = {
     hidePasswordIcon: require("./hidePasswordIcon.png"),
     unhidePasswordIcon: require("./Unhide.png"),
     bottomArrowIcon: require("./bottomArrow.png"),
-    tickBlueIcon: require("./tickBlueIcon.png")
+    tickBlueIcon: require("./tickBlueIcon.png"),
+    scannerIcon: require("./Scanner.png")
 }

@@ -612,20 +612,15 @@ const VerifyLocation = (props) => {
                 result.push(tempArray[i].label)
               }
             }
-            // if (result.length === 0) {
-            //   AlertComponent({ msg: "Please select symptoms" })
-            // }
-            // else {
               setValue([...result])
               setShowRadioBottomSheet(false)
               console.log(result)
-            // }
           }}
           onDragDown={() => {
             let tempArray = items, result = [];
             for (let i = 0; i < tempArray.length; i++) {
               if (tempArray[i].checked) {
-                result.push(tempArray[i].label + " ")
+                result.push(tempArray[i].label)
               }
             }
             // if (result.length === 0) {

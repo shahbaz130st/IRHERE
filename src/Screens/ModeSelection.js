@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform, PermissionsAndroid, BackHandler } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Keyboard, Platform, PermissionsAndroid,TouchableWithoutFeedback } from "react-native";
 import { colors } from "../Themes/colors";
 import constant from "../Utils/ApiConstants";
 import { AlertComponent } from "../Utils/Alert";
@@ -22,6 +22,9 @@ import Geocoder from 'react-native-geocoding';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 import { HeaderHeight } from '../Utils/Dimensions';
+import RNExitApp from 'react-native-exit-app';
+import { ScrollView } from 'react-native-virtualized-view';
+
 const ModeSelection = (props) => {
   const state = useSelector(state => state)
   let user = useSelector(state => state.authenticationReducer.user)
@@ -190,10 +193,12 @@ const ModeSelection = (props) => {
     };
   }, []);
   return (
-    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+    <TouchableWithoutFeedback style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} onPress={()=>Keyboard.dismiss()}>
+       <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <Header
         leftIcon={images.unboldIcon}
-        backIconPress={() => { BackHandler.exitApp() }}
+        backIconPress={() => { 
+          RNExitApp.exitApp(); }}
         headerText={"Your Quarantine Address"} />
       <View style={{ height: phoneScreen.height - HeaderHeight }} >
         <Text style={{ paddingHorizontal: 30, paddingTop: 20, paddingBottom: 5, color: colors.blackTextColor, fontSize: 14, fontWeight: "400" }}>{"Where are you planning to Quarantine?"}</Text>
@@ -273,7 +278,8 @@ const ModeSelection = (props) => {
           />
         </View>
       </View>
-    </View >
+      </View>
+    </TouchableWithoutFeedback >
     // <View style={[styles.mainViewStyle, { height: phoneScreen.height - keyboardHeight }]}>
     //   <KeyboardAwareScrollView containerStyle={{ flexGrow: 1, alignItems: "center" }} keyboardShouldPersistTaps='always'>
     //     <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor, height: phoneScreen.height * 20 / 100 /* mode === "quarantine" ? phoneScreen.height * 30 / 100 : phoneScreen.height * 35 / 100 */ }]}>

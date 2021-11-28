@@ -14,7 +14,7 @@ import SettingMenue from "../Component/SettingMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { StackActions } from "@react-navigation/native";
 import Preference from 'react-native-preference';
-const login = StackActions.replace("OnBoarding")
+const login = StackActions.replace("OnBoarding",{screen:"Welcom"})
 const SettingScreen = (props) => {
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)

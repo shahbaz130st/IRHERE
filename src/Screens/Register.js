@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, PermissionsAndroid } from "react-native";
 import { colors } from "../Themes/colors";
 import InputField from "../Component/InputField";
@@ -49,6 +49,14 @@ const Register = (props) => {
 
   const dispatch = useDispatch()
   const state = useSelector(state => state)
+  useEffect(() => {
+    if (props.route.params?.img) {
+      console.log(props.route.params?.img)
+      setFilePath(props.route.params?.img)
+      // Post updated, do something with `route.params.post`
+      // For example, send the post to the server
+    }
+  }, [props.route.params?.img]);
 
   const validation = () => {
     if (fullName === "") {
@@ -397,7 +405,8 @@ const Register = (props) => {
             onDragDown={() => setImageModalVisible(false)}
             fromCamera={() => {
               setImageModalVisible(false);
-              captureImage("photo");
+              props.navigation.navigate("SecureIdVerification")
+              // captureImage("photo");
             }}
             fromGallery={() => {
               setImageModalVisible(false);
