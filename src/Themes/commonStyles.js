@@ -105,7 +105,41 @@ const styles = StyleSheet.create(
         checkLabelStyle: {
             color: colors.blackTextColor,
             fontSize: 14
-        }
+        },
+        WhiteButtonStyle: {
+            padding:7,
+            flexDirection: "row",
+            width: "100%",
+            borderRadius: 16,
+            marginTop: 25,
+            alignItems: "center",
+            paddingHorizontal: 10,
+            justifyContent: "space-between",
+          },
+          lWhiteImageStyle: {
+            height: 24,
+            width: 28,
+            resizeMode: "contain",
+            tintColor: colors.whiteColor
+          },
+          leftImageViewStyle:{
+              height:47,
+              width:47,
+              borderRadius:9,
+              alignItems:"center",
+              justifyContent:"center",
+              marginRight:14
+          },
+          textStyle: {
+            fontSize: 16,
+            fontWeight: "400",
+            fontStyle: "normal",
+          },
+          text1Style: {
+            fontSize: 14,
+            fontWeight: "700",
+            fontStyle: "normal",
+          },
     }
 )
 export default styles;

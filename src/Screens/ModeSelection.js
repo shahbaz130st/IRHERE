@@ -209,7 +209,8 @@ const ModeSelection = (props) => {
             inputStyle={[commonStyles.passwordInputinnerStyle]}
             placeholder={"Type Address here"}
             notifyChange={(loc, details) => {
-              console.log("loc", loc.lat, loc.lng, details)
+              setCurrentAddress(childRef.current?.getAddressText())
+              console.log("loc", details)
               setLocation({
                 latitude: parseFloat(loc.lat),
                 longitude: parseFloat(loc.lng),
@@ -272,7 +273,7 @@ const ModeSelection = (props) => {
               else {
                 let latlng = Object.keys(location).map(function (k) { return location[k] }).join(",");
                 console.log(latlng)
-                props.navigation.navigate("QuarantineWelcom", { location: latlng })
+                props.navigation.navigate("QuarantineWelcom", { location: latlng,address:currentAddress })
               }
             }}
           />

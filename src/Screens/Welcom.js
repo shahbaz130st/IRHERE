@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         color: colors.blackTextColor
     },
     bodyStyle: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: "400",
         fontStyle: "normal",
         color: colors.bodyTextColor

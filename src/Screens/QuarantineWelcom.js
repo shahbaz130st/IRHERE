@@ -14,6 +14,8 @@ import CustomCheckBox from "../Component/CustomCheckBox";
 import axios from "axios";
 import { StackActions } from "@react-navigation/native";
 import { phoneScreen } from "../Themes/phoneScreen";
+import Header from "../Component/Header";
+import CustomRadioButtonBottomSheet from "../Component/CustomRadioButtonBottomSheet";
 
 const mainApp = StackActions.replace("TabGroup")
 import { useSelector } from "react-redux";
@@ -30,22 +32,23 @@ const QuarantineWelcom = (props) => {
   const [loading, setLoading] = useState(false)
   const [checkBox, setCheckBox] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
-  const [listOfItems, setListOfItems] = useState([{ name: "Voluntary Self Isolation" }, { name: "Mandatory Self Isolation" }, { name: "Mandatory Quarantine" }])
-  const [isolationTimeList, setIsolationTimeList] = useState([{ name: "7 days", value: 7 }, { name: "14 days", value: 14 }, { name: "Other (Please type Below)", value: "Other (Please type Below)" }])
+  const [listOfItems, setListOfItems] = useState([{ name: "Voluntary Self Isolation", isChecked: false }, { name: "Mandatory Self Isolation", isChecked: false }, { name: "Mandatory Quarantine", isChecked: false }])
+  const [isolationTimeList, setIsolationTimeList] = useState([{ name: "7 days", value: 7, isChecked: false }, { name: "14 days", value: 14, isChecked: false }, { name: "Click here to type other isolation days", value: "Other (Please type Below)", isChecked: false }])
   const [isolationReasonList, setIsolationReasonList] = useState([{ id: 1, name: "Close Contact", checked: false }, { id: 2, name: "Avaiting Results", checked: false }, { id: 3, name: "Mandatory Lockdown", checked: false }])
   const [selectedIsolationReason, setSelectedIsolationReason] = useState([])
   const validation = () => {
-    if (isolationType === "") {
-      AlertComponent({ msg: "Please select isolation type",title:"Error",type:"error" })
+    if (selectedIsolationReason.length === 0) {
+      AlertComponent({ msg: "Please select isolation reason", title: "Error", type: "error" })
     }
-    else if (selectedIsolationReason.length === 0) {
-      AlertComponent({ msg: "Please select isolation reason",title:"Error",type:"error" })
+    else if (isolationType === "") {
+      AlertComponent({ msg: "Please select isolation type", title: "Error", type: "error" })
     }
+
     else if (isolationTime == "") {
-      AlertComponent({ msg: "Please select isolation duration",title:"Error",type:"error" })
+      AlertComponent({ msg: "Please select isolation duration", title: "Error", type: "error" })
     }
     else if (isolationTime == "Other (Please type Below)" && otherIsolationTime == "") {
-      AlertComponent({ msg: "Please add other isolation duration",title:"Error",type:"error" })
+      AlertComponent({ msg: "Please add other isolation duration", title: "Error", type: "error" })
     }
     else {
       addQuestion()
@@ -69,6 +72,7 @@ const QuarantineWelcom = (props) => {
     else {
       data.append("q4", parseInt(otherIsolationTime))
     }
+    data.append("address", props.route.params.address)
 
     console.log(constant.add_questionnaire, data)
     axios.post(constant.add_questionnaire, data, config)
@@ -83,40 +87,31 @@ const QuarantineWelcom = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   return (
-    <View style={styles.mainViewStyle}>
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+      <Header
+        leftIcon={images.unboldIcon}
+        backIconPress={() => { props.navigation.goBack() }}
+        headerText={"Welcome"} />
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
-          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Welcome"}</Text>
-          <Image source={images.welcomImage} style={styles.imageStyle} />
-        </View>
-        <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
+        <View style={{
+          paddingHorizontal: 24,
+          paddingBottom: 50,
+          padding: 30, backgroundColor: state.themeChangeReducer.secondaryColor
+        }} >
           <Text style={[styles.heading1Style, { color: colors.blackTextColor }]}>{"Tell us a little about your situation"}</Text>
-          <Text style={styles.bodyStyle}>{"How are you isolating?"}</Text>
-          <ModalOpenField
-            value={isolationType === "" ? "Select Isolation type" : isolationType}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
-            textViewStyle={commonStyles.selectionInputTextStyle}
-            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
-            rightImage={images.bottomArrowIcon}
-            rightImageViewStyle={commonStyles.selectionRightArrowView}
-            rightImageStyle={commonStyles.selectionRightArrow}
-            onPress={() => {
-              setPickerType("isolationType")
-              setShowPicker(true)
-            }}
-          />
           <Text style={styles.bodyStyle}>{"Why are you isolating?"}</Text>
           <ModalOpenField
-            value={selectedIsolationReason.length === 0 ? "Select Reasons of Isolation" : selectedIsolationReason.toString()}
+            numberOfLines={1}
+            value={selectedIsolationReason.length === 0 ? "Select Reasons of Isolation" : selectedIsolationReason.join(", ")}
             containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
             textViewStyle={commonStyles.selectionInputTextStyle}
             valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
@@ -129,6 +124,22 @@ const QuarantineWelcom = (props) => {
               setShowPicker(true)
             }}
           />
+          <Text style={styles.bodyStyle}>{"How are you isolating?"}</Text>
+          <ModalOpenField
+            numberOfLines={1}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+            textViewStyle={commonStyles.selectionInputTextStyle}
+            value={isolationType === "" ? "Select Isolation type" : isolationType}
+            valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+            rightImage={images.bottomArrowIcon}
+            rightImageViewStyle={commonStyles.selectionRightArrowView}
+            rightImageStyle={commonStyles.selectionRightArrow}
+            onPress={() => {
+              setPickerType("isolationType")
+              setShowPicker(true)
+            }}
+          />
+
           <Text style={styles.bodyStyle}>{"How long are you isolating for?"}</Text>
           <ModalOpenField
             value={isolationTimeName === "" ? "Select Isolation Period" : isolationTimeName}
@@ -155,105 +166,114 @@ const QuarantineWelcom = (props) => {
               keyboardType={"numeric"}
             />
           }
-
-          <View style={{ marginTop: 10, alignItems: "center", width: "100%" }}>
-            <CustomCheckBox
-              checkstyle={{ borderWidth: 0.8, borderColor: colors.greyColor }}
-              onChange={() => { setCheckBox(!checkBox) }}
-              isChecked={checkBox}
-              textStyle={{ flex: 1 }}
-              tintColor={colors.checkBoxLightGreyColor}
-              labelStyle={{ fontSize: 12, color: colors.placeholderColor }}
-              label={"By starting the isolation with us you agree to iRHere’s Terms & Conditions & I agree that all the information provided here is true and accurate."}
-              label1Style={{ textDecorationLine: "underline", fontSize: 12, color: colors.placeholderColor }}
-            />
+          <View style={{ flex: 1 }} />
+          <View style={{ marginVertical: 18 }}>
+            <Text style={{ color: colors.placeholderColor, fontSize: 14, fontWeight: "400" }} >{"By starting the isolation with us you agree to iRHere’s Terms & Conditions & I agree that all the information provided here is true and accurate."}</Text>
           </View>
           <Button
-            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 15 }]}
+            buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor }]}
             textStyle={commonStyles.textStyle}
             text={"Start my Isolation"}
             onPress={() => { validation() }}
           />
-
         </View>
-
-        <Loader visible={loading} />
       </KeyboardAwareScrollView>
-
       {
         showPicker &&
-        <CustomModal
-          listOfItems={pickerType === "isolationType" ? listOfItems : pickerType === "isolationReason" ? isolationReasonList : isolationTimeList}
-          headingText={pickerType === "isolationType" ? "Choose Isolation Type" : "Choose Isolation Time"}
-          headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-          headingButtonStyle={{ fontSize: 16, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-          okButtonPress={() => {
-            let tempArray = isolationReasonList
-            for (let i = 0; i < tempArray.length; i++) {
-              if (tempArray[i].checked) {
-                selectedIsolationReason.push(tempArray[i].name)
-              }
-            }
-            setShowPicker(false)
-          }}
-          showOkButton={pickerType === "isolationReason" && true}
-          oKButtonPressStyle={{ width: 80, height: 30, marginTop: 0 }}
+        <CustomRadioButtonBottomSheet
+          visible={showPicker}
+          listOfItems={pickerType === "isolationType" ? listOfItems : pickerType === "isolationReason" ? isolationReasonList : pickerType === "isolationTime" && isolationTimeList}
+          headerText={pickerType === "isolationType" ? "Choose Isolation Type" : "Choose Isolation Time"}
+          onDragDown={() => setShowPicker(false)}
+          subHeaderText={pickerType === "isolationReason" ? "Choose multiple" : "Choose one"}
           ItemSeparatorComponent={() =>
             <View
               style={{
                 height: 1,
-                backgroundColor: "#E5E5E5",
+                backgroundColor: colors.lightGreyColor
               }}
             />
           }
           renderItem={({ item, index }) => {
-            if (pickerType === "isolationReason") {
-              return (
-                <View style={{ width: "100%", paddingVertical: 7 }}>
-                  <CustomCheckBox
-                    checkstyle={{ borderWidth: 2, borderColor: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor, backgroundColor: item.checked ? state.themeChangeReducer.primaryColor : "white" }}
-                    onChange={() => {
-                      let tempArray = isolationReasonList
-                      for (let i = 0; i < tempArray.length; i++) {
-                        if (i === index) {
-                          tempArray[i].checked = !tempArray[i].checked
-                        }
+            return (
+              <TouchableOpacity
+                style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", height: 48, alignItems: "center" }}
+                onPress={() => {
+                  if (pickerType === "isolationType") {
+                    let tempArray = listOfItems
+                    for (let i = 0; i < tempArray.length; i++) {
+                      if (i === index) {
+                        tempArray[i].isChecked = true
+                        setIsolationType(tempArray[i].name)
                       }
-                      setIsolationReasonList([...tempArray])
-                    }}
-                    isChecked={item.checked}
-                    textStyle={{ flex: 1 }}
-                    tintColor={item.checked ? "white" : colors.placeholderColor}
-                    labelStyle={[commonStyles.checkLabelStyle, { color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }]}
-                    label={item.name}
-                    label1={index === 0 && "   (likely contact with COVID-19 person)"}
-                    label1Style={{ fontSize: 9, color: item.checked ? state.themeChangeReducer.primaryColor : colors.blackTextColor }}
-                  />
-                </View>
-              )
+                      else {
+                        tempArray[i].isChecked = false
+                      }
+                    }
+                    setListOfItems([...tempArray])
+                  }
+                  else if (pickerType === "isolationTime") {
+                    let tempArray = isolationTimeList
+                    for (let i = 0; i < tempArray.length; i++) {
+                      if (i === index) {
+                        tempArray[i].isChecked = true
+                        setIsolationTimeName(tempArray[i].name)
+                        setIsolationTime(tempArray[i].value)
+                      }
+                      else {
+                        tempArray[i].isChecked = false
+                      }
+                    }
+                    setIsolationTimeList([...tempArray])
+                  }
+                  else {
+                    let tempArray = isolationReasonList
+                    for (let i = 0; i < tempArray.length; i++) {
+                      if (i === index) {
+                        tempArray[i].checked = !tempArray[i].checked
+                      }
+                    }
+                    setIsolationReasonList([...tempArray])
+                  }
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{item.name}</Text>
+                {
+                  pickerType === "isolationReason" ?
+                    <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
+                      {item.checked &&
+                        <Image source={images.tickBlueIcon} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />}
+                    </View>
+                    :
+                    <View style={{ borderColor: item.isChecked ? state.themeChangeReducer.primaryColor : "#CDCFD0", backgroundColor: item.isChecked ? state.themeChangeReducer.primaryColor : colors.whiteColor, width: 24, height: 24, borderWidth: 1, borderRadius: 12, alignItems: "center", justifyContent: "center" }}>
+                      <View style={{ height: 8, width: 8, backgroundColor: colors.whiteColor, borderRadius: 4 }}></View>
+                    </View>
+
+                }
+
+              </TouchableOpacity>
+            );
+          }}
+          onSelectPress={() => {
+            if (pickerType === "isolationType") {
+              setShowPicker(false)
+            }
+            else if (pickerType === "isolationTime") {
+              setShowPicker(false)
             }
             else {
-              return (
-                <TouchableOpacity
-                  style={{ width: "100%", paddingVertical: 13 }}
-                  onPress={() => {
-                    if (pickerType === "isolationType") {
-                      setIsolationType(item.name)
-                      setShowPicker(false)
-                    }
-                    else if (pickerType === "isolationTime") {
-                      setIsolationTimeName(item.name)
-                      setIsolationTime(item.value)
-                      setShowPicker(false)
-                    }
-                  }}
-                >
-                  <Text style={commonStyles.checkLabelStyle}>{item.name}</Text>
-                </TouchableOpacity>
-              );
+              let tempArray = isolationReasonList
+              for (let i = 0; i < tempArray.length; i++) {
+                if (tempArray[i].checked) {
+                  selectedIsolationReason.push(tempArray[i].name)
+                }
+              }
+              setShowPicker(false)
             }
-          }} />
+          }}
+        />
       }
+      <Loader visible={loading} />
     </View>
   )
 }

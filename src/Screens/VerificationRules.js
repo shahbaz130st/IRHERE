@@ -121,6 +121,30 @@ const VerifyLocation = (props) => {
                 }
             });
     }
+    const generate_Pattern = () => {
+        // setLoading(true)
+        var config = {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          },
+        };
+        console.log(constant.generate_Pattern)
+        axios
+          .post(constant.generate_Pattern, config)
+          .then(async function (response) {
+            // setLoading(false)
+            console.log(response.data)
+            called_pattern = response.data
+            props.navigation.navigate("VerificationRules", { data: response.data, list: value })
+            // setPattern(response.data)
+            // setShowBottom(true)
+            // AlertComponent({ msg: response.data.head_pose === 1 ? "Raise " + response.data.fingers + " fingers of your right hand for entire video and turn your head towards right and shoulder must be visible." : "Raise " + response.data.fingers + " finger of your right hand for entire video and turn your head towards left and shoulder must be visible.", onOkPress: () => { captureImage('video') } })
+          })
+          .catch(function (error) {
+            // setLoading(false)
+            AlertComponent({ msg: error.message,title:"Error",type:"error" })
+          });
+      }
     const uploadVideo = (file) => {
         setLoading(true)
         setStatus("Uploading.....")
@@ -145,6 +169,7 @@ const VerifyLocation = (props) => {
                     // setShowAlert(true)
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
+                    generate_Pattern()
                     AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                 }
             })
@@ -178,6 +203,7 @@ const VerifyLocation = (props) => {
                     // setShowAlert(true)
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
+                    generate_Pattern()
                     AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                 }
             })
@@ -227,6 +253,7 @@ const VerifyLocation = (props) => {
                     // setShowAlert(true)
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
+                    generate_Pattern()
                     AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
                     setStatus("Verification Failed.Make a video again")
                 }
@@ -346,7 +373,7 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
+                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", paddingTop: 10 }}>
@@ -356,7 +383,7 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
+                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", paddingTop: 10 }}>
@@ -366,7 +393,7 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20 }}>{"Shoulder must be visible."}</Text>
+                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{"Shoulder must be visible."}</Text>
                             </View>
                         </View>
                     </View>

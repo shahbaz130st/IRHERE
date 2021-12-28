@@ -11,29 +11,25 @@ export default function SessionDetailItem(props) {
         props.containerStyle,
       ]}
     >
+      <View style={props.labelContainerStyle}>
       <Text
         style={{
           color: colors.secondaryColor,
           fontSize: 14,
           lineHeight: 24,
-          fontWeight: "700"
+          fontWeight: "400"
         }}
       >
         {props.label}
       </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
+      </View>
+      <View style={props.valueContainerStyle}>
         <Text
+        numberOfLines={props.numberOfLines}
           style={[
             {
               color: colors.secondaryColor,
-              fontSize: 12,
-              fontWeight: "400"
+              fontWeight: "700"
             },
             props.valueStyle,
           ]}

@@ -27,6 +27,7 @@ import { navigationRef } from './Utils/RootNavigation';
 import VerificationRules from "./Screens/VerificationRules";
 import SecureIdVerification from "./Screens/SecureIdVerification";
 import { colors } from "./Themes/colors";
+import { BottomTab } from "./Utils/Dimensions";
 
 const SignInStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -63,8 +64,7 @@ function TabGroup() {
             headerShown: false,
             tabBarActiveTintColor: state.themeChangeReducer.primaryColor,
             tabBarInactiveTintColor: colors.placeholderColor,
-            // tabBarActiveBackgroundColor: "#98B6F1",
-            tabBarStyle: { backgroundColor: colors.whiteColor, height: DeviceInfo.hasNotch() ? 90 : Platform.OS === "ios" ? 60 : 70,/*  borderTopColor: state.themeChangeReducer.primaryColor */ },
+            tabBarStyle: { backgroundColor: colors.whiteColor, height: DeviceInfo.hasNotch() ? BottomTab.notchHeight : Platform.OS === "ios" ? BottomTab.ios : BottomTab.android },
             tabBarItemStyle: { height: "100%", paddingVertical: !DeviceInfo.hasNotch() ? 7 : 0 },
             tabBarLabelStyle: { fontSize: 12, fontWeight: "400" },
 
@@ -74,6 +74,14 @@ function TabGroup() {
                     tabBarLabel: 'Home',
                     tabBarIcon: ({ tintColor, focused }) => (
                         <Image style={[style.iconStyle, { tintColor: focused ? state.themeChangeReducer.primaryColor : colors.placeholderColor }]} source={images.homeIcon} />
+                    )
+                }}
+            />
+            <Tab.Screen name="History" component={HistoryScreen}
+                options={{
+                    tabBarLabel: 'History',
+                    tabBarIcon: ({ tintColor, focused }) => (
+                        <Image style={[style.iconStyle, { tintColor: focused ? state.themeChangeReducer.primaryColor : colors.placeholderColor }]} source={images.historyIcon} />
                     )
                 }}
             />
@@ -101,14 +109,7 @@ function TabGroup() {
                 }} />
             } */}
 
-            {/* <Tab.Screen name="History" component={HistoryScreen}
-                options={{
-                    tabBarLabel: 'History',
-                    tabBarIcon: () => (
-                        <Image style={style.iconStyle} source={images.historyIcon} />
-                    )
-                }}
-            />
+            {/* 
             <Tab.Screen name="Notifications" component={NotificationScreen}
                 options={{
                     tabBarLabel: 'Notifications',

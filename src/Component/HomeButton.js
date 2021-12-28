@@ -1,12 +1,14 @@
 import React from "react";
 import { TouchableOpacity, Text, Image, View } from "react-native";
 import _ from "lodash";
-const BiggerButton = (props) => {
+const HomeButton = (props) => {
     return (
-        <TouchableOpacity
+        <View
             disabled={props.disabled}
             style={props.buttonStyle} onPress={props.onPress}>
-            <Image style={props.leftImageStyle} source={props.leftImage} />
+            <View style={props.leftImageViewStyle}>
+                <Image style={props.leftImageStyle} source={props.leftImage} />
+            </View>
             <View style={props.textViewStyle}>
                 <Text style={props.textStyle}>
                     {props.text}
@@ -16,11 +18,8 @@ const BiggerButton = (props) => {
                         {props.text1}
                     </Text>}
             </View>
-            {!_.isNil(props.text1) &&
-                <Image style={props.rightImageStyle} source={props.rightImage} />
-            }
-        </TouchableOpacity>
+        </View>
     )
 
 }
-export default BiggerButton;
+export default HomeButton;

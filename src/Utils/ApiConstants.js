@@ -27,6 +27,10 @@ const constants =
     update_user_mode: Base_url + link + "update_user_mode",
     add_questionnaire: Base_url + link + "add_questionnaire",
     get_certificate_list: Base_url + link + "get_certificate_list",
+    get_user_list_id:Base_url + link + "get_user_list_id",
+    get_certificate_list_id:Base_url + link + "get_certificate_list_id",
+
+    
     verifyEmail: Base_url + link + "reset.php",
     total_miles: Base_url + link + "rides.php",
     total_rides: Base_url + link + "rides.php",

@@ -5,7 +5,8 @@ export const AlertComponent = (props) => {
   Toast.show({
     type:  props?.type?props.type:"success",
     text1: props?.title?props.title:"Hello",
-    text2: props?.msg&&props.msg
+    text2: props?.msg&&props.msg,
+    position: 'bottom'
   });
 } /* const AlertComponent = (props) =>
     Alert.alert(

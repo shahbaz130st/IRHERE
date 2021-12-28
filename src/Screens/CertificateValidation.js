@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image,Linking,TouchableOpacity } from "react-native";
 import { colors } from "../Themes/colors";
 import Button from "../Component/Button";
 import commonStyles from "../Themes/commonStyles";
@@ -15,17 +15,18 @@ import Preference from "react-native-preference";
 import Header from "../Component/Header";
 import SessionDetailItem from "../Component/SessionDetailItem";
 import moment from "moment";
-import CustomCheckBox from "../Component/CustomCheckBox";
 const certificateValidation = (props) => {
   let user = useSelector(state => state.authenticationReducer.user)
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const [checkBox, setCheckBox] = useState(true)
   const [listOfItems, setListOfItems] = useState([{ date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: false }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }, { date: "21-7-2021 / 4.00 PM", name: "71-77 covet garden  london, ...", time: "2hr ago", status: true }])
+  const [quarantine, setQuarantine] = useState(null)
+  const [quarantineDay, setQuarantineDay] = useState(0)
   useEffect(() => {
-    // listOfCertificates()
+    getUserQuarantinDetail()
   }, [])
-  const listOfCertificates = () => {
+  const getUserQuarantinDetail = () => {
     setLoading(true)
     var config = {
       headers: {
@@ -34,68 +35,121 @@ const certificateValidation = (props) => {
     };
     const data = new FormData();
     data.append('user_id', user.id);
-    console.log(constant.get_certificate_list, data)
+    console.log(constant.get_user_list_id, data, config)
     axios
-      .post(constant.get_certificate_list, data, config)
+      .post(constant.get_user_list_id, data)
       .then(function (response) {
         setLoading(false)
-        const propertyValues = Object.values(response.data);
-        console.log(propertyValues.length)
-        setListOfItems(propertyValues)
+        console.log(response.data)
+        setQuarantine(response.data)
+        console.log(response.data.date)
+        var given = moment(response.data.date, "YYYY-MM-DD");
+        var current = moment().startOf('day');
+
+        //Difference in number of days
+        console.log(moment.duration(current.diff(given)).asDays())
+        setQuarantineDay(moment.duration(current.diff(given)).asDays() + 1)
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
 
-
   return (
-    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, borderColor: colors.whiteColor, borderWidth: 1 }]}>
       <Header
         leftIcon={images.unboldIcon}
         backIconPress={() => { props.navigation.goBack() }}
         headerText={""} />
-      <View style={{ flex: 1, paddingHorizontal: 30 }}>
-        <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, paddingHorizontal: "5%", alignItems: "center", justifyContent: "space-evenly" }}>
+      <View style={{ flex: 1, paddingHorizontal: 24 }}>
+        <View style={{ height: "40%", backgroundColor: state.themeChangeReducer.primaryColor, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingHorizontal: "5%", alignItems: "center", justifyContent: "space-evenly" }}>
+          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 24, textAlignVertical: "center" }]}>{"Validation Certificate"}</Text>
           <View style={{ height: 22, backgroundColor: "#479597", width: 120, marginTop: 10, borderRadius: 11, alignItems: "center", justifyContent: "center" }}>
             <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 12, textAlignVertical: "center" }]}>{"Success"}</Text>
           </View>
-          <SessionDetailItem
-            label={"Name"}
-            value={user.Name}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-            }}
-          >
-            <View style={{ width: "50%" }}>
-              <SessionDetailItem
-                label={"Verification Date"}
-                value={moment(props?.route?.params?.certificate?.date).format("MMM DD, YYYY hh:mm A")}
-              />
-            </View>
+          {
+            quarantineDay > quarantine?.quarantine_days ?
+              <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                <Image source={images.circularTickIcon} style={{ height: 66, width: 66, resizeMode: "contain", marginBottom: 13, tintColor: colors.whiteColor }} />
+                <Text style={styles.bodyStyle}>{"You have successfully"}</Text>
+                <Text style={styles.bodyStyle}>{"completed your quarantine."}</Text>
+              </View> :
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    marginVertical: 5
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <SessionDetailItem
+                      label={"Name"}
+                      value={user?.Name ? user.Name : ""}
+                      valueStyle={{ fontSize: 12, lineHeight: 20 }}
+                    />
+                  </View>
+                  <View style={{ alignItems: "flex-end", width: "50%" }}>
+                    <SessionDetailItem
+                      label={"Your Quarantine Day"}
+                      value={quarantineDay == quarantine?.quarantine_days ? "Day " + quarantineDay + " last Day" : "Day " + quarantineDay}
+                      valueStyle={{ fontSize: 12, lineHeight: 20 }}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    marginTop: 18
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <SessionDetailItem
+                      label={"Verification Date"}
+                      value={moment(props?.route?.params?.certificate?.date).format("D MMM, YYYY h:mm A")}
+                      valueStyle={{ fontSize: 12, lineHeight: 20 }}
+                    />
+                  </View>
 
-            <View style={{ width: "50%" }}>
-              <SessionDetailItem
-                label={"Quarantine Day"}
-                value={"Day " + 2}
-              />
-            </View>
-          </View>
-
+                  <View style={{ alignItems: "flex-end", width: "50%" }}>
+                    <SessionDetailItem
+                      numberOfLines={2}
+                      label={"You Were At"}
+                      value={props?.route?.params?.certificate?.address}
+                      valueStyle={{ fontSize: 10, lineHeight: 20 }}
+                    />
+                  </View>
+                </View>
+              </View>}
         </View>
-        <View style={{ height: 1, width: "100%", color: colors.whiteColor }} />
-        <View style={{ height: "45%", backgroundColor: state.themeChangeReducer.primaryColor, borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ flexDirection: "row", backgroundColor: state.themeChangeReducer.primaryColor, alignItems: "center", justifyContent: "center" }}>
+          <View style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: colors.whiteColor }} />
+          <View style={{
+            height: 1, width: "93%", borderColor: colors.primaryColor,
+            borderWidth: 1,
+            borderStyle: "dashed",
+            borderRadius: 1,
+          }} />
+          <View style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: colors.whiteColor }} />
+        </View>
+        <View style={{ height: "45%", backgroundColor: state.themeChangeReducer.primaryColor, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, alignItems: "center", justifyContent: "space-evenly" }}>
+          <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={() => { Linking.openURL(props?.route?.params?.certificate?.url) }}>
+            <Image source={images.linkIcon} style={{ height: 14, width: 14, marginRight: 5, tintColor: state.themeChangeReducer.secondaryColor }} />
+            <Text style={{
+              color: colors.whiteColor,
+              fontSize: 14,
+              fontWeight: "400"
+            }}>{"Open QR Code"}</Text>
+          </TouchableOpacity>
           <Image source={{ uri: `data:image/gif;base64,${props?.route?.params?.certificate?.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
           <Text style={{
             color: colors.whiteColor,
             fontSize: 10,
             fontWeight: "400",
-            marginTop: 20
           }}>{"Generated using V&V Technology"}</Text>
         </View>
         <View style={{ marginTop: 20, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
@@ -227,6 +281,13 @@ const styles = StyleSheet.create(
       height: 11,
       resizeMode: "contain",
       marginLeft: 5
+    },
+    bodyStyle: {
+      fontSize: 14,
+      fontWeight: "400",
+      fontStyle: "normal",
+      lineHeight: 17.5,
+      color: colors.whiteColor
     },
     // headingStyle: {
     //   fontSize: 24,

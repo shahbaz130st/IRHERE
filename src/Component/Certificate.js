@@ -68,7 +68,6 @@ const Certificate = (props) => {
                         <View style={{ justifyContent:"flex-end"}}>
                             <Image source={{ uri: `data:image/gif;base64,${props.bodyQr}` }} style={{ height: 46, width: 46 }} />
                         </View>
-
                     </View>
             }
         </View>

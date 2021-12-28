@@ -22,12 +22,16 @@ import {
   launchImageLibrary
 } from 'react-native-image-picker';
 import AlertModal from "../Utils/AlertModal";
-const mainApp = StackActions.replace("DrawerGroup")
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
 import CustomModal from "../Component/CustomModal";
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 import CustomRadioButtonBottomSheet from "../Component/CustomRadioButtonBottomSheet";
+import messaging from '@react-native-firebase/messaging';
+import Preference from 'react-native-preference';
+
+const modeSelection = StackActions.replace("ModeSelection")
+const mainApp = StackActions.replace("TabGroup")
 
 const Register = (props) => {
   const [fullName, setFullName] = useState("")
@@ -35,7 +39,7 @@ const Register = (props) => {
   const [password, setPassword] = useState("")
   const [number, setNumber] = useState("")
   const [verification, setVerification] = useState("")
-  const [verificationNumber, setverificationNumber] = useState(1)
+  const [verificationNumber, setverificationNumber] = useState(-1)
   const [loading, setLoading] = useState(false)
   const [checkBox, setCheckBox] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
@@ -57,15 +61,30 @@ const Register = (props) => {
       // For example, send the post to the server
     }
   }, [props.route.params?.img]);
+  useEffect(() => {
+    onAppBootstrap()
+  }, [])
+  const onAppBootstrap = async () => {
+    // Register the device with FCM
+    // await messaging().registerDeviceForRemoteMessages();
+    // Get the token
+    const token = await messaging().getToken();
+    // Save the token
+    console.log("loginscreenfcmToken", "_---------------------------------->" + token);
+    Preference.set("fcmToken", token)
+    // await AsyncStorage.setItem('fcmToken', token);
+    //await postToApi('/users/1234/tokens', { token });
+  }
 
   const validation = () => {
+    console.log(number.length)
     if (fullName === "") {
       AlertComponent({ msg: "Full name is required", title: "Error", type: "error" })
     }
-    else if (email === "") {
-      AlertComponent({ msg: "Email is required", title: "Error", type: "error" })
+    else if(email === ""&&number.length == ""){
+      AlertComponent({ msg: "Email or Mobile number is required", title: "Error", type: "error" })
     }
-    else if (reg.test(email) == false) {
+    else if (reg.test(email) == false&&number.length == "") {
       AlertComponent({ msg: "Email is invalid", title: "Error", type: "error" })
     }
     else if (password == "") {
@@ -74,13 +93,13 @@ const Register = (props) => {
     else if (password.length <= 7) {
       AlertComponent({ msg: "Password must be 8 characters", title: "Error", type: "error" })
     }
-    else if (number.length == "") {
-      AlertComponent({ msg: "Mobile number is required", title: "Error", type: "error" })
+    // else if (number.length == "") {
+    //   AlertComponent({ msg: "Mobile number is required", title: "Error", type: "error" })
+    // }
+    else if (!number==""&& number.length <= 8) {
+      AlertComponent({ msg: "Mobile number is invalid", title: "Error", type: "error"})
     }
-    else if (number.length <= 8) {
-      AlertComponent({ msg: "Mobile number is invalid" })
-    }
-    else if (verificationNumber === 1) {
+    else if (verificationNumber === -1) {
       AlertComponent({ msg: "Select verification type", title: "Error", type: "error" })
     }
     else if (!filePath) {
@@ -207,19 +226,27 @@ const Register = (props) => {
     data.append('full_name', fullName);
     data.append('email', email);
     data.append('password', password);
-    data.append('phone_no', "+61" + number);
+    if(number!==""&&!number.length <= 8){
+      data.append('phone_no', "+61" + number);
+    }
+    else{
+      data.append('phone_no', "");
+    }
+    
     data.append('verification_method', verificationNumber);
     data.append('file', filePath);
+    data.append("device_id", Preference.get("fcmToken"))
     console.log(constant.registration, data)
     axios
       .post(constant.registration, data, config)
       .then(function (response) {
         setLoading(false)
+        console.log(response.data)
+        setLoading(false)
         if (response.data.code === "1") {
-          console.log(response.data)
-          props.navigation.navigate("Login")
-          // dispatch(signIn({ userData: response.data.user, isLogin: true }))
-          // props.navigation.dispatch(mainApp)
+          dispatch(signIn({ userData: response.data, isLogin: true }))
+          Preference.set("isLogin", "done")
+          check_mode(response.data.id)
         }
         else {
           AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
@@ -236,41 +263,96 @@ const Register = (props) => {
         AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
+  const check_mode = (id) => {
+    setLoading(true)
+    var config = {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+    };
+    const data = new FormData();
+    data.append('user_id', id);
+    console.log(constant.check_mode_status, data)
+    axios
+      .post(constant.check_mode_status, data, config)
+      .then(function (response) {
+        console.log(response.data)
+        setLoading(false)
+        if (response.data.code === "1") {
+          if (response.data.user_mode === "1" && response.data.is_mode_active === "1") {
+            Preference.set("mode", "quarantine")
+            Preference.set("CompleteQuestionaire", "done")
+            props.navigation.dispatch(mainApp)
+          }
+          else if (response.data.user_mode === "1") {
+            // props.navigation.dispatch(modeSelection)
+            Preference.set("mode", "quarantine")
+            props.navigation.dispatch(modeSelection)
+          }
+          else {
+            Preference.set("mode", "general")
+            props.navigation.dispatch(mainApp)
+          }
+        }
+        else if (response.data.code === "0" && response.data.desc === "User mode not created yet.") {
+          mode_Selection(1, id)
+          // Preference.set("mode", "notSet")
+          // props.navigation.dispatch(modeSelection)
+        }
+        else {
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ title:"Error",msg: response.data.desc ,type:"error",title:"Error"})
+        }
+      })
+      .catch(function (error) {
+        setLoading(false)
+        AlertComponent({ msg: error.message,type:"error",title:"Error" })
+      });
+  }
+
+  const mode_Selection = (mode, id) => {
+    setLoading(true)
+    var config = {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+    };
+    const data = new FormData();
+    data.append('user_id', id);
+    data.append('mode_code', mode);
+    console.log(constant.set_user_mode, data)
+    axios
+      .post(constant.set_user_mode, data, config)
+      .then(function (response) {
+        console.log(response.data)
+        setLoading(false)
+        if (response.data.code === "1") {
+          Preference.set("mode", "quarantine")
+          props.navigation.dispatch(modeSelection)
+          // setMode("quarantine")
+        }
+        else {
+          // setShowAlert(true)
+          // setAlertHeader("Error")
+          // setAlertBody(response.data.desc)
+          AlertComponent({ msg: response.data.desc,type:"error",title:"Error" })
+        }
+      })
+      .catch(function (error) {
+        setLoading(false)
+        AlertComponent({ msg: error.message,type:"error",title:"Error" })
+      });
+  }
   return (
-    // <View>
-    //   {
-    //     loading ?
-    //       <View style={styles.mainViewStyle}>
-    //         <View style={[styles.innerStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
-    //           <TouchableOpacity style={[styles.leftArrowIconStyle, { borderColor: state.themeChangeReducer.secondaryColor, position: "absolute", top: 40, left: 20, zIndex: 222222 }]}
-    //             onPress={() => { props.navigation.goBack() }}>
-    //             <Image source={images.leftArrowIcon} style={styles.imageStyle} />
-    //           </TouchableOpacity>
-    //           <View style={{ width: "100%", alignItems: "center" }}>
-    //             <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, textAlign: "center", width: "100%" }]}>{"Verify Your ID"}</Text>
-    //             <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor, fontSize: 12, textAlign: "center" }]}>{"Scan you Driver’s License in the \ncamera below to verify your identity"}</Text>
-    //           </View>
-    //         </View>
-
-    //         <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor, justifyContent: "center", alignItems: "center" }]} >
-    //           <View style={{ width: 260, height: 310, borderColor: state.themeChangeReducer.primaryColor, borderWidth: 2 }}>
-    //             <View style={{ marginLeft: -2, marginTop: -2, width: 260, height: 310, borderColor: state.themeChangeReducer.secondaryColor, borderWidth: 30, borderRadius: 30 }}>
-    //               {/* <Image source={images.filePathuir}/> */}
-
-    //             </View>
-    //           </View>
-    //           <Loader visible={loading} />
-    //         </View>
-    //       </View>
-    //       :
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <Header
         leftIcon={images.unboldIcon}
         backIconPress={() => { props.navigation.goBack() }}
         headerText={"Create an Account"} />
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,  /* flex: 1, height: "100%" */ }]} >
-
+        <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
           <InputField
             placeholder={"Full Name"}
             autoComplete={"name"}
@@ -356,7 +438,6 @@ const Register = (props) => {
             textViewStyle={commonStyles.mobileCountryCodeStyle}
           />
           <ModalOpenField
-            // containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
             containerStyle={{
               flex: 1, backgroundColor: colors.whiteColor,
               width: "100%",
@@ -365,7 +446,7 @@ const Register = (props) => {
               borderColor: colors.greyColor,
               borderWidth: 2,
               flexDirection: "row", marginTop: 12
-            }/* commonStyles.inputContainerStyle */}
+            }}
             textViewStyle={commonStyles.selectionInputTextStyle}
             value={verification === "" ? "Verification Document" : verification}
             valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
@@ -379,7 +460,7 @@ const Register = (props) => {
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
           <View style={{ flex: 1, width: "100%" }}>
-            <Text style={{ color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }} >{"By signing up, you agree to our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Terms of use"}</Text>{" as well as our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Privacy"}</Text>{" , and "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 12, fontWeight: "400" }}>{"Cookies policies"}</Text></Text>
+            <Text style={{ color: colors.placeholderColor, fontSize: 14, fontWeight: "400" }} >{"By signing up, you agree to our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 14, fontWeight: "400" }}>{"Terms of use"}</Text>{" as well as our "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 14, fontWeight: "400" }}>{"Privacy"}</Text>{" , and "}<Text style={{ textDecorationLine: "underline", color: colors.placeholderColor, fontSize: 14, fontWeight: "400" }}>{"Cookies policies"}</Text></Text>
           </View>
           <Button
             buttonStyle={[commonStyles.buttonStyle, { flex: 1, backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 18 }]}
@@ -405,7 +486,7 @@ const Register = (props) => {
             onDragDown={() => setImageModalVisible(false)}
             fromCamera={() => {
               setImageModalVisible(false);
-              props.navigation.navigate("SecureIdVerification")
+              props.navigation.navigate("SecureIdVerification",{type:verification})
               // captureImage("photo");
             }}
             fromGallery={() => {
@@ -425,7 +506,7 @@ const Register = (props) => {
             body={alertBody}
           />
         }
-        <Loader visible={loading} />
+      
       </KeyboardAwareScrollView>
       {
         showRadioBottomSheet &&
@@ -480,38 +561,9 @@ const Register = (props) => {
             }
           }}
         />
-        // <CustomModal
-        //   listOfItems={listOfItems}
-        //   headingStyle={{ fontSize: 18, fontWeight: "500", color: state.themeChangeReducer.primaryColor }}
-        //   ItemSeparatorComponent={() =>
-        //     <View
-        //       style={{
-        //         height: 1,
-        //         backgroundColor: "#E5E5E5",
-        //       }}
-        //     />
-        //   }
-        //   renderItem={({ item, index }) => {
-        //     return (
-        //       <TouchableOpacity
-        //         style={{ width: "100%", paddingVertical: 13 }}
-        //         onPress={() => {
-        //           setVerification(item.name)
-        //           setverificationNumber(item.number)
-        //           setShowPicker(false)
-        //           setImageModalVisible(true)
-        //         }}
-        //       >
-        //         <Text style={{ fontSize: 14, fontWeight: "400" }}>{item.name}</Text>
-        //       </TouchableOpacity>
-        //     );
-        //   }} />
       }
-    </View>
-    //   }
-
-
-    // </View>
+        <Loader visible={loading} />
+    </View> 
   )
 }
 export default Register;

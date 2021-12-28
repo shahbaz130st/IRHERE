@@ -34,5 +34,13 @@ export const images = {
     unhidePasswordIcon: require("./Unhide.png"),
     bottomArrowIcon: require("./bottomArrow.png"),
     tickBlueIcon: require("./tickBlueIcon.png"),
-    scannerIcon: require("./Scanner.png")
+    scannerIcon: require("./Scanner2.png"),
+    quarantineDayIcon: require("./quartineDay.png"),
+    calendarIcon: require("./calendar.png"),
+    homeLocationIcon: require("./homeLocation.png"),
+    bellIcon: require("./bellIcon.png"),
+    ic_launcher: require("./ic_launcher.png"),
+    circularTickIcon: require("./circularTick.png"),
+    certificateItem: require("./certificateItem.png"),
+    linkIcon: require("./link.png")
 }

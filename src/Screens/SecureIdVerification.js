@@ -157,27 +157,16 @@ const SecureIdVerification = (props) => {
         />
         
         <View style={styles.rectangleContainer}>
-          {/* <View style={styles.bottomOverlay} /> */}
-          <View style={{ flexDirection: "row",borderWidth:5,borderColor:"white",width:"100%",justifyContent:"center",alignItems:"center" }}>
-            <View style={styles.leftAndRightOverlay} />
-            <View style={styles.rectangle}>
-            <View style={styles.bottomOverlay} />
+          <View style={{ flexDirection: "row",width:"100%",height:"100%",justifyContent:"center",alignItems:"center" }}>
+            {/* <View style={styles.leftAndRightOverlay} /> */}
+            {/* <View style={styles.rectangle}> */}
+            {/* <View style={styles.bottomOverlay} /> */}
               <Image source={images.scannerIcon}
-                style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
-              {/* <Animatable.View
-                style={styles.scanBar}
-                direction="alternate-reverse"
-                iterationCount="infinite"
-                duration={1700}
-                easing="linear"
-                animation={makeSlideOutTranslation(
-                  "translateY",
-                  SCREEN_WIDTH * -0.76
-                )}
-              /> */}
-               <View style={styles.bottomOverlay} />
-            </View>
-            <View style={styles.leftAndRightOverlay} />
+                style={{  height: phoneScreen.height * 35 / 100,
+                  width: phoneScreen.width * 100 / 100, resizeMode: "contain" }} />
+               {/* <View style={styles.bottomOverlay} /> */}
+            {/* </View> */}
+            {/* <View style={styles.leftAndRightOverlay} /> */}
           </View>
          
         </View>
@@ -203,7 +192,7 @@ const SecureIdVerification = (props) => {
           <Text style={{ fontSize: 14, fontWeight: "700", lineHeight: 24, color: colors.blackTextColor, marginTop: 18 }}>{"Scan the front side of your ID in the"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "700", lineHeight: 24, color: colors.blackTextColor }}>{"frame above"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor, marginTop: 18 }}>{"In order to verify its really you, please scan your"}</Text>
-          <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{"Driver’s Licence. Use a well lit area, a simple"}</Text>
+          <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{props.route.params?.type +". Use a well lit area, a simple"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{"dark background and make sure the edges are"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{"within the highlighted area."}</Text>
         </View>
@@ -337,8 +326,8 @@ const styles = StyleSheet.create(
     rectangle: {
       height: phoneScreen.height * 28 / 100,
       width: phoneScreen.width * 80 / 100,
-      // borderWidth: rectBorderWidth,
-      // borderColor: "green" /* rectBorderColor */,
+      borderWidth: rectBorderWidth,
+      borderColor: "green" /* rectBorderColor */,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: "transparent",

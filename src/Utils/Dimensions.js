@@ -24,7 +24,7 @@ export const isIPhoneX = DeviceInfo.hasNotch();
 
 export const StatusBarHeight = Platform.select({
     ios: DeviceInfo.hasNotch() ? 40 : 30,
-    android: StatusBar.currentHeight+16,
+    android: StatusBar.currentHeight + 16,
     default: 0
 })
 export const HeaderHeight = Platform.select({
@@ -32,3 +32,8 @@ export const HeaderHeight = Platform.select({
     android: 100 + StatusBarHeight,
     default: 94 + StatusBarHeight,
 })
+export const BottomTab = {
+    ios: 60,
+    android: 70,
+    notchHeight:90
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { colors } from "../Themes/colors";
 import InputField from "../Component/InputField";
 import Button from "../Component/Button";
@@ -9,7 +9,6 @@ import { reg } from "../Utils/ValidationConstants";
 import constant from "../Utils/ApiConstants";
 import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
-import CustomCheckBox from "../Component/CustomCheckBox";
 import axios from "axios";
 
 import { StackActions } from "@react-navigation/native";
@@ -24,8 +23,7 @@ const mainApp = StackActions.replace("TabGroup")
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../Store/ActionsCreator";
 import Header from "../Component/Header";
-import { StatusBarHeight, HeaderHeight } from '../Utils/Dimensions';
-import Toast from 'react-native-toast-message';
+import { HeaderHeight } from '../Utils/Dimensions';
 const Login = (props) => {
 
   const [email, setEmail] = useState("")
@@ -54,12 +52,18 @@ const Login = (props) => {
   }
   const loginValidation = () => {
     if (email === "") {
-      // showToast()
-       AlertComponent({msg:"Email is required",title:"Error",type:"error"})
+       AlertComponent({msg:"Email/Mobile Number is required",title:"Error",type:"error"})
     }
-    else if (reg.test(email) == false) {
-      AlertComponent({ msg: "Email is invalid",type:"error" })
+    else if(reg.test(email) == false&&/^[-+]?[0-9]+$/.test(email)===false){
+      AlertComponent({ msg: "Email is invalid",title:"Error",type:"error" })
+     }
+    else if (reg.test(email) == false&&/^[-+]?[0-9]+$/.test(email)===true&&email.charAt(0)==="+"&&email.length<= 11) {
+      console.log(email.length)
+        AlertComponent({ msg: "Mobile number is invalid 1",title:"Error",type:"error" })
     }
+      else if(reg.test(email) == false&&/^[-+]?[0-9]+$/.test(email)===true&&email.charAt(0)!=="+"&&email.length<= 12){
+        AlertComponent({ msg: "Mobile number is invalid",title:"Error",type:"error" })
+      }
     else if (password == "") {
       AlertComponent({ msg: "Password is required",type:"error",title:"Error" })
     }
@@ -78,7 +82,11 @@ const Login = (props) => {
       },
     };
     const data = new FormData();
-    data.append('email', email);
+    if(reg.test(email) == false){
+      data.append('phone_no', email);
+    }else{
+      data.append('email', email);
+    }
     data.append('password', password);
     data.append("device_id", Preference.get("fcmToken"))
     console.log(constant.signin, data)
@@ -197,11 +205,14 @@ const Login = (props) => {
 
         <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
           <InputField
-            placeholder={"Email"}
+            placeholder={"Email/Mobile Number"}
             placeholderTextColor={colors.placeholderColor}
             containerStyle={commonStyles.inputContainerStyle}
             inputStyle={commonStyles.inputInnerStyle}
             onChangeText={(text) => setEmail(text)}
+            maxLength={(reg.test(email) == false&&/^[-+]?[0-9]+$/.test(email)===true&&email.charAt(0)==="+")?13
+            :(reg.test(email) == false&&/^[-+]?[0-9]+$/.test(email)===true&&email.charAt(0)!=="+")?14:50
+          }
             keyboardType={"email-address"}
             autoComplete={"email"}
             value={email}
