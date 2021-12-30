@@ -26,9 +26,11 @@ const Home = (props) => {
   const [quarantine, setQuarantine] = useState(null)
   const [endDate, setEndDate] = useState(new Date())
   const [quarantineDay, setQuarantineDay] = useState(0)
+  const [showNotification,setShowNotification] = useState("0") 
   useEffect(() => {
     const unsubscribe = props.navigation.addListener("focus", () => {
       getUserQuarantinDetail()
+      checkPendingVerifications()
     });
     return unsubscribe;
   }, [props.navigation]);
@@ -51,7 +53,6 @@ const Home = (props) => {
         var given = moment(response.data.date, "YYYY-MM-DD");
         var current = moment().startOf('day');
         //Difference in number of days
-        console.log(moment.duration(current.diff(given)).asDays())
         setQuarantineDay(moment.duration(current.diff(given)).asDays()+1)
         let startdate = moment(response.data.date).format("DD.MM.YYYY");
         var new_date = moment(startdate, "DD.MM.YYYY");
@@ -65,6 +66,29 @@ const Home = (props) => {
       });
   }
 
+  const checkPendingVerifications = () => {
+    setLoading(true)
+    var config = {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+    };
+    const data = new FormData();
+    data.append('user_id', user.id);
+    console.log(constant.check_pending_verifications, data, config)
+    axios
+      .post(constant.check_pending_verifications, data)
+      .then(function (response) {
+        setLoading(false)
+        console.log(response.data)
+        setShowNotification(response.data.code)
+      })
+      .catch(function (error) {
+        setLoading(false)
+        console.log(error)
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
+      });
+  }
   return (
     <View style={styles.mainViewStyle}>
       <View style={[styles.innerViewStyle1, { backgroundColor: state.themeChangeReducer.primaryColor }]}>
@@ -89,7 +113,7 @@ const Home = (props) => {
             <Text style={styles.bodyStyle}>{"to them in time to prove that you are staying at"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine address during the period of"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine."}</Text>
-            {/* {(Preference.get("mode") === "general" || Preference.get("mode") === "quarantine") &&
+            {showNotification==="1"&&
             <View style={{paddingHorizontal:24}}>
             <BiggerButton
               buttonStyle={styles.biggerButtonStyle}
@@ -102,10 +126,10 @@ const Home = (props) => {
               textStyle={[styles.textStyle, { color: state.themeChangeReducer.secondaryColor }]}
               text1={"You have received a doorbell to verify your location. You have 20 minutes to respond."}
               text1Style={[styles.text1Style, { color: state.themeChangeReducer.secondaryColor }]}
-              onPress={() => { props.navigation.navigate('certificateValidation') }}
+              onPress={() => { props.navigation.navigate('verifyLocation') }}
             />
             </View>
-          } */}
+          }
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: quarantineDay > quarantine?.quarantine_days ? "center" : "flex-start", marginTop: 25, width: "100%", paddingHorizontal: quarantineDay > quarantine?.quarantine_days ? 0 : 24 }}>
               <Text style={{ fontSize: 20, fontWeight: "700" }}>{"Quarantine Status"}</Text>
               <View style={{ height: 13, width: 13, borderRadius: 6.5, marginTop: 5, marginLeft: 5, alignItems: "center", justifyContent: "center", borderColor: state.themeChangeReducer.primaryColor, borderWidth: 1, paddingBottom: 3 }}>

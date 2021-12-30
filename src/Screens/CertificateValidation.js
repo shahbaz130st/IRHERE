@@ -148,7 +148,7 @@ const certificateValidation = (props) => {
           <Image source={{ uri: `data:image/gif;base64,${props?.route?.params?.certificate?.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
           <Text style={{
             color: colors.whiteColor,
-            fontSize: 10,
+            fontSize: 14,
             fontWeight: "400",
           }}>{"Generated using V&V Technology"}</Text>
         </View>

@@ -215,7 +215,7 @@ const HistoryScreen = (props) => {
                   <View style={{ alignItems: "flex-end", width: "50%" }}>
                     <SessionDetailItem
                       label={"Your Quarantine Day"}
-                      value={moment.duration(moment(item?.date).startOf('day').diff(moment(quarantine?.date, "YYYY-MM-DD"))).asDays()}
+                      value={moment.duration(moment(item?.date, "YYYY-MM-DD").diff(moment(item?.quarantine_date, "YYYY-MM-DD"))).asDays()+1}
                       valueStyle={{ fontSize: 12, lineHeight: 20 }}
                     />
                   </View>
@@ -272,38 +272,12 @@ const HistoryScreen = (props) => {
               <Image source={{ uri: `data:image/gif;base64,${item.qr}` }} style={{ height: "70%", width: "70%", resizeMode: "contain", borderRadius: 20 }} />
               <Text style={{
                 color: colors.whiteColor,
-                fontSize: 10,
+                fontSize: 14,
                 fontWeight: "400"
               }}>{"Generated using V&V Technology"}</Text>
             </View>
           </View>
         </View>
-        // <TouchableOpacity style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "#090A0A36", alignItems: "center", justifyContent: "center", width: phoneScreen.width }}
-        //   onPress={() => setShowItem(false)}>
-        //   <View style={{ height: Platform.OS === "android" ? phoneScreen.height * 35 / 100 : phoneScreen.height * 25 / 100, width: phoneScreen.width * 90 / 100 }}>
-        //     <View style={styles.headerViewStyle}>
-        //       <Text style={[styles.headingStyle, { color: state.themeChangeReducer.secondaryColor }]}>{"Certificate of validation - Location"}</Text>
-        //       <Image style={styles.headingImage1Style} source={images.greenCheckIcon} />
-        //     </View>
-        //     <View style={{
-        //       flex:1,
-        //       paddingHorizontal:18,
-        //       borderRadius: 8,
-        //       backgroundColor: state.themeChangeReducer.secondaryColor,
-        //       justifyContent:"center"
-        //     }}>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center" }}>{"This is certify that"}</Text>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center" }}>{item?.name}</Text>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center",marginTop:15 }}>{"was located at"}</Text>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center" }}>{item?.address}</Text>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center",marginTop:15 }}>{"on"}</Text>
-        //       <View style={{flexDirection:"row",justifyContent: "center",alignItems:"center" }}>
-        //       <Text style={{ fontSize: 13, fontWeight: "400", textAlign: "center",marginRight:18 }}>{moment(item?.date).format("D MMM YYYY h:mm A")}</Text>
-        //         <Image source={{ uri: `data:image/gif;base64,${props.bodyQr}` }} style={{ height: 46, width: 46,borderColor:"red",borderWidth:1 }} />
-        //       </View> 
-        //     </View>
-        //   </View>
-        // </TouchableOpacity>
       }
       <Loader visible={loading} />
     </View>

@@ -52,6 +52,7 @@ const VerifyLocation = (props) => {
     const [value, setValue] = useState([]);
     // const [listOfItems, setListOfItems] = useState([{ checked: false, name: "Congestion or Running Nose" }, { checked: false, name: "Cough" }, { checked: false, name: "Diarrhea" }, { checked: false, name: "Fatigue" }, { checked: false, name: "Fever or Chills" }, { checked: false, name: "Headache" }, { checked: false, name: "Muscle or Body Aches" }, { checked: false, name: "Nausea or Vomiting" }, { checked: false, name: "New loss or taste or smell" }, { checked: false, name: "Shortness or breath or difficulty breathing" }, { checked: false, name: "Soar Throat" }, { checked: false, name: "None of the above" }])
     const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Soar Throat", value: "Soar Throat" }, { checked: false, label: "None of the above", value: "None of the above" }]);
+    const [statusArray, setStatusArray] = useState([{ inteval: 0, value: "Verifying your identity" }, { inteval: 500, value: "Breaking your video apart" }, { inteval: 1000, value: "Tracking your movement" }, { inteval: 2000, value: "Counting Fingers" }, { inteval: 2500, value: "Checking your shoulders" }])
     const user = useSelector(state => state.authenticationReducer.user)
 
     useEffect(async () => {
@@ -124,27 +125,27 @@ const VerifyLocation = (props) => {
     const generate_Pattern = () => {
         // setLoading(true)
         var config = {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          },
+            headers: {
+                "Content-Type": "multipart/form-data"
+            },
         };
         console.log(constant.generate_Pattern)
         axios
-          .post(constant.generate_Pattern, config)
-          .then(async function (response) {
-            // setLoading(false)
-            console.log(response.data)
-            called_pattern = response.data
-            props.navigation.navigate("VerificationRules", { data: response.data, list: value })
-            // setPattern(response.data)
-            // setShowBottom(true)
-            // AlertComponent({ msg: response.data.head_pose === 1 ? "Raise " + response.data.fingers + " fingers of your right hand for entire video and turn your head towards right and shoulder must be visible." : "Raise " + response.data.fingers + " finger of your right hand for entire video and turn your head towards left and shoulder must be visible.", onOkPress: () => { captureImage('video') } })
-          })
-          .catch(function (error) {
-            // setLoading(false)
-            AlertComponent({ msg: error.message,title:"Error",type:"error" })
-          });
-      }
+            .post(constant.generate_Pattern, config)
+            .then(async function (response) {
+                // setLoading(false)
+                console.log(response.data)
+                called_pattern = response.data
+                props.navigation.navigate("VerificationRules", { data: response.data, list: value })
+                // setPattern(response.data)
+                // setShowBottom(true)
+                // AlertComponent({ msg: response.data.head_pose === 1 ? "Raise " + response.data.fingers + " fingers of your right hand for entire video and turn your head towards right and shoulder must be visible." : "Raise " + response.data.fingers + " finger of your right hand for entire video and turn your head towards left and shoulder must be visible.", onOkPress: () => { captureImage('video') } })
+            })
+            .catch(function (error) {
+                // setLoading(false)
+                AlertComponent({ msg: error.message, title: "Error", type: "error" })
+            });
+    }
     const uploadVideo = (file) => {
         setLoading(true)
         setStatus("Uploading.....")
@@ -170,13 +171,13 @@ const VerifyLocation = (props) => {
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
                     generate_Pattern()
-                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+                    AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message,title:"Error",type:"error" })
+                AlertComponent({ msg: error.message, title: "Error", type: "error" })
             });
     }
     const convertVideo = (name) => {
@@ -204,17 +205,18 @@ const VerifyLocation = (props) => {
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
                     generate_Pattern()
-                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+                    AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message,title:"Error",type:"error" })
+                AlertComponent({ msg: error.message, title: "Error", type: "error" })
             });
     }
     const processVideo = (name) => {
         setLoading(true)
+       
         setStatus("Processing.....")
         var config = {
             headers: {
@@ -236,8 +238,8 @@ const VerifyLocation = (props) => {
         axios
             .post(constant.process_video, data, config)
             .then(function (response) {
-                setLoading(false)
 
+                setLoading(false)
                 if (response.data.Face_Found === "True") {
                     console.log(response.data)
                     setStatus("Precessing Complete")
@@ -254,14 +256,14 @@ const VerifyLocation = (props) => {
                     // setAlertHeader("Error")
                     // setAlertBody(response.data.desc)
                     generate_Pattern()
-                    AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
-                    setStatus("Verification Failed.Make a video again")
+                    AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
+                    // setStatus("Verification Failed.Make a video again")
                 }
             })
             .catch(function (error) {
                 setLoading(false)
                 console.log(error)
-                AlertComponent({ msg: error.message,title:"Error",type:"error" })
+                AlertComponent({ msg: error.message, title: "Error", type: "error" })
             });
     }
     const requestCameraPermission = async () => {
@@ -338,8 +340,8 @@ const VerifyLocation = (props) => {
                     leftIcon={images.unboldIcon}
                     backIconPress={() => { props.navigation.goBack() }}
                     headerText={"Verify Your Identity"} />
-                <View style={{ flex: 1, justifyContent: "space-between", alignItems: "center", paddingHorizontal: 30,paddingBottom: 10  }}>
-                    <View style={{ alignItems: "center", paddingTop: "10%",marginBottom: 60 }}>
+                <View style={{ flex: 1, justifyContent: "space-between", alignItems: "center", paddingHorizontal: 30, paddingBottom: 10 }}>
+                    <View style={{ alignItems: "center", paddingTop: "10%", marginBottom: 60 }}>
                         <Text style={[styles.bodyStyle, { color: colors.blackTextColor, fontWeight: "700", fontSize: 18 }]}>{"Record a video"}</Text>
                         <Text style={{ fontSize: 14, fontWeight: "400", marginTop: 10 }}>{"To make sure its really you, please"}</Text>
                         <Text style={{ fontSize: 14, fontWeight: "400" }}>{"record 3 seconds video of yourself"}</Text>
@@ -360,8 +362,8 @@ const VerifyLocation = (props) => {
                         elevation: 5,
                         borderRadius: 5,
                         paddingHorizontal: "10%",
-                        paddingBottom:"10%",
-                        marginBottom:"10%"
+                        paddingBottom: "10%",
+                        marginBottom: "10%"
                     }]}>
                         <View style={{ alignItems: "center", width: "100%", marginTop: -60 }}>
                             <Image source={images.selfImage} style={{ height: 120, width: 120, resizeMode: "contain" }} />
@@ -373,7 +375,7 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
+                                <Text style={{ fontSize: Platform.OS === "android" ? 14 : 16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.fingers === 1 ? "Raise " + props?.route?.params?.data.fingers + " finger of your hand." : "Raise " + props?.route?.params?.data.fingers + " fingers of your hand."}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", paddingTop: 10 }}>
@@ -383,7 +385,7 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
+                                <Text style={{ fontSize: Platform.OS === "android" ? 14 : 16, fontWeight: "400", lineHeight: 20 }}>{props?.route?.params?.data.head_pose === 0 ? "Turn your head towards left and then move back straight." : "Turn your head towards right and then move back straight."}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", paddingTop: 10 }}>
@@ -393,14 +395,14 @@ const VerifyLocation = (props) => {
                                 </View>
                             </View>
                             <View style={{ width: "80%" }}>
-                                <Text style={{ fontSize: Platform.OS==="android"?14:16, fontWeight: "400", lineHeight: 20 }}>{"Shoulder must be visible."}</Text>
+                                <Text style={{ fontSize: Platform.OS === "android" ? 14 : 16, fontWeight: "400", lineHeight: 20 }}>{"Shoulder must be visible."}</Text>
                             </View>
                         </View>
                     </View>
 
 
                     <View style={{ width: "100%" }}>
-                        <Text style={{ fontSize: 12, textAlign: "center", color: colors.placeholderColor }}>{"We never store any of your video.Only your encrypted facial data is stored for verification purposes."}</Text>
+                        <Text style={{ fontSize: 14, textAlign: "center", color: colors.placeholderColor }}>{"We never store any of your video.Only your encrypted facial data is stored for verification purposes."}</Text>
                         <Button
                             image
                             rightImage={images.cameraImage}

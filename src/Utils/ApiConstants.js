@@ -29,6 +29,7 @@ const constants =
     get_certificate_list: Base_url + link + "get_certificate_list",
     get_user_list_id:Base_url + link + "get_user_list_id",
     get_certificate_list_id:Base_url + link + "get_certificate_list_id",
+    check_pending_verifications: Base_url + link + "check_pending_verifications",
 
     
     verifyEmail: Base_url + link + "reset.php",

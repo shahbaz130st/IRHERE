@@ -373,7 +373,7 @@ const VerifyLocation = (props) => {
               rightImageStyle={commonStyles.selectionRightArrow}
               onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
             />
-            <Text style={[styles.bodyStyle, { marginTop: 10, fontSize: 12, color: colors.placeholderColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
+            <Text style={[styles.bodyStyle, { marginTop: 10, fontSize: 14, color: colors.placeholderColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
 
             <View style={{ flex: 1 }} />
             <Button
