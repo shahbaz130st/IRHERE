@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, PermissionsAndroid, FlatList, Alert, Dimensions, Platform } from "react-native";
+import { View, Text, StyleSheet,  Image, PermissionsAndroid, Dimensions, Platform } from "react-native";
 import { colors } from "../Themes/colors";
-import ModalOpenField from "../Component/modalOpenField";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import Button from "../Component/Button";
 import commonStyles from "../Themes/commonStyles";
@@ -11,48 +10,28 @@ import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
 import axios from "axios";
 import { phoneScreen } from "../Themes/phoneScreen";
-import { useDispatch, useSelector } from "react-redux";
-import Preference from "react-native-preference";
-import BiggerButton from "../Component/BiggerButton";
+import { useSelector } from "react-redux";
 import {
     launchCamera
 } from 'react-native-image-picker';
 import Geolocation from '@react-native-community/geolocation';
 import Geocoder from 'react-native-geocoding';
 import AlertModal from "../Utils/AlertModal";
-import { signOut } from "../Store/ActionsCreator";
-import { StackActions } from "@react-navigation/native";
-import CustomBottomSheet from "../Component/CustomBottomSheet";
-import { RNCamera } from 'react-native-camera';
 import Header from "../Component/Header";
 import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
-import DropDownPicker from 'react-native-dropdown-picker';
-const login = StackActions.replace("OnBoarding")
-let called_pattern = {}
+let interval
 const VerifyLocation = (props) => {
-
     const [loading, setLoading] = useState(false)
+    const [processing,setProcessing] = useState(false)
     const state = useSelector(state => state)
-    const [avatar, setAvatar] = useState("")
-    const [verification, setVerification] = useState("")
-    const [showItem, setShowItem] = useState(false)
     const [location, setLocation] = useState({})
-    const [listOfItems, setListOfItems] = useState([{ name: "71-77 covet garden  london, United kingdom" }, { name: "71-77 covet garden  london, United kingdom" }, { name: "71-77 covet garden  london, United kingdom" }, { name: "71-77 covet garden  london, United kingdom" }])
-    const [filePath, setFilePath] = useState("")
-    const [pattern, setPattern] = useState({})
     const [currentAddress, setCurrentAddress] = useState("")
     const [status, setStatus] = useState("Make a video")
     const [resultImage, setResultImage] = useState("")
     const [showAlert, setShowAlert] = useState(false)
     const [alertHeader, setAlertHeader] = useState("")
     const [alertBody, setAlertBody] = useState("")
-    const [showBottom, setShowBottom] = useState(false)
-    const [showCamera, setShowCamera] = useState(false)
-    const [open, setOpen] = useState(false);
     const [value, setValue] = useState([]);
-    // const [listOfItems, setListOfItems] = useState([{ checked: false, name: "Congestion or Running Nose" }, { checked: false, name: "Cough" }, { checked: false, name: "Diarrhea" }, { checked: false, name: "Fatigue" }, { checked: false, name: "Fever or Chills" }, { checked: false, name: "Headache" }, { checked: false, name: "Muscle or Body Aches" }, { checked: false, name: "Nausea or Vomiting" }, { checked: false, name: "New loss or taste or smell" }, { checked: false, name: "Shortness or breath or difficulty breathing" }, { checked: false, name: "Soar Throat" }, { checked: false, name: "None of the above" }])
-    const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Soar Throat", value: "Soar Throat" }, { checked: false, label: "None of the above", value: "None of the above" }]);
-    const [statusArray, setStatusArray] = useState([{ inteval: 0, value: "Verifying your identity" }, { inteval: 500, value: "Breaking your video apart" }, { inteval: 1000, value: "Tracking your movement" }, { inteval: 2000, value: "Counting Fingers" }, { inteval: 2500, value: "Checking your shoulders" }])
     const user = useSelector(state => state.authenticationReducer.user)
 
     useEffect(async () => {
@@ -60,6 +39,36 @@ const VerifyLocation = (props) => {
         Geocoder.init("AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU");
         await requestLocationPermission()
     }, [])
+    useEffect(() => {
+        if (loading&&processing) {
+            let timesRun = 0;
+             interval = setInterval(function () {
+                timesRun += 1;
+                if (timesRun === 1) {
+                    setStatus("Verifying your identity")
+                }
+                if (timesRun === 2) {
+                    setStatus("Breaking your video apart")
+                }
+                if (timesRun === 3) {
+                    setStatus("Tracking your movement")
+                }
+                if (timesRun === 4) {
+                    setStatus("Counting Fingers")
+                }
+                if (timesRun === 5) {
+                    setStatus("Checking your shoulders")
+                }
+                if (timesRun === 6) {
+                    setStatus("Processing.....")
+                    clearInterval(interval);
+                }
+                //do whatever here..
+            }, 5000);
+        }else {
+
+        }
+    }, [loading,processing])
     const requestLocationPermission = async () => {
         if (Platform.OS === 'ios') {
 
@@ -216,8 +225,7 @@ const VerifyLocation = (props) => {
     }
     const processVideo = (name) => {
         setLoading(true)
-       
-        setStatus("Processing.....")
+        setProcessing(true)
         var config = {
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -238,8 +246,9 @@ const VerifyLocation = (props) => {
         axios
             .post(constant.process_video, data, config)
             .then(function (response) {
-
+                clearInterval(interval);
                 setLoading(false)
+                setProcessing(false)
                 if (response.data.Face_Found === "True") {
                     console.log(response.data)
                     setStatus("Precessing Complete")
@@ -262,6 +271,7 @@ const VerifyLocation = (props) => {
             })
             .catch(function (error) {
                 setLoading(false)
+                setProcessing(false)
                 console.log(error)
                 AlertComponent({ msg: error.message, title: "Error", type: "error" })
             });
@@ -332,7 +342,6 @@ const VerifyLocation = (props) => {
             });
         }
     };
-
     return (
         <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
             <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >

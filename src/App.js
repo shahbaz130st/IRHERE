@@ -82,7 +82,6 @@ const App = () => {
     const createNotificationListeners = async () => {
         messaging().onMessage(async remoteMessage => {
             showNotification("Verify your location", "You have received a request to verify your location. You have 20 minutes to respond.");
-
         });
 
         messaging().setBackgroundMessageHandler(
@@ -109,7 +108,7 @@ const App = () => {
     }
     const showNotification = (title, body) => {
         if (popupRef) {
-            popupRef.current.show({
+            popupRef?.current?.show({
                 onPress: () => {
                     onNotificationRecieve()
                     // TODO

@@ -41,8 +41,6 @@ const Register = (props) => {
   const [verification, setVerification] = useState("")
   const [verificationNumber, setverificationNumber] = useState(-1)
   const [loading, setLoading] = useState(false)
-  const [checkBox, setCheckBox] = useState(false)
-  const [showPicker, setShowPicker] = useState(false)
   const [listOfItems, setListOfItems] = useState([{ name: "Passport", number: 3, isChecked: false }, { name: "Photo ID", number: 1, isChecked: false }, { name: "Driver’s License", number: 2, isChecked: false },])
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [filePath, setFilePath] = useState(null);
@@ -54,16 +52,24 @@ const Register = (props) => {
   const dispatch = useDispatch()
   const state = useSelector(state => state)
   useEffect(() => {
-    if (props.route.params?.img) {
-      console.log(props.route.params?.img)
-      setFilePath(props.route.params?.img)
+    if (props?.route?.params?.img) {
+      // console.log(props.route.params?.img)
+      setFilePath(props?.route?.params?.img)
       // Post updated, do something with `route.params.post`
       // For example, send the post to the server
     }
-  }, [props.route.params?.img]);
+  }, [props.route?.params?.img]);
   useEffect(() => {
     onAppBootstrap()
   }, [])
+  useEffect(() => {
+    if (filePath !== null) {
+      if (validation() === true) {
+        register()
+      }
+    }
+
+  }, [filePath])
   const onAppBootstrap = async () => {
     // Register the device with FCM
     // await messaging().registerDeviceForRemoteMessages();
@@ -80,34 +86,45 @@ const Register = (props) => {
     console.log(number.length)
     if (fullName === "") {
       AlertComponent({ msg: "Full name is required", title: "Error", type: "error" })
+      return false
     }
-    else if(email === ""&&number.length == ""){
+    else if (email === "" && number.length == "") {
       AlertComponent({ msg: "Email or Mobile number is required", title: "Error", type: "error" })
+      return false
     }
-    else if (reg.test(email) == false&&number.length == "") {
+    else if (reg.test(email) == false && number.length == "") {
       AlertComponent({ msg: "Email is invalid", title: "Error", type: "error" })
+      return false
     }
     else if (password == "") {
       AlertComponent({ msg: "Password is required", title: "Error", type: "error" })
+      return false
     }
     else if (password.length <= 7) {
       AlertComponent({ msg: "Password must be 8 characters", title: "Error", type: "error" })
+      return false
     }
     // else if (number.length == "") {
     //   AlertComponent({ msg: "Mobile number is required", title: "Error", type: "error" })
     // }
-    else if (!number==""&& number.length <= 8) {
-      AlertComponent({ msg: "Mobile number is invalid", title: "Error", type: "error"})
+    else if (!number == "" && number.length <= 8) {
+      AlertComponent({ msg: "Mobile number is invalid", title: "Error", type: "error" })
+      return false
     }
     else if (verificationNumber === -1) {
       AlertComponent({ msg: "Select verification type", title: "Error", type: "error" })
+      return false
     }
     else if (!filePath) {
       AlertComponent({ msg: "Select image for verficiation", title: "Error", type: "error" })
+      return false;
     }
     else {
-      register()
+      return true
     }
+    // else {
+    //   register()
+    // }
   }
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -226,13 +243,13 @@ const Register = (props) => {
     data.append('full_name', fullName);
     data.append('email', email);
     data.append('password', password);
-    if(number!==""&&!number.length <= 8){
+    if (number !== "" && !number.length <= 8) {
       data.append('phone_no', "+61" + number);
     }
-    else{
+    else {
       data.append('phone_no', "");
     }
-    
+
     data.append('verification_method', verificationNumber);
     data.append('file', filePath);
     data.append("device_id", Preference.get("fcmToken"))
@@ -303,12 +320,12 @@ const Register = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ title:"Error",msg: response.data.desc ,type:"error",title:"Error"})
+          AlertComponent({ title: "Error", msg: response.data.desc, type: "error", title: "Error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message,type:"error",title:"Error" })
+        AlertComponent({ msg: error.message, type: "error", title: "Error" })
       });
   }
 
@@ -337,12 +354,12 @@ const Register = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ msg: response.data.desc,type:"error",title:"Error" })
+          AlertComponent({ msg: response.data.desc, type: "error", title: "Error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message,type:"error",title:"Error" })
+        AlertComponent({ msg: error.message, type: "error", title: "Error" })
       });
   }
   return (
@@ -450,9 +467,12 @@ const Register = (props) => {
             textViewStyle={commonStyles.selectionInputTextStyle}
             value={verification === "" ? "Verification Document" : verification}
             valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
-            rightImage={images.bottomArrowIcon}
+            rightImage={!filePath ? images.bottomArrowIcon : images.circularTickIcon}
             rightImageViewStyle={commonStyles.selectionRightArrowView}
-            rightImageStyle={commonStyles.selectionRightArrow}
+            rightImageStyle={[commonStyles.selectionRightArrow, {
+              height: !filePath ? 6 : 20,
+              width: !filePath ? 12 : 20, tintColor: !filePath ? colors.placeholderColor : colors.greanColor
+            }]}
             onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
           />
           <TouchableOpacity style={{ flex: 1, marginVertical: 18 }} onPress={props.onResetPress}>
@@ -466,7 +486,11 @@ const Register = (props) => {
             buttonStyle={[commonStyles.buttonStyle, { flex: 1, backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 18 }]}
             textStyle={commonStyles.textStyle}
             text={"Sign Up"}
-            onPress={() => { validation() }}
+            onPress={() => {
+              if (validation() === true) {
+                register()
+              }/* validation()  */
+            }}
           />
           <View style={{ alignItems: "center", width: "100%" }}>
             <TouchableOpacity style={{ marginTop: 34 }} onPress={() => { props.navigation.navigate("Login") }}>
@@ -486,7 +510,7 @@ const Register = (props) => {
             onDragDown={() => setImageModalVisible(false)}
             fromCamera={() => {
               setImageModalVisible(false);
-              props.navigation.navigate("SecureIdVerification",{type:verification})
+              props.navigation.navigate("SecureIdVerification", { type: verification })
               // captureImage("photo");
             }}
             fromGallery={() => {
@@ -506,7 +530,7 @@ const Register = (props) => {
             body={alertBody}
           />
         }
-      
+
       </KeyboardAwareScrollView>
       {
         showRadioBottomSheet &&
@@ -535,6 +559,8 @@ const Register = (props) => {
                       tempArray[i].isChecked = true
                       setVerification(tempArray[i].name)
                       setverificationNumber(tempArray[i].number)
+                      setShowRadioBottomSheet(false)
+                      setImageModalVisible(true)
                     }
                     else {
                       tempArray[i].isChecked = false
@@ -562,8 +588,8 @@ const Register = (props) => {
           }}
         />
       }
-        <Loader visible={loading} />
-    </View> 
+      <Loader visible={loading} />
+    </View>
   )
 }
 export default Register;

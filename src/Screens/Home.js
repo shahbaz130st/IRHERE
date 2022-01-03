@@ -16,6 +16,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import { StatusBarHeight, BottomTab } from "../Utils/Dimensions";
 import DeviceInfo from 'react-native-device-info';
 import moment from "moment";
+import messaging from '@react-native-firebase/messaging';
 
 let date = ""
 const Home = (props) => {
@@ -28,6 +29,10 @@ const Home = (props) => {
   const [quarantineDay, setQuarantineDay] = useState(0)
   const [showNotification,setShowNotification] = useState("0") 
   useEffect(() => {
+    messaging().onMessage(async remoteMessage => {
+      checkPendingVerifications()
+
+  });
     const unsubscribe = props.navigation.addListener("focus", () => {
       getUserQuarantinDetail()
       checkPendingVerifications()
@@ -109,7 +114,7 @@ const Home = (props) => {
               <Image style={styles.headingImageStyle} source={images.greenCheckIcon} />
             </View>
             <Text style={styles.bodyStyle}>{"You are all set for now! We will randomly send"}</Text>
-            <Text style={styles.bodyStyle}>{"you electronic doorbells, Make sure you respond"}</Text>
+            <Text style={styles.bodyStyle}>{"you electronic doorbell, Make sure you respond"}</Text>
             <Text style={styles.bodyStyle}>{"to them in time to prove that you are staying at"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine address during the period of"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine."}</Text>

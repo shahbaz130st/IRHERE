@@ -205,6 +205,7 @@ const QuarantineWelcom = (props) => {
                       if (i === index) {
                         tempArray[i].isChecked = true
                         setIsolationType(tempArray[i].name)
+                        setShowPicker(false)
                       }
                       else {
                         tempArray[i].isChecked = false
@@ -219,6 +220,7 @@ const QuarantineWelcom = (props) => {
                         tempArray[i].isChecked = true
                         setIsolationTimeName(tempArray[i].name)
                         setIsolationTime(tempArray[i].value)
+                        setShowPicker(false)
                       }
                       else {
                         tempArray[i].isChecked = false
