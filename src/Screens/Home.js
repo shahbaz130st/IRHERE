@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image,AppState } from "react-native";
 import { colors } from "../Themes/colors";
 import commonStyles from "../Themes/commonStyles";
 import { images } from "../Assets/Images";
@@ -39,6 +39,15 @@ const Home = (props) => {
     });
     return unsubscribe;
   }, [props.navigation]);
+  useEffect(()=>{
+    AppState.addEventListener('change', async (state) => {
+      if (state === 'active') {
+        checkPendingVerifications()
+        }
+    })
+  },[]
+
+  )
   const getUserQuarantinDetail = () => {
     setLoading(true)
     var config = {

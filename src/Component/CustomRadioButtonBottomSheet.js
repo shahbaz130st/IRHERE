@@ -13,6 +13,7 @@ import Button from "./Button";
 import commonStyles from "../Themes/commonStyles";
 import { useSelector } from "react-redux";
 import DeviceInfo from 'react-native-device-info';
+import { phoneScreen } from "../Themes/phoneScreen";
 
 const CustomRadioButtonBottomSheet = ({
     visible,
@@ -64,10 +65,10 @@ const CustomRadioButtonBottomSheet = ({
                     height: 5
                 },
             }}
-            height={360}>
+            height={(subHeaderText === "Choose one" && Platform.OS === "android") ? 360 - phoneScreen.height * 7 / 100 :(subHeaderText === "Choose one" && Platform.OS === "ios")? 360 - phoneScreen.height * 6 / 100 : 360}>
             <View
                 style={{
-                    height: 337,
+                    height:(subHeaderText === "Choose one" && Platform.OS === "android") ? 337 - phoneScreen.height * 7 / 100 :(subHeaderText === "Choose one" && Platform.OS === "ios")? 337 - phoneScreen.height * 6 / 100 : 337,
                     backgroundColor: colors.whiteColor,
                     width: "100%",
                     paddingHorizontal: 24,
@@ -82,16 +83,19 @@ const CustomRadioButtonBottomSheet = ({
                     extraData={{ list: listOfItems }}
                     showsVerticalScrollIndicator={false}
                     removeClippedSubviews={false}
-                    style={{ width: "100%",paddingTop:10}}
+                    style={{ width: "100%", paddingTop: 10 }}
                     renderItem={renderItem}
                     ItemSeparatorComponent={ItemSeparatorComponent}
-                />
-                <Button
-                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor,marginTop:0 }]}
-                    textStyle={commonStyles.textStyle}
-                    text={"Select"}
-                    onPress={onSelectPress}
-                />
+                />{
+                    subHeaderText !== "Choose one" &&
+                    <Button
+                        buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0 }]}
+                        textStyle={commonStyles.textStyle}
+                        text={"Select"}
+                        onPress={onSelectPress}
+                    />
+                }
+
                 {!DeviceInfo.hasNotch() ?
                     <View style={{ flex: 1, width: "100%", alignItems: "center", marginTop: 16 }}>
                         <View style={{ width: 135, height: 5, borderRadius: 3, backgroundColor: "rgb(57,57,68)" }} />
