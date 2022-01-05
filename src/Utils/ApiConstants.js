@@ -30,6 +30,7 @@ const constants =
     get_user_list_id:Base_url + link + "get_user_list_id",
     get_certificate_list_id:Base_url + link + "get_certificate_list_id",
     check_pending_verifications: Base_url + link + "check_pending_verifications",
+    fetch_user_info:Base_url + link + "fetch_user_info",
 
     
     verifyEmail: Base_url + link + "reset.php",

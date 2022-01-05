@@ -94,14 +94,39 @@ const Home = (props) => {
     axios
       .post(constant.check_pending_verifications, data)
       .then(function (response) {
-        setLoading(false)
+       
         console.log(response.data)
         setShowNotification(response.data.code)
-        var given = moment(response.data.start_date, "YYYY-MM-DD");
-        var current = moment().startOf('minute');
-        //Difference in number of days
-        setShowNotificationTime(moment.duration(current.diff(given)).asMinutes()+1)
-        // setShowNotificationTime(response.data.start_date)
+        if(response.data.code==="1"){
+          setInterval(()=>{
+            let start = moment(response.data.start_date).format(
+              "DD-MM-YYYY HH:mm:ss"
+            );
+                          let current = moment(new Date())/* .add(6,"hour") */.format(
+                            "DD-MM-YYYY HH:mm:ss"
+                          );
+                          var ms = moment(current, "DD/MM/YYYY HH:mm:ss").diff(
+                            moment(start, "DD/MM/YYYY HH:mm:ss")
+                          );
+                          let timeDifference = moment.duration(ms);
+                          // console.log(
+                          //   start,
+                          //   current,
+                          //   timeDifference.years(),
+                          //   timeDifference.months(),
+                          //   timeDifference.days(),
+                          //   timeDifference.hours(),
+                          //   timeDifference.minutes(),
+                          //   timeDifference.seconds()
+                          // );
+                          setShowNotificationTime(20-timeDifference.minutes())
+                          if(20-timeDifference.minutes()<=0){
+                            setShowNotification("0")
+
+                          }
+          },1000)
+        }
+        setLoading(false)
       })
       .catch(function (error) {
         setLoading(false)

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import { colors } from "../Themes/colors";
 import commonStyles from "../Themes/commonStyles";
+import InputField from "../Component/InputField";
 import { images } from "../Assets/Images";
-// import constant from "../Utils/ApiConstants";
+import constant from "../Utils/ApiConstants";
 import { AlertComponent } from "../Utils/Alert";
 import Loader from "../Utils/Loader";
-// import axios from "axios";
+import axios from "axios";
 import { phoneScreen } from "../Themes/phoneScreen";
 import { signOut } from "../Store/ActionsCreator";
 import SwitchToggle from "../Component/SwitchToggle";
@@ -18,16 +19,91 @@ const login = StackActions.replace("OnBoarding",{screen:"Welcom"})
 const SettingScreen = (props) => {
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
+  const user = useSelector(state => state.authenticationReducer.user)
   const [switchValue, setSwitchValue] = useState(false);
+  const [userData,setUserData]= useState(null)
   const dispatch = useDispatch()
   const logOut = () => {
     Preference.clear()
     dispatch(signOut())
     props.navigation.dispatch(login)
   }
+  useEffect(() => {
+    const unsubscribe = props.navigation.addListener("focus", () => {
+      getUserDetail()
+    });
+    return unsubscribe;
+  }, [props.navigation]);
+  const getUserDetail = () => {
+    setLoading(true)
+    var config = {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+    };
+    const data = new FormData();
+    data.append('user_id', user.id);
+    console.log(constant.fetch_user_info, data)
+    axios
+      .post(constant.fetch_user_info, data)
+      .then(function (response) {
+        setLoading(false)
+        console.log(response.data)
+        if(response.data.code==="1"){
+          setUserData(response.data)
+        }
+      
+      })
+      .catch(function (error) {
+        setLoading(false)
+        console.log(error)
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
+      });
+  }
   return (
-    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
-      <View style={[styles.innerViewStyle2, { backgroundColor: state.themeChangeReducer.secondaryColor }]} >
+    <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.secondaryColor }}>
+    <View style={{ height: 75, width: "100%", backgroundColor: state.themeChangeReducer.primaryColor }} />
+    <View style={{ flex: 1, alignItems: "center", backgroundColor: colors.skyBlueColor, borderTopRightRadius: 17, borderTopLeftRadius: 17, marginTop: -20,paddingHorizontal:20 }}>
+      <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor, marginTop: 25 }]}>{"User Setting"}</Text>
+      <InputField
+            placeholder={"Full Name"}
+            autoComplete={"name"}
+            placeholderTextColor={colors.placeholderColor}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
+            editable={false}
+            // onChangeText={(text) => setFullName(text)}
+            value={userData?.name}
+          />
+          <InputField
+            placeholder={"Email"}
+            autoComplete={"email"}
+            placeholderTextColor={colors.placeholderColor}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
+            // onChangeText={(text) => setEmail(text)}
+            keyboardType={"email-address"}
+            value={userData?.email}
+            onEndEditing={() => setEmail(email.trim())}
+            editable={false}
+          />
+           <InputField
+            placeholder={"Mobile Number"}
+            placeholderTextColor={colors.placeholderColor}
+            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
+            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
+            keyboardType={"phone-pad"}
+            autoComplete={"tel"}
+            value={userData?.phone_no}
+            maxLength={10}
+            image={images.auFlag}
+            imageStyle={{ width: 21, height: 13, resizeMode: "contain" }}
+            imageViewStyle={commonStyles.mobileFlagStyle}
+            // countryCode={"+61"}
+            countryCodeStyle={{ fontSize: 16, color: colors.blackTextColor, fontWeight: "400" }}
+            textViewStyle={commonStyles.mobileCountryCodeStyle}
+            editable={false}
+          />
         {/* <View style={{ width: "100%", alignItems: "flex-end" }}>
           <SwitchToggle
             onChange={() => setSwitchValue(!switchValue)}
