@@ -28,6 +28,7 @@ const Home = (props) => {
   const [endDate, setEndDate] = useState(new Date())
   const [quarantineDay, setQuarantineDay] = useState(0)
   const [showNotification,setShowNotification] = useState("0") 
+  const [showNotificationTime,setShowNotificationTime] = useState(null) 
   useEffect(() => {
     messaging().onMessage(async remoteMessage => {
       checkPendingVerifications()
@@ -96,6 +97,11 @@ const Home = (props) => {
         setLoading(false)
         console.log(response.data)
         setShowNotification(response.data.code)
+        var given = moment(response.data.start_date, "YYYY-MM-DD");
+        var current = moment().startOf('minute');
+        //Difference in number of days
+        setShowNotificationTime(moment.duration(current.diff(given)).asMinutes()+1)
+        // setShowNotificationTime(response.data.start_date)
       })
       .catch(function (error) {
         setLoading(false)
@@ -138,7 +144,7 @@ const Home = (props) => {
               textViewStyle={{ flex: 1, marginHorizontal: 5 }}
               text={"Verify Your Location"}
               textStyle={[styles.textStyle, { color: state.themeChangeReducer.secondaryColor }]}
-              text1={"You have received a doorbell to verify your location. You have 20 minutes to respond."}
+              text1={"You have received a doorbell to verify your location. You have "+showNotificationTime+" minutes to respond."}
               text1Style={[styles.text1Style, { color: state.themeChangeReducer.secondaryColor }]}
               onPress={() => { props.navigation.navigate('verifyLocation') }}
             />
