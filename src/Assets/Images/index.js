@@ -42,5 +42,6 @@ export const images = {
     ic_launcher: require("./ic_launcher.png"),
     circularTickIcon: require("./circularTick.png"),
     certificateItem: require("./certificateItem.png"),
-    linkIcon: require("./link.png")
+    linkIcon: require("./link.png"),
+    imagePlaceholder:require("./imagePlaceholder.png"),
 }

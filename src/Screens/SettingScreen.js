@@ -14,14 +14,15 @@ import SwitchToggle from "../Component/SwitchToggle";
 import SettingMenue from "../Component/SettingMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { StackActions } from "@react-navigation/native";
+import AvatarComponent from "../Component/AvatarComponent";
 import Preference from 'react-native-preference';
-const login = StackActions.replace("OnBoarding",{screen:"Welcom"})
+const login = StackActions.replace("OnBoarding", { screen: "Welcom" })
 const SettingScreen = (props) => {
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const user = useSelector(state => state.authenticationReducer.user)
   const [switchValue, setSwitchValue] = useState(false);
-  const [userData,setUserData]= useState(null)
+  const [userData, setUserData] = useState(null)
   const dispatch = useDispatch()
   const logOut = () => {
     Preference.clear()
@@ -49,10 +50,10 @@ const SettingScreen = (props) => {
       .then(function (response) {
         setLoading(false)
         console.log(response.data)
-        if(response.data.code==="1"){
+        if (response.data.code === "1") {
           setUserData(response.data)
         }
-      
+
       })
       .catch(function (error) {
         setLoading(false)
@@ -62,84 +63,38 @@ const SettingScreen = (props) => {
   }
   return (
     <View style={{ flex: 1, backgroundColor: state.themeChangeReducer.secondaryColor }}>
-    <View style={{ height: 75, width: "100%", backgroundColor: state.themeChangeReducer.primaryColor }} />
-    <View style={{ flex: 1, alignItems: "center", backgroundColor: colors.skyBlueColor, borderTopRightRadius: 17, borderTopLeftRadius: 17, marginTop: -20,paddingHorizontal:20 }}>
-      <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor, marginTop: 25 }]}>{"User Setting"}</Text>
-      <InputField
-            placeholder={"Full Name"}
-            autoComplete={"name"}
-            placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
-            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
-            editable={false}
-            // onChangeText={(text) => setFullName(text)}
-            value={userData?.name}
+      <View style={{ height: 75, width: "100%", backgroundColor: state.themeChangeReducer.primaryColor }} />
+      <View style={{ flex: 1, alignItems: "center", backgroundColor: colors.skyBlueColor, borderTopRightRadius: 17, borderTopLeftRadius: 17, marginTop: -20, paddingHorizontal: 20 }}>
+        <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor, marginTop: 25 }]}>{"User Setting"}</Text>
+        <View style={{ alignItems: "center" }}>
+          <AvatarComponent
+            style={{ height: 150, width: 150, borderRadius: 75, marginTop: 30 }}
+            imageStyle={{ height: 150, width: 150, resizeMode: "cover", borderRadius: 75 }}
+            defaultSource={images.imagePlaceholder}
+            source={images.imagePlaceholder}
           />
-          <InputField
-            placeholder={"Email"}
-            autoComplete={"email"}
-            placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
-            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
-            // onChangeText={(text) => setEmail(text)}
-            keyboardType={"email-address"}
-            value={userData?.email}
-            onEndEditing={() => setEmail(email.trim())}
-            editable={false}
-          />
-           <InputField
-            placeholder={"Mobile Number"}
-            placeholderTextColor={colors.placeholderColor}
-            containerStyle={[commonStyles.inputContainerStyle, { marginTop: 18 }]}
-            inputStyle={[commonStyles.inputInnerStyle,{color:colors.blackTextColor}]}
-            keyboardType={"phone-pad"}
-            autoComplete={"tel"}
-            value={userData?.phone_no}
-            maxLength={10}
-            image={images.auFlag}
-            imageStyle={{ width: 21, height: 13, resizeMode: "contain" }}
-            imageViewStyle={commonStyles.mobileFlagStyle}
-            // countryCode={"+61"}
-            countryCodeStyle={{ fontSize: 16, color: colors.blackTextColor, fontWeight: "400" }}
-            textViewStyle={commonStyles.mobileCountryCodeStyle}
-            editable={false}
-          />
-        {/* <View style={{ width: "100%", alignItems: "flex-end" }}>
-          <SwitchToggle
-            onChange={() => setSwitchValue(!switchValue)}
-            value={switchValue}
-          />
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <Text style={[styles.headingStyle, { color: state.themeChangeReducer.primaryColor }]}>{"Settings"}</Text>
-          <Text style={[styles.bodyStyle, { color: state.themeChangeReducer.primaryColor, fontSize: 10 }]}>{"Switch to Quarantine Mode"}</Text>
-        </View>
-        <View style={{ flex: 1, paddingTop: 20 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image style={{ width: 13, height: 14, resizeMode: "contain" }} source={images.accountIcon} />
-            <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: "500" }}>{"Account"}</Text>
+          <View style={{ marginTop: 20, alignItems: "center" }}>
+            {
+              userData?.name &&
+              <Text style={{ fontSize: 20, fontWeight: "700" }}>{userData?.name}</Text>}
+            {
+              userData?.email &&
+              <Text style={{
+                fontSize: 14,
+                fontWeight: "400",
+                fontStyle: "normal",
+                lineHeight: 22.5,
+              }}>{userData?.email}</Text>}
+            {
+              userData?.phone_no &&
+              <Text style={{
+                fontSize: 14,
+                fontWeight: "400",
+                fontStyle: "normal",
+                lineHeight: 22.5
+              }}>{userData?.phone_no}</Text>}
           </View>
-          <SettingMenue
-            title={"Edit Profile"}
-            rightIcon={images.rightArrowIcon}
-          />
-          <SettingMenue
-            title={"Change Password"}
-            rightIcon={images.rightArrowIcon}
-          />
-          <SettingMenue
-            title={"Trusted Contacts"}
-            rightIcon={images.rightArrowIcon} />
-          <SettingMenue
-            title={"Help & Support"}
-            rightIcon={images.rightArrowIcon}
-
-          />
-          <SettingMenue
-            title={"Add Relevant Addresses"}
-            rightIcon={images.rightArrowIcon}
-          />
-        </View> */}
+        </View>
         <View style={{ flex: 1, width: "100%", alignItems: "center", marginBottom: 10, justifyContent: "flex-end" }}>
           <TouchableOpacity style={{ flexDirection: "row" }}
             onPress={() => {
