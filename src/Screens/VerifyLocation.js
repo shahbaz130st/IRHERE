@@ -26,7 +26,7 @@ import { StackActions } from "@react-navigation/native";
 import CustomBottomSheet from "../Component/CustomBottomSheet";
 import { RNCamera } from 'react-native-camera';
 import Header from "../Component/Header";
-import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
+import { PERMISSIONS, check, request, RESULTS, openSettings } from 'react-native-permissions';
 import CustomCheckBoxBottomSheet from "../Component/CustomCheckBoxBottomSheet";
 import DropDownPicker from 'react-native-dropdown-picker';
 const login = StackActions.replace("OnBoarding")
@@ -69,6 +69,7 @@ const VerifyLocation = (props) => {
     if (Platform.OS === 'ios') {
 
       const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      console.log(res)
       if (res === RESULTS.GRANTED) {
         console.log('You can use locations ');
         getLocation();
@@ -78,6 +79,9 @@ const VerifyLocation = (props) => {
         if (res2 === RESULTS.GRANTED) {
           getLocation();
         }
+      }
+      else if (res === RESULTS.BLOCKED) {
+        openSettings().catch(() => console.warn('cannot open settings'));
       }
     }
     else {
@@ -148,7 +152,7 @@ const VerifyLocation = (props) => {
       })
       .catch(function (error) {
         setLoading(false)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   const uploadVideo = (file) => {
@@ -175,14 +179,14 @@ const VerifyLocation = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          
-          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   const convertVideo = (name) => {
@@ -209,13 +213,13 @@ const VerifyLocation = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   const processVideo = (name) => {
@@ -258,14 +262,14 @@ const VerifyLocation = (props) => {
           // setShowAlert(true)
           // setAlertHeader("Error")
           // setAlertBody(response.data.desc)
-          AlertComponent({ msg: response.data.desc,title:"Error",type:"error" })
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
           setStatus("Verification Failed.Make a video again")
         }
       })
       .catch(function (error) {
         setLoading(false)
         console.log(error)
-        AlertComponent({ msg: error.message,title:"Error",type:"error" })
+        AlertComponent({ msg: error.message, title: "Error", type: "error" })
       });
   }
   const requestCameraPermission = async () => {
@@ -334,7 +338,7 @@ const VerifyLocation = (props) => {
       });
     }
   };
-  
+
 
   return (
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
@@ -383,8 +387,8 @@ const VerifyLocation = (props) => {
               textStyle={commonStyles.textStyle}
               text={"Continue"}
               onPress={() => {
-                  setResultImage("")
-                  generate_Pattern()
+                setResultImage("")
+                generate_Pattern()
               }}
             />
             {/* <DropDownPicker
@@ -613,9 +617,9 @@ const VerifyLocation = (props) => {
                 result.push(tempArray[i].label)
               }
             }
-              setValue([...result])
-              setShowRadioBottomSheet(false)
-              console.log(result)
+            setValue([...result])
+            setShowRadioBottomSheet(false)
+            console.log(result)
           }}
           onDragDown={() => {
             let tempArray = items, result = [];
@@ -630,9 +634,9 @@ const VerifyLocation = (props) => {
             //   AlertComponent({ msg: "Please select symptoms" })
             // }
             // else {
-              setValue([...result])
-              setShowRadioBottomSheet(false)
-              console.log(result)
+            setValue([...result])
+            setShowRadioBottomSheet(false)
+            console.log(result)
             // }
           }}
         />

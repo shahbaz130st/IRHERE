@@ -138,10 +138,11 @@ const SecureIdVerification = (props) => {
     return (
       <View style={styles.container}>
         <RNCamera
+          captureAudio={false}
           ref={ref}
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
+          flashMode={RNCamera.Constants.FlashMode.off}
           androidCameraPermissionOptions={{
             title: 'Permission to use camera',
             message: 'We need your permission to use your camera',
@@ -157,16 +158,11 @@ const SecureIdVerification = (props) => {
         />
         
         <View style={styles.rectangleContainer}>
-          <View style={{ flexDirection: "row",width:"100%",height:"100%",justifyContent:"center",alignItems:"center" }}>
-            {/* <View style={styles.leftAndRightOverlay} /> */}
-            {/* <View style={styles.rectangle}> */}
-            {/* <View style={styles.bottomOverlay} /> */}
+          <View style={{ flexDirection: "row", height: phoneScreen.height * 35 / 100,
+                  width: phoneScreen.width * 100 / 100}}>
               <Image source={images.scannerIcon}
                 style={{  height: phoneScreen.height * 35 / 100,
-                  width: phoneScreen.width * 100 / 100, resizeMode: "contain" }} />
-               {/* <View style={styles.bottomOverlay} /> */}
-            {/* </View> */}
-            {/* <View style={styles.leftAndRightOverlay} /> */}
+                  width: phoneScreen.width * 100 / 100, resizeMode: "stretch" }} />
           </View>
          
         </View>

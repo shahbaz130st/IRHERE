@@ -6,7 +6,9 @@ export const AlertComponent = (props) => {
     type:  props?.type?props.type:"success",
     text1: props?.title?props.title:"Hello",
     text2: props?.msg&&props.msg,
-    position: 'bottom'
+    position: 'bottom',
+    autoHide: true,
+    visibilityTime: props?.visibilityTime&&props.visibilityTime,
   });
 } /* const AlertComponent = (props) =>
     Alert.alert(

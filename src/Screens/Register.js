@@ -48,6 +48,7 @@ const Register = (props) => {
   const [alertHeader, setAlertHeader] = useState("")
   const [alertBody, setAlertBody] = useState("")
   const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
+  const [isVerification, setIsVerification] = useState(true)
 
   const dispatch = useDispatch()
   const state = useSelector(state => state)
@@ -266,7 +267,8 @@ const Register = (props) => {
           check_mode(response.data.id)
         }
         else {
-          AlertComponent({ msg: response.data.desc, title: "Error", type: "error" })
+          setIsVerification(false)
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error",visibilityTime:8000 })
           // setFilePath(null)
           // setShowAlert(true)
           // setAlertHeader("Error")
@@ -467,13 +469,17 @@ const Register = (props) => {
             textViewStyle={commonStyles.selectionInputTextStyle}
             value={verification === "" ? "Verification Document" : verification}
             valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
-            rightImage={!filePath ? images.bottomArrowIcon : images.circularTickIcon}
+            rightImage={!filePath ? images.bottomArrowIcon : !isVerification ? images.crossIcon : images.circularTickIcon}
             rightImageViewStyle={commonStyles.selectionRightArrowView}
             rightImageStyle={[commonStyles.selectionRightArrow, {
-              height: !filePath ? 6 : 20,
-              width: !filePath ? 12 : 20, tintColor: !filePath ? colors.placeholderColor : colors.greanColor
+              height: !filePath ? 6 : !isVerification ? 10 : 20,
+              width: !filePath ? 12 : !isVerification ? 10 : 20, tintColor: !filePath ? colors.placeholderColor : !isVerification ? colors.redColor : colors.greanColor
             }]}
-            onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
+            onPress={() => {
+              setShowRadioBottomSheet(true)
+              setFilePath(null)
+              setIsVerification(true)
+            }}
           />
           <TouchableOpacity style={{ flex: 1, marginVertical: 18 }} onPress={props.onResetPress}>
             <Text style={{ color: state.themeChangeReducer.primaryColor, fontSize: 16, fontWeight: "400" }} >{"Why do I need a verification Document?"}</Text>

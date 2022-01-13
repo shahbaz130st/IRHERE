@@ -22,7 +22,7 @@ const SettingScreen = (props) => {
   const state = useSelector(state => state)
   const user = useSelector(state => state.authenticationReducer.user)
   const [switchValue, setSwitchValue] = useState(false);
-  const [userData, setUserData] = useState(null)
+  const [userData, setUserData] = useState({})
   const dispatch = useDispatch()
   const logOut = () => {
     Preference.clear()
@@ -74,25 +74,22 @@ const SettingScreen = (props) => {
             source={images.imagePlaceholder}
           />
           <View style={{ marginTop: 20, alignItems: "center" }}>
-            {
-              userData?.name &&
-              <Text style={{ fontSize: 20, fontWeight: "700" }}>{userData?.name}</Text>}
-            {
-              userData?.email &&
+   
+              <Text style={{ fontSize: 20, fontWeight: "700" }}>{userData?.name}</Text>
+            
               <Text style={{
                 fontSize: 14,
                 fontWeight: "400",
                 fontStyle: "normal",
                 lineHeight: 22.5,
-              }}>{userData?.email}</Text>}
-            {
-              userData?.phone_no &&
+              }}>{userData?.email}</Text>
+          
               <Text style={{
                 fontSize: 14,
                 fontWeight: "400",
                 fontStyle: "normal",
                 lineHeight: 22.5
-              }}>{userData?.phone_no}</Text>}
+              }}>{userData?.phone_no}</Text>
           </View>
         </View>
         <View style={{ flex: 1, width: "100%", alignItems: "center", marginBottom: 10, justifyContent: "flex-end" }}>
