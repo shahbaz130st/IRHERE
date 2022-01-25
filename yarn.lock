@@ -6015,6 +6015,11 @@ react-native-preference@2.0.2:
   resolved "https://registry.yarnpkg.com/react-native-preference/-/react-native-preference-2.0.2.tgz#3cbe5e27eed08ed99ba438fc20984c59bfca9716"
   integrity sha512-5fXbNSDhCwdXcCV4pVVTBAYldgKNZ2PCPnLc18XrhPsZHL3Q41DC7RiNNLdBYm9u2Gv3ttsWxl6Tr/+FjdkW5w==
 
+react-native-progress-circle@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-progress-circle/-/react-native-progress-circle-2.1.0.tgz#62bdf31c76962d10c5c14446b61ff7d05cf0d0ec"
+  integrity sha512-VP0s92bgbTMQy4hQzPU4LlGyFj3z5u7i1HYFG8/yzXXfGkX1cxKS4xOlE+OTaObWC99w7Bodi3h8R7En2nQPYw==
+
 react-native-push-notification-popup@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-native-push-notification-popup/-/react-native-push-notification-popup-1.6.0.tgz#bbca3e68cf62cd5d47d718dd6d1f1e8e01f562f9"

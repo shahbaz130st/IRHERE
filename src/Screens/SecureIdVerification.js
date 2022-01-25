@@ -46,7 +46,7 @@ const iconScanColor = "#fff";
 const login = StackActions.replace("OnBoarding")
 let called_pattern = {}
 const SecureIdVerification = (props) => {
-  const cameraRef= useRef(null)
+  const cameraRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const [location, setLocation] = useState({})
@@ -55,33 +55,67 @@ const SecureIdVerification = (props) => {
   const [status, setStatus] = useState("Make a video")
   const [resultImage, setResultImage] = useState("")
   const user = useSelector(state => state.authenticationReducer.user)
- 
-
+    useEffect(async () => {
+      const unsubscribe = props.navigation.addListener("focus",async () => {
+        await requestCameraPermission()
+      });
+      return unsubscribe;
+    }, [props.navigation])
+    
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
-            title: 'Camera Permission',
-            message: 'App needs camera permission',
-          },
+            title: "Cool Photo App Camera Permission",
+            message:
+              "Cool Photo App needs access to your camera " +
+              "so you can take awesome pictures.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
         );
-        // If CAMERA Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("You can use the camera");
+        } else {
+          console.log("Camera permission denied");
+        }
       } catch (err) {
         console.warn(err);
-        return false;
       }
+      // try {
+      //   const granted = await PermissionsAndroid.request(
+      //     PermissionsAndroid.PERMISSIONS.CAMERA,
+      //     {
+      //       title: 'Camera Permission',
+      //       message: 'App needs camera permission',
+      //     },
+      //   );
+      //   // If CAMERA Permission is granted
+      //   console.log("granted",PermissionsAndroid.RESULTS.GRANTED)
+      //   return granted === PermissionsAndroid.RESULTS.GRANTED;
+      // } catch (err) {
+      //   console.warn(err);
+      //   return false;
+      // }
     } else {
       const res = await check(PERMISSIONS.IOS.CAMERA);
       if (res === RESULTS.GRANTED) {
         console.log('You can use camera');
-        return res === RESULTS.GRANTED;
 
       } else if (res === RESULTS.DENIED) {
         const res2 = await request(PERMISSIONS.IOS.CAMERA);
-        res2 === RESULTS.GRANTED;
+        if (res2 === RESULTS.GRANTED) {
+          console.log('You can use camera');
+        }
+        else if (res2 === RESULTS.BLOCKED) {
+          props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+        }
+      }
+      else if (res === RESULTS.BLOCKED) {
+        props.navigation.navigate("UnablePermisssion", { for: "Camera" })
       }
     }
   };
@@ -118,7 +152,7 @@ const SecureIdVerification = (props) => {
           // setFilePath({ uri: response.assets[0].uri, type: 'video/mp4', name: response.assets[0].fileName });
         }
         uploadVideo({ uri: Platform.OS === "ios" ? response.assets[0].uri.replace('file://', '') : response.assets[0].uri, type: 'video/mp4', name: Platform.OS === "ios" ? response.assets[0].uri.split("/").pop() : response.assets[0].fileName })
-        
+
         // setAvatar(response.assets[0].uri)
         // setFilePath({ uri: response.assets[0].uri, type: 'image/jpeg', name: response.assets[0].fileName });
       });
@@ -156,23 +190,24 @@ const SecureIdVerification = (props) => {
             buttonNegative: 'Cancel',
           }}
         />
-        
+
         <View style={styles.rectangleContainer}>
-          <View style={{ flexDirection: "row", height: phoneScreen.height * 35 / 100,
-                  width: phoneScreen.width * 100 / 100}}>
-              <Image source={images.scannerIcon}
-                style={{  height: phoneScreen.height * 35 / 100,
-                  width: phoneScreen.width * 100 / 100, resizeMode: "stretch" }} />
+          <View style={{
+            flexDirection: "row", height: phoneScreen.height * 35 / 100,
+            width: phoneScreen.width * 100 / 100
+          }}>
+            <Image source={images.scannerIcon}
+              style={{
+                height: phoneScreen.height * 35 / 100,
+                width: phoneScreen.width * 100 / 100, resizeMode: "stretch"
+              }} />
           </View>
-         
+
         </View>
       </View>
     )
   }
   )
-
-
-
   return (
     <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
       <Header
@@ -181,37 +216,37 @@ const SecureIdVerification = (props) => {
         headerText={"Secure ID Verification"} />
 
       <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingHorizontal: 0 }]} >
-        <Camera 
-        ref={cameraRef}/>
+        <Camera
+          ref={cameraRef} />
 
         <View style={{ alignItems: "center", paddingHorizontal: 24 }}>
           <Text style={{ fontSize: 14, fontWeight: "700", lineHeight: 24, color: colors.blackTextColor, marginTop: 18 }}>{"Scan the front side of your ID in the"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "700", lineHeight: 24, color: colors.blackTextColor }}>{"frame above"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor, marginTop: 18 }}>{"In order to verify its really you, please scan your"}</Text>
-          <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{props.route.params?.type +". Use a well lit area, a simple"}</Text>
+          <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{props.route.params?.type + ". Use a well lit area, a simple"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{"dark background and make sure the edges are"}</Text>
           <Text style={{ fontSize: 14, fontWeight: "400", lineHeight: 20, color: colors.blackTextColor }}>{"within the highlighted area."}</Text>
         </View>
-      
+
         <View style={{ flex: 1 }} />
         <View style={{ alignItems: "center", paddingHorizontal: 24 }}>
-        <Button
+          <Button
             buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor }]}
             textStyle={commonStyles.textStyle}
             text={"Capture"}
             onPress={async () => {
               if (cameraRef) {
-                const options = { quality: 0.5 };
+                const options = { quality: 0.5,mirrorImage:false };
                 const data = await cameraRef.current.takePictureAsync(options);
                 // console.log(data);
                 setFilePath({ uri: data.uri, type: 'image/jpeg', name: data.uri.split("/").pop() });
-                if(data.uri){
-                  props.navigation.navigate("Register",{img:{ uri: data.uri, type: 'image/jpeg', name: data.uri.split("/").pop() }})
+                if (data.uri) {
+                  props.navigation.navigate("Register", { img: { uri: data.uri, type: 'image/jpeg', name: data.uri.split("/").pop() } })
                 }
               }
             }}
           />
-          <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 16, color: colors.placeholderColor,marginTop:18 }}>{"We do not store an image of your ID. Instead, we encrypt"}</Text>
+          <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 16, color: colors.placeholderColor, marginTop: 18 }}>{"We do not store an image of your ID. Instead, we encrypt"}</Text>
           <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 16, color: colors.placeholderColor }}>{"and save the information on your ID for verification"}</Text>
           <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 16, color: colors.placeholderColor }}>{"purposes."}</Text>
         </View>

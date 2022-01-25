@@ -37,6 +37,7 @@
     "react-native-maps": "^0.29.3",
     "react-native-permissions": "^3.0.5",
     "react-native-preference": "2.0.2",
+    "react-native-progress-circle": "^2.1.0",
     "react-native-push-notification-popup": "^1.6.0",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-safe-area-context": "^3.3.2",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity,Linking } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Linking } from "react-native";
 import { colors } from "../Themes/colors";
 import { images } from "../Assets/Images";
 import constant from "../Utils/ApiConstants";
@@ -118,7 +118,7 @@ const HistoryScreen = (props) => {
               {"Location"}
             </Text>
           </View>
-          <View style={{ width: "25%", alignItems: "center", /* alignItems: "flex-end", */ justifyContent: "center", paddingRight: 10 }}>
+          <View style={{ width: "25%", alignItems: "center", /* alignItems: "flex-end", */ justifyContent: "center" }}>
             <Text style={{ fontSize: 14, fontWeight: "500", textAlign: "center", color: state.themeChangeReducer.primaryColor }} >
               {"Status"}
             </Text>
@@ -130,7 +130,7 @@ const HistoryScreen = (props) => {
           </View>
         </View>
         {
-          listOfItems.length > 0 ?
+          (!loading && listOfItems.length > 0) ?
             <FlatList
               numColumns={1}
               data={listOfItems}
@@ -156,13 +156,13 @@ const HistoryScreen = (props) => {
                       </Text>
                     </View>
                     <View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-                      <Text style={{ fontSize: 12, fontWeight: "400", textAlign: "center", color: state.themeChangeReducer.primaryColor }} >
+                      <Text style={{ fontSize: 11, fontWeight: "400", textAlign: "center", color: state.themeChangeReducer.primaryColor }} >
                         {item.address}
                       </Text>
                     </View>
                     <View style={{ width: "25%", alignItems: "center", justifyContent: "center" }}>
-                      <View style={{ height: 20, width: "70%", backgroundColor: (item.status === "True" || item.status === true || item.status === "true") && (item.true_status === "True" || item.true_status === true || item.true_status === "true") ? colors.greanColor : colors.redColor, alignItems: "center", justifyContent: "center", borderRadius: 3 }}>
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: state.themeChangeReducer.secondaryColor }}>{(item.status === "True" || item.status === true || item.status === "true") && (item.true_status === "True" || item.true_status === true || item.true_status === "true") ? "Verified" : "Unverified"}</Text>
+                      <View style={{  backgroundColor: (item.status === "True" || item.status === true || item.status === "true") && (item.true_status === "True" || item.true_status === true || item.true_status === "true") ? colors.greanColor : colors.redColor, alignItems: "center", justifyContent: "center", borderRadius: 3,paddingHorizontal:5,paddingVertical:4 }}>
+                        <Text style={{ fontSize: 11, fontWeight: "600", color: state.themeChangeReducer.secondaryColor}}>{(item.status === "True" || item.status === true || item.status === "true") && (item.true_status === "True" || item.true_status === true || item.true_status === "true") ? "  Verified  " : "Unverified"}</Text>
                       </View>
                     </View>
                     <TouchableOpacity style={{ width: "25%", alignItems: "center", justifyContent: "center" }} onPress={() => {
@@ -174,11 +174,11 @@ const HistoryScreen = (props) => {
                   </TouchableOpacity>
                 )
               }}
-            /> :
+            />
+            : (!loading && listOfItems.length == 0) &&
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
               <Text style={{ fontSize: 20, fontWeight: "bold" }}>{"No Record Found"}</Text>
             </View>
-
         }
       </View>
       {showItem &&
@@ -215,7 +215,7 @@ const HistoryScreen = (props) => {
                   <View style={{ alignItems: "flex-end", width: "50%" }}>
                     <SessionDetailItem
                       label={"Your Quarantine Day"}
-                      value={moment.duration(moment(item?.date, "YYYY-MM-DD").diff(moment(item?.quarantine_date, "YYYY-MM-DD"))).asDays()+1}
+                      value={moment.duration(moment(item?.date, "YYYY-MM-DD").diff(moment(item?.quarantine_date, "YYYY-MM-DD"))).asDays() + 1}
                       valueStyle={{ fontSize: 12, lineHeight: 20 }}
                     />
                   </View>
@@ -260,8 +260,8 @@ const HistoryScreen = (props) => {
               <View style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: colors.whiteColor, marginRight: -6 }} />
             </View>
             <View style={{ height: "50%", backgroundColor: state.themeChangeReducer.primaryColor, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, alignItems: "center", justifyContent: "space-evenly", width: "100%" }}>
-              <TouchableOpacity style={{flexDirection:"row",alignItems:"center"}} onPress={()=>{Linking.openURL(item.url)}}>
-                <Image source={images.linkIcon} style={{height:14,width:14,marginRight:5,tintColor:state.themeChangeReducer.secondaryColor}}/>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { Linking.openURL(item.url) }}>
+                <Image source={images.linkIcon} style={{ height: 14, width: 14, marginRight: 5, tintColor: state.themeChangeReducer.secondaryColor }} />
                 <Text style={{
                   color: colors.whiteColor,
                   fontSize: 14,

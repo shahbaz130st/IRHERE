@@ -49,6 +49,8 @@ const Register = (props) => {
   const [alertBody, setAlertBody] = useState("")
   const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
   const [isVerification, setIsVerification] = useState(true)
+  const [status, setStatus] = useState("Processing")
+  const [loadingProgress,setLoadingProgress]= useState(0)
 
   const dispatch = useDispatch()
   const state = useSelector(state => state)
@@ -71,6 +73,36 @@ const Register = (props) => {
     }
 
   }, [filePath])
+  useEffect(() => {
+    if (loading) {
+      let timesRun = 0;
+      interval = setInterval(function () {
+        timesRun += 1;
+        if (timesRun === 1) {
+          setStatus("Uploading your document")
+        }
+        if (timesRun === 2) {
+          setStatus("Breaking your photo apart")
+        }
+        if (timesRun === 3) {
+          setStatus("Checking your name")
+        }
+        if (timesRun === 4) {
+          setStatus("Checking your Expiry")
+        }
+        if (timesRun === 5) {
+          setStatus("Checking your Image")
+        }
+        if (timesRun === 6) {
+          setStatus("Processing")
+          clearInterval(interval);
+        }
+        //do whatever here..
+      }, 5000);
+    } else {
+
+    }
+  }, [loading])
   const onAppBootstrap = async () => {
     // Register the device with FCM
     // await messaging().registerDeviceForRemoteMessages();
@@ -180,7 +212,10 @@ const Register = (props) => {
 
   const captureImage = async (type) => {
     let options = {
-      mediaType: type
+      mediaType: type,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      quality: 0.3
     };
     let isCameraPermitted = await requestCameraPermission();
     let isStoragePermitted = await requestExternalWritePermission();
@@ -208,14 +243,15 @@ const Register = (props) => {
   };
 
   const chooseFile = (type) => {
-
     let options = {
       mediaType: type,
+      maxWidth: 1024,
+      maxHeight: 720,
+      quality: 0.1
     };
     launchImageLibrary(options, (response) => {
 
       console.log('Response = ', response);
-
       if (response.didCancel) {
         alert('User cancelled camera picker');
         return;
@@ -239,6 +275,12 @@ const Register = (props) => {
       headers: {
         // "Content-Type": "multipart/form-data"
       },
+      onUploadProgress: (progressEvent) => {
+        var percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setLoadingProgress(percentCompleted)
+      }
     };
     const data = new FormData();
     data.append('full_name', fullName);
@@ -268,7 +310,7 @@ const Register = (props) => {
         }
         else {
           setIsVerification(false)
-          AlertComponent({ msg: response.data.desc, title: "Error", type: "error",visibilityTime:8000 })
+          AlertComponent({ msg: response.data.desc, title: "Error", type: "error", visibilityTime: 8000 })
           // setFilePath(null)
           // setShowAlert(true)
           // setAlertHeader("Error")
@@ -277,6 +319,7 @@ const Register = (props) => {
         }
       })
       .catch(function (error) {
+        setIsVerification(false)
         setLoading(false)
         console.log(error)
         AlertComponent({ msg: error.message, title: "Error", type: "error" })
@@ -594,7 +637,8 @@ const Register = (props) => {
           }}
         />
       }
-      <Loader visible={loading} />
+      <Loader visible={loading} styleLoader={{ elevation: 6, }}
+        statusText={status} progress={loadingProgress} />
     </View>
   )
 }

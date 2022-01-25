@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet,  Image, PermissionsAndroid, Dimensions, Platform } from "react-native";
+import { View, Text, StyleSheet, Image, PermissionsAndroid, Dimensions, Platform } from "react-native";
 import { colors } from "../Themes/colors";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import Button from "../Component/Button";
@@ -22,7 +22,7 @@ import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 let interval
 const VerifyLocation = (props) => {
     const [loading, setLoading] = useState(false)
-    const [processing,setProcessing] = useState(false)
+    const [processing, setProcessing] = useState(false)
     const state = useSelector(state => state)
     const [location, setLocation] = useState({})
     const [currentAddress, setCurrentAddress] = useState("")
@@ -32,17 +32,24 @@ const VerifyLocation = (props) => {
     const [alertHeader, setAlertHeader] = useState("")
     const [alertBody, setAlertBody] = useState("")
     const [value, setValue] = useState([]);
+    const [loadingProgress, setLoadingProgress] = useState(0)
     const user = useSelector(state => state.authenticationReducer.user)
 
+    useEffect(async () => {
+        const unsubscribe = props.navigation.addListener("focus", async () => {
+            await requestCameraPermission()
+        });
+        return unsubscribe;
+    }, [props.navigation])
     useEffect(async () => {
         console.log(props?.route?.params?.data)
         Geocoder.init("AIzaSyD6ClGJNjuVbHUZWgf2K4gAcrtTX3T99iU");
         await requestLocationPermission()
     }, [])
     useEffect(() => {
-        if (loading&&processing) {
+        if (loading && processing) {
             let timesRun = 0;
-             interval = setInterval(function () {
+            interval = setInterval(function () {
                 timesRun += 1;
                 if (timesRun === 1) {
                     setStatus("Verifying your identity")
@@ -60,15 +67,15 @@ const VerifyLocation = (props) => {
                     setStatus("Checking your shoulders")
                 }
                 if (timesRun === 6) {
-                    setStatus("Processing.....")
+                    setStatus("Processing")
                     clearInterval(interval);
                 }
                 //do whatever here..
             }, 5000);
-        }else {
+        } else {
 
         }
-    }, [loading,processing])
+    }, [loading, processing])
     const requestLocationPermission = async () => {
         if (Platform.OS === 'ios') {
 
@@ -144,7 +151,6 @@ const VerifyLocation = (props) => {
             .then(async function (response) {
                 // setLoading(false)
                 console.log(response.data)
-                called_pattern = response.data
                 props.navigation.navigate("VerificationRules", { data: response.data, list: value })
                 // setPattern(response.data)
                 // setShowBottom(true)
@@ -157,7 +163,7 @@ const VerifyLocation = (props) => {
     }
     const uploadVideo = (file) => {
         setLoading(true)
-        setStatus("Uploading.....")
+        setStatus("Uploading")
         var config = {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -191,11 +197,17 @@ const VerifyLocation = (props) => {
     }
     const convertVideo = (name) => {
         setLoading(true)
-        setStatus("Conversion.....")
+        setStatus("Conversion")
         var config = {
             headers: {
                 "Content-Type": "multipart/form-data"
             },
+            onUploadProgress: (progressEvent) => {
+                var percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                );
+                setLoadingProgress(percentCompleted)
+            }
         };
         const data = new FormData();
         data.append('apikey', "68685dc6-5fb7-46c6-8cd5-228fc33b5485");
@@ -279,15 +291,36 @@ const VerifyLocation = (props) => {
     const requestCameraPermission = async () => {
         if (Platform.OS === 'android') {
             try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: 'Camera Permission',
-                        message: 'App needs camera permission',
-                    },
-                );
+                const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
                 // If CAMERA Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
+                
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    return granted === PermissionsAndroid.RESULTS.GRANTED;
+                }
+                else if(granted===PermissionsAndroid.RESULTS.DENIED){
+                    try {
+                        const granted = await PermissionsAndroid.request(
+                            PermissionsAndroid.PERMISSIONS.CAMERA
+                        );
+                        // If CAMERA Permission is granted
+                        
+                        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                            return granted === PermissionsAndroid.RESULTS.GRANTED;
+                        }
+                        else if(granted===PermissionsAndroid.RESULTS.DENIED){
+                            return false
+                        }
+                        else if(granted==="never_ask_again"){
+                            props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+                        }
+                    } catch (err) {
+                        console.warn(err);
+                        return false;
+                    }
+                }
+                else if(granted==="never_ask_again"){
+                    props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+                }
             } catch (err) {
                 console.warn(err);
                 return false;
@@ -300,7 +333,15 @@ const VerifyLocation = (props) => {
 
             } else if (res === RESULTS.DENIED) {
                 const res2 = await request(PERMISSIONS.IOS.CAMERA);
-                return res2 === RESULTS.GRANTED;
+                if (res2 === RESULTS.GRANTED) {
+                    return res2 === RESULTS.GRANTED;
+                }
+                else if (res2 === RESULTS.BLOCKED) {
+                    props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+                }
+            }
+            else if (res === RESULTS.BLOCKED) {
+                props.navigation.navigate("UnablePermisssion", { for: "Camera" })
             }
         }
     };
@@ -316,6 +357,7 @@ const VerifyLocation = (props) => {
             cameraType: "front"
         };
         let isCameraPermitted = await requestCameraPermission();
+        console.log(isCameraPermitted)
         if (isCameraPermitted) {
             launchCamera(options, (response) => {
                 console.log('Response = ', response);

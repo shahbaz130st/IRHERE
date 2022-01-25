@@ -44,4 +44,6 @@ export const images = {
     certificateItem: require("./certificateItem.png"),
     linkIcon: require("./link.png"),
     imagePlaceholder:require("./imagePlaceholder.png"),
+    unblockLocation:require("./unablelocation.png"),
+    unableCamera:require("./unableCamera.png"),
 }

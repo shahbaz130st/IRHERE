@@ -26,9 +26,8 @@ import { StackActions } from "@react-navigation/native";
 import CustomBottomSheet from "../Component/CustomBottomSheet";
 import { RNCamera } from 'react-native-camera';
 import Header from "../Component/Header";
-import { PERMISSIONS, check, request, RESULTS, openSettings } from 'react-native-permissions';
+import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 import CustomCheckBoxBottomSheet from "../Component/CustomCheckBoxBottomSheet";
-import DropDownPicker from 'react-native-dropdown-picker';
 const login = StackActions.replace("OnBoarding")
 let called_pattern = {}
 const VerifyLocation = (props) => {
@@ -55,6 +54,7 @@ const VerifyLocation = (props) => {
   const [items, setItems] = useState([{ checked: false, label: "Congestion or Running Nose", value: "Congestion or Running Nose" }, { checked: false, label: "Cough", value: "Cough" }, { checked: false, label: "Diarrhea", value: "Diarrhea" }, { checked: false, label: "Fatigue", value: "Fatigue" }, { checked: false, label: "Fever or Chills", value: "Fever or Chills" }, { checked: false, label: "Headache", value: "Headache" }, { checked: false, label: "Muscle or Body Aches", value: "Muscle or Body Aches" }, { checked: false, label: "Nausea or Vomiting", value: "Nausea or Vomiting" }, { checked: false, label: "New loss or taste or smell", value: "New loss or taste or smell" }, { checked: false, label: "Shortness or breath or difficulty breathing", value: "Shortness or breath or difficulty breathing" }, { checked: false, label: "Sore Throat", value: "Sore Throat" }]);
   const user = useSelector(state => state.authenticationReducer.user)
   const [showRadioBottomSheet, setShowRadioBottomSheet] = useState(false)
+  const [permission, setPermission] = useState(false)
   const dispatch = useDispatch()
   const logOut = () => {
     dispatch(signOut())
@@ -62,12 +62,14 @@ const VerifyLocation = (props) => {
   }
 
   useEffect(async () => {
-    Geocoder.init(Platform.OS === "ios" ? constant.ios_map_key : constant.android_map_key);
-    await requestLocationPermission()
-  }, [])
+    const unsubscribe = props.navigation.addListener("focus",async () => {
+      Geocoder.init(Platform.OS === "ios" ? constant.ios_map_key : constant.android_map_key);
+      await requestLocationPermission()
+    });
+    return unsubscribe;
+  }, [props.navigation])
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
-
       const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
       console.log(res)
       if (res === RESULTS.GRANTED) {
@@ -79,30 +81,60 @@ const VerifyLocation = (props) => {
         if (res2 === RESULTS.GRANTED) {
           getLocation();
         }
+        else if (res2 === RESULTS.BLOCKED) {
+          props.navigation.navigate("UnablePermisssion",{for:"Location"})
+         }
       }
       else if (res === RESULTS.BLOCKED) {
-        openSettings().catch(() => console.warn('cannot open settings'));
+       props.navigation.navigate("UnablePermisssion",{for:"Location"})
       }
     }
     else {
       try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            'title': 'Location Permission',
-            'message': 'This App needs access to your location ' +
-              'so we can know where you are.'
-          }
-        )
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        // If CAMERA Permission is granted
+        
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log("You can use locations ")
-          getLocation()
-        } else {
-          console.log("Location permission denied")
+          getLocation();
         }
-      } catch (err) {
-        console.warn(err)
-      }
+        else if(granted===PermissionsAndroid.RESULTS.DENIED){
+            try {
+                const granted = await PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+                
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                  getLocation();
+                }
+                else if(granted===PermissionsAndroid.RESULTS.DENIED){
+                    return false
+                }
+                else if(granted==="never_ask_again"){
+                    props.navigation.navigate("UnablePermisssion", { for: "Location" })
+                }
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        else if(granted==="never_ask_again"){
+            props.navigation.navigate("UnablePermisssion", { for: "Location" })
+        }
+    } catch (err) {
+        console.warn(err);
+        return false;
+    }
+      // try {
+      //   const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+      //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      //     console.log("You can use locations ")
+      //     getLocation()
+      //   } else {
+      //     console.log("Location permission denied")
+      //   }
+      // } catch (err) {
+      //   console.warn(err)
+      // }
     }
   }
   const getLocation = () => {
@@ -338,60 +370,58 @@ const VerifyLocation = (props) => {
       });
     }
   };
+    return (
+      <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
+        <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
+          <Header
+            leftIcon={images.unboldIcon}
+            backIconPress={() => { props.navigation.goBack() }}
+            headerText={"Verify Your Location"} />
+          {
+            Preference.get("mode") === "quarantine" &&
+            <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingBottom: 10 }]} >
+              <Text style={styles.bodyStyle}>{"Your current location"}</Text>
+              <ModalOpenField
+                // disabled={true}
+                onPress={async () => { await requestLocationPermission() }}
+                numberOfLines={1}
+                value={currentAddress === "" ? "Location" : currentAddress}
+                valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+                containerStyle={[commonStyles.inputContainerStyle, { marginTop: 10, flexDirection: "row", paddingHorizontal: 0 }]}
+                textViewStyle={[commonStyles.passwordInputinnerStyle, { paddingLeft: 15, justifyContent: "center" }]}
+                rightImageViewStyle={{
+                  width: "15%", height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: phoneScreen.height * 1 / 100, borderBottomRightRadius: phoneScreen.height * 1 / 100
+                }}
+                rightImage={images.location}
+                rightImageStyle={{ width: "60%", height: "60%", resizeMode: "contain" }}
+              />
+              <Text style={[styles.bodyStyle, { marginTop: 10 }]}>{"Do you have any Symptoms"}</Text>
+              <ModalOpenField
+                numberOfLines={1}
+                containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
+                textViewStyle={commonStyles.selectionInputTextStyle}
+                value={value.length === 0 ? "Choose Symptoms (optional)" : value.join(", ")}
+                valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
+                rightImage={images.bottomArrowIcon}
+                rightImageViewStyle={commonStyles.selectionRightArrowView}
+                rightImageStyle={commonStyles.selectionRightArrow}
+                onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
+              />
+              <Text style={[styles.bodyStyle, { marginTop: 10, fontSize: 14, color: colors.placeholderColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
 
-
-  return (
-    <View style={[commonStyles.mainViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor }]}>
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} >
-        <Header
-          leftIcon={images.unboldIcon}
-          backIconPress={() => { props.navigation.goBack() }}
-          headerText={"Verify Your Location"} />
-        {
-          Preference.get("mode") === "quarantine" &&
-          <View style={[commonStyles.innerViewStyle, { backgroundColor: state.themeChangeReducer.secondaryColor, paddingBottom: 10 }]} >
-            <Text style={styles.bodyStyle}>{"Your current location"}</Text>
-            <ModalOpenField
-              // disabled={true}
-              onPress={async () => { await requestLocationPermission() }}
-              numberOfLines={1}
-              value={currentAddress === "" ? "Location" : currentAddress}
-              valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
-              containerStyle={[commonStyles.inputContainerStyle, { marginTop: 10, flexDirection: "row", paddingHorizontal: 0 }]}
-              textViewStyle={[commonStyles.passwordInputinnerStyle, { paddingLeft: 15, justifyContent: "center" }]}
-              rightImageViewStyle={{
-                width: "15%", height: "100%", alignItems: "center", justifyContent: "center", backgroundColor: colors.whiteColor, borderTopRightRadius: phoneScreen.height * 1 / 100, borderBottomRightRadius: phoneScreen.height * 1 / 100
-              }}
-              rightImage={images.location}
-              rightImageStyle={{ width: "60%", height: "60%", resizeMode: "contain" }}
-            />
-            <Text style={[styles.bodyStyle, { marginTop: 10 }]}>{"Do you have any Symptoms"}</Text>
-            <ModalOpenField
-              numberOfLines={1}
-              containerStyle={[commonStyles.inputContainerStyle, { marginTop: 15 }]}
-              textViewStyle={commonStyles.selectionInputTextStyle}
-              value={value.length === 0 ? "Choose Symptoms (optional)" : value.join(", ")}
-              valueStyle={{ fontSize: 16, color: colors.placeholderColor, fontWeight: "400" }}
-              rightImage={images.bottomArrowIcon}
-              rightImageViewStyle={commonStyles.selectionRightArrowView}
-              rightImageStyle={commonStyles.selectionRightArrow}
-              onPress={() => { setShowRadioBottomSheet(true)/* setShowPicker(true) */ }}
-            />
-            <Text style={[styles.bodyStyle, { marginTop: 10, fontSize: 14, color: colors.placeholderColor }]}>{"Please note that these symptoms are provided by CDC and may appear 2-14 days after exporure to the virus."}</Text>
-
-            <View style={{ flex: 1 }} />
-            <Button
-              image
-              imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
-              buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 18 }]}
-              textStyle={commonStyles.textStyle}
-              text={"Continue"}
-              onPress={() => {
-                setResultImage("")
-                generate_Pattern()
-              }}
-            />
-            {/* <DropDownPicker
+              <View style={{ flex: 1 }} />
+              <Button
+                image
+                imageStyle={{ height: 25, width: 25, tintColor: state.themeChangeReducer.secondaryColor, position: "absolute", zIndex: 1111, right: 20 }}
+                buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 18 }]}
+                textStyle={commonStyles.textStyle}
+                text={"Continue"}
+                onPress={() => {
+                  setResultImage("")
+                  generate_Pattern()
+                }}
+              />
+              {/* <DropDownPicker
               multiple={true}
               containerStyle={{
                 marginTop: 10,
@@ -425,13 +455,13 @@ const VerifyLocation = (props) => {
               setItems={setItems}
             /> */}
 
-            {/*  <ModalOpenField
+              {/*  <ModalOpenField
                 value={props?.route?.params?.list && props.route.params.list.length > 0 ? props.route.params.list.toString() : "Choose your Symptoms (multiple)"}
                 containerStyle={[commonStyles.inputContainerStyle, { marginTop: 10, height: Platform.OS === "android" ? phoneScreen.height * 7 / 100 : phoneScreen.height * 6 / 100 }]}
                 inputStyle={[commonStyles.inputInnerStyle, { color: props?.route?.params?.list && props.route.params.list.length > 0 ? colors.greyColor : colors.placeholderColor }]}
                 onPress={() => { props.navigation.navigate("SymptomScreen") }}
               /> */}
-            {/* <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
+              {/* <View style={{ width: "100%", alignItems: "center", marginTop: 20 }}>
                 <View style={{ height: Platform.OS === "android" ? phoneScreen.height * 18 / 100 : phoneScreen.height * 15 / 100, width: 197, borderColor: colors.placeholderColor, borderWidth: 1, borderRadius: 10, marginTop: 10, alignItems: "center", justifyContent: "center", padding: 10 }}>
                   {
                     resultImage !== "" ?
@@ -446,7 +476,7 @@ const VerifyLocation = (props) => {
                   }
                 </View>
               </View> */}
-          </View>
+            </View>
             /*  :
             <View style={{ alignItems: "center" }}>
               <BiggerButton
@@ -490,7 +520,7 @@ const VerifyLocation = (props) => {
             </View>
         } */}
 
-        {/* <Button
+          {/* <Button
           buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 15 }, commonStyles.shadowStyle]}
           textStyle={commonStyles.textStyle}
           text={"Record a video"}
@@ -504,146 +534,146 @@ const VerifyLocation = (props) => {
             }
           }}
         /> */}
-        {showItem &&
-          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "#090A0A36", alignItems: "center", justifyContent: "center", width: phoneScreen.width }}>
-            <View style={{ height: 206, width: "90%", backgroundColor: state.themeChangeReducer.secondaryColor, borderRadius: 24, padding: 20 }}>
-              <Text style={{ fontSize: 13, fontWeight: "600" }}>{"Select From known Address"}</Text>
-              <FlatList
-                numColumns={1}
-                data={listOfItems}
-                keyExtractor={(item, index) => {
-                  return index.toString();
-                }}
-                extraData={{ list: listOfItems }}
-                showsVerticalScrollIndicator={false}
-                removeClippedSubviews={false}
-                style={{ flex: 1, width: "100%" }}
-                renderItem={({ item, index }) => {
-                  return (
-                    <TouchableOpacity
-                      style={{ flexDirection: "row", width: "100%", alignItems: "center", padding: 5 }}
-                    >
-                      <View style={{ height: 12, width: 12, borderRadius: 6, borderColor: colors.blackTextColor, borderWidth: 1, alignItems: "center", justifyContent: "center", marginRight: 5 }}>
-                        <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.blackTextColor }}>
+          {showItem &&
+            <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "#090A0A36", alignItems: "center", justifyContent: "center", width: phoneScreen.width }}>
+              <View style={{ height: 206, width: "90%", backgroundColor: state.themeChangeReducer.secondaryColor, borderRadius: 24, padding: 20 }}>
+                <Text style={{ fontSize: 13, fontWeight: "600" }}>{"Select From known Address"}</Text>
+                <FlatList
+                  numColumns={1}
+                  data={listOfItems}
+                  keyExtractor={(item, index) => {
+                    return index.toString();
+                  }}
+                  extraData={{ list: listOfItems }}
+                  showsVerticalScrollIndicator={false}
+                  removeClippedSubviews={false}
+                  style={{ flex: 1, width: "100%" }}
+                  renderItem={({ item, index }) => {
+                    return (
+                      <TouchableOpacity
+                        style={{ flexDirection: "row", width: "100%", alignItems: "center", padding: 5 }}
+                      >
+                        <View style={{ height: 12, width: 12, borderRadius: 6, borderColor: colors.blackTextColor, borderWidth: 1, alignItems: "center", justifyContent: "center", marginRight: 5 }}>
+                          <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.blackTextColor }}>
+                          </View>
                         </View>
-                      </View>
-                      <Text style={{ fontSize: 10, fontWeight: "400" }}>{item.name}</Text>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-              <View style={{ width: "100%" }}>
-                <Button
-                  buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0, width: 70, height: 30 }, commonStyles.shadowStyle]}
-                  textStyle={commonStyles.textStyle}
-                  text={"Ok"}
-                  onPress={() => { setShowItem(false) }}
+                        <Text style={{ fontSize: 10, fontWeight: "400" }}>{item.name}</Text>
+                      </TouchableOpacity>
+                    );
+                  }}
                 />
+                <View style={{ width: "100%" }}>
+                  <Button
+                    buttonStyle={[commonStyles.buttonStyle, { backgroundColor: state.themeChangeReducer.primaryColor, marginTop: 0, width: 70, height: 30 }, commonStyles.shadowStyle]}
+                    textStyle={commonStyles.textStyle}
+                    text={"Ok"}
+                    onPress={() => { setShowItem(false) }}
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        }
-        {
-          showBottom &&
-          <CustomBottomSheet
-            visible={showBottom}
-            crossIcon={() => { setShowBottom(false) }}
-            fingers={called_pattern.fingers}
-            headPositon={called_pattern.head_pose === 0 ? "left" : "right"}
-            recordVideoPress={() => {
-              setShowBottom(false)
-              // setShowCamera(true)
-              setTimeout(() => { captureImage('video') }, 500)
+          }
+          {
+            showBottom &&
+            <CustomBottomSheet
+              visible={showBottom}
+              crossIcon={() => { setShowBottom(false) }}
+              fingers={called_pattern.fingers}
+              headPositon={called_pattern.head_pose === 0 ? "left" : "right"}
+              recordVideoPress={() => {
+                setShowBottom(false)
+                // setShowCamera(true)
+                setTimeout(() => { captureImage('video') }, 500)
 
-            }}
-          />
-        }
-        {
-          showAlert &&
-          <AlertModal
-            showAlert={showAlert}
-            ok_Button={() => { setShowAlert(false) }}
-            header={alertHeader}
-            body={alertBody}
-          />
-        }
-        <Loader visible={loading} />
-
-      </KeyboardAwareScrollView>
-      {
-        showRadioBottomSheet &&
-        <CustomCheckBoxBottomSheet
-          visible={showRadioBottomSheet}
-          listOfItems={items}
-          headerText={"Symptoms"}
-          subHeaderText={"Choose multiple"}
-          ItemSeparatorComponent={() =>
-            <View
-              style={{
-                height: 1,
-                backgroundColor: colors.lightGreyColor
               }}
             />
           }
-          renderItem={({ item, index }) => {
-            return (
-              <TouchableOpacity
-                style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", height: 48, alignItems: "center" }}
-                onPress={() => {
-                  let tempArray = items
-                  for (let i = 0; i < tempArray.length; i++) {
-                    if (i === index) {
-                      tempArray[i].checked = !tempArray[i].checked
-                    }
-                  }
-                  setItems([...tempArray])
+          {
+            showAlert &&
+            <AlertModal
+              showAlert={showAlert}
+              ok_Button={() => { setShowAlert(false) }}
+              header={alertHeader}
+              body={alertBody}
+            />
+          }
+          <Loader visible={loading} />
+
+        </KeyboardAwareScrollView>
+        {
+          showRadioBottomSheet &&
+          <CustomCheckBoxBottomSheet
+            visible={showRadioBottomSheet}
+            listOfItems={items}
+            headerText={"Symptoms"}
+            subHeaderText={"Choose multiple"}
+            ItemSeparatorComponent={() =>
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: colors.lightGreyColor
                 }}
-              >
-                <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{item.label}</Text>
-                {
-                  item.checked &&
-                  <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
-                    <Image source={images.tickBlueIcon} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
-                  </View>
+              />
+            }
+            renderItem={({ item, index }) => {
+              return (
+                <TouchableOpacity
+                  style={{ flexDirection: "row", width: "100%", justifyContent: "space-between", height: 48, alignItems: "center" }}
+                  onPress={() => {
+                    let tempArray = items
+                    for (let i = 0; i < tempArray.length; i++) {
+                      if (i === index) {
+                        tempArray[i].checked = !tempArray[i].checked
+                      }
+                    }
+                    setItems([...tempArray])
+                  }}
+                >
+                  <Text style={{ fontSize: 16, fontWeight: "400", color: colors.blackTextColor }}>{item.label}</Text>
+                  {
+                    item.checked &&
+                    <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
+                      <Image source={images.tickBlueIcon} style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
+                    </View>
+                  }
+
+                </TouchableOpacity>
+              );
+            }}
+            onSelectPress={() => {
+              let tempArray = items, result = [];
+              for (let i = 0; i < tempArray.length; i++) {
+                if (tempArray[i].checked) {
+                  result.push(tempArray[i].label)
                 }
-
-              </TouchableOpacity>
-            );
-          }}
-          onSelectPress={() => {
-            let tempArray = items, result = [];
-            for (let i = 0; i < tempArray.length; i++) {
-              if (tempArray[i].checked) {
-                result.push(tempArray[i].label)
               }
-            }
-            setValue([...result])
-            setShowRadioBottomSheet(false)
-            console.log(result)
-          }}
-          onDragDown={() => {
-            let tempArray = items, result = [];
-            for (let i = 0; i < tempArray.length; i++) {
-              if (tempArray[i].checked) {
-                result.push(tempArray[i].label)
+              setValue([...result])
+              setShowRadioBottomSheet(false)
+              console.log(result)
+            }}
+            onDragDown={() => {
+              let tempArray = items, result = [];
+              for (let i = 0; i < tempArray.length; i++) {
+                if (tempArray[i].checked) {
+                  result.push(tempArray[i].label)
+                }
               }
-            }
-            // if (result.length === 0) {
-            //   setValue([...result])
-            //   setShowRadioBottomSheet(false)
-            //   AlertComponent({ msg: "Please select symptoms" })
-            // }
-            // else {
-            setValue([...result])
-            setShowRadioBottomSheet(false)
-            console.log(result)
-            // }
-          }}
-        />
+              // if (result.length === 0) {
+              //   setValue([...result])
+              //   setShowRadioBottomSheet(false)
+              //   AlertComponent({ msg: "Please select symptoms" })
+              // }
+              // else {
+              setValue([...result])
+              setShowRadioBottomSheet(false)
+              console.log(result)
+              // }
+            }}
+          />
 
-      }
-    </View>
-  )
+        }
+      </View>
+    )
 }
 export default VerifyLocation;
 

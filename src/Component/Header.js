@@ -16,7 +16,7 @@ const Header = (props) => {
             {
                 !_.isNil(props.headerText) &&
                 <View style={[{ width: "100%", alignItems: "center" }, props.headerTextStyle]}>
-                    <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor }, props.headerTStyle]}>{props.headerText}</Text>
+                    <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor}, props.headerTStyle]}>{props.headerText}</Text>
                 </View>
             }
         </View>

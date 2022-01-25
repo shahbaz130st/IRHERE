@@ -158,7 +158,7 @@ const Home = (props) => {
             <Text style={styles.bodyStyle}>{"to them in time to prove that you are staying at"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine address during the period of"}</Text>
             <Text style={styles.bodyStyle}>{"your quarantine."}</Text>
-            {showNotification==="1"&&
+            {(showNotification==="1"&&showNotificationTime!==null)&&
             <View style={{paddingHorizontal:24}}>
             <BiggerButton
               buttonStyle={styles.biggerButtonStyle}

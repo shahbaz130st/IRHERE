@@ -28,6 +28,7 @@ import VerificationRules from "./Screens/VerificationRules";
 import SecureIdVerification from "./Screens/SecureIdVerification";
 import { colors } from "./Themes/colors";
 import { BottomTab } from "./Utils/Dimensions";
+import  UnablePermisssion  from "./Screens/Permission"
 
 const SignInStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
@@ -44,6 +45,7 @@ function OnBoardingStack() {
             <SignInStack.Screen name="Register" component={Register} />
             <SignInStack.Screen name="ModeSelection" component={ModeSelection} />
             <SignInStack.Screen name="QuarantineWelcom" component={QuarantineWelcom} />
+            <SignInStack.Screen name="SecureIdVerification" component={SecureIdVerification} />
         </SignInStack.Navigator>
     )
 }
@@ -131,7 +133,7 @@ const Routing = () => {
                 <SignInStack.Screen name="ModeSelection" component={ModeSelection} />
                 <SignInStack.Screen name="QuarantineWelcom" component={QuarantineWelcom} />
                 <SignInStack.Screen name="verifyLocation" component={VerifyLocation} />
-                <SignInStack.Screen name="SecureIdVerification" component={SecureIdVerification} />
+                <SignInStack.Screen name="UnablePermisssion" component={UnablePermisssion} />
             </RootStack.Navigator>
         </NavigationContainer>
     )
