@@ -18,6 +18,14 @@ const HomeButton = (props) => {
                         {props.text1}
                     </Text>}
             </View>
+            {!_.isNil(props.Permission) &&
+                (props.Permission) ?
+                    <View style={props.rightImageViewStyle}>
+                        <Image style={props.rightImageStyle} source={props.rightImage} />
+                    </View> :
+                    <View>
+                    </View>
+            }
         </View>
     )
 

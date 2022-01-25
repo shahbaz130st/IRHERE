@@ -46,4 +46,7 @@ export const images = {
     imagePlaceholder:require("./imagePlaceholder.png"),
     unblockLocation:require("./unablelocation.png"),
     unableCamera:require("./unableCamera.png"),
+    cameraPermission:require("./cameraPermission.png"),
+    locationPermission:require("./locationPermission.png"),
+    permissionAllow:require("./permissionAllow.png")
 }
