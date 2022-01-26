@@ -1,6 +1,8 @@
 import React from "react";
-import { TouchableOpacity, Text, Image, View } from "react-native";
+import { Text, Image, View } from "react-native";
+import Button from "../Component/Button";
 import _ from "lodash";
+import commonStyles from "../Themes/commonStyles";
 const HomeButton = (props) => {
     return (
         <View
@@ -18,13 +20,18 @@ const HomeButton = (props) => {
                         {props.text1}
                     </Text>}
             </View>
-            {!_.isNil(props.Permission) &&
-                (props.Permission) ?
-                    <View style={props.rightImageViewStyle}>
-                        <Image style={props.rightImageStyle} source={props.rightImage} />
-                    </View> :
-                    <View>
-                    </View>
+            {!_.isNil(props.rightImage) &&
+                <View style={props.rightImageViewStyle}>
+                    <Image style={props.rightImageStyle} source={props.rightImage} />
+                </View>
+            }
+            {!_.isNil(props.onAllowPress) &&
+                <Button
+                    buttonStyle={[commonStyles.buttonStyle,props.button1Style]}
+                    textStyle={[commonStyles.textStyle,{fontSize:13}]}
+                    text={props.buttonText}
+                    onPress={props.onAllowPress}
+                />
             }
         </View>
     )

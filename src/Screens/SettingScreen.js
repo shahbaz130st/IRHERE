@@ -24,6 +24,7 @@ const SettingScreen = (props) => {
   const user = useSelector(state => state.authenticationReducer.user)
   const [switchValue, setSwitchValue] = useState(false);
   const [cameraPermission,setCameraPermission] =useState(true)
+  const [locationPermission,setLocationPermission] =useState(false)
   const [userData, setUserData] = useState({})
   const dispatch = useDispatch()
   const logOut = () => {
@@ -93,31 +94,58 @@ const SettingScreen = (props) => {
                 lineHeight: 22.5
               }}>{userData?.phone_no}</Text>
                <Text style={[{ fontWeight: "700", fontSize: 24, lineHeight: 36, color: colors.blackTextColor, marginTop: 25 }]}>{"Permissions"}</Text>
-               
-               <HomeButton
-                  buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
-                  leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
-                  leftImage={images.cameraPermission}
-                  leftImageStyle={{height:20,width:20,resizeMode:"contain"}}
-                  textViewStyle={{ flex: 1 }}
-                  text={"Camera"}
-                  textStyle={[commonStyles.textStyle, { fontWeight:"600" }]}
-                  rightImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
-                  rightImage={images.permissionAllow}
-                  rightImageStyle={{height:16,width:16,resizeMode:"contain"}}
-                />
+               {
+                 cameraPermission?
                  <HomeButton
-                  buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
-                  leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
-                  leftImage={images.locationPermission}
-                  leftImageStyle={{height:21,width:16,resizeMode:"contain"}}
-                  textViewStyle={{ flex: 1 }}
-                  text={"Location"}
-                  textStyle={[commonStyles.textStyle, {fontWeight:"600" }]}
-                  rightImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
-                  rightImage={images.permissionAllow}
-                  rightImageStyle={{height:16,width:16,resizeMode:"contain"}}
-                />
+                 buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
+                 leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+                 leftImage={images.cameraPermission}
+                 leftImageStyle={{height:20,width:20,resizeMode:"contain"}}
+                 textViewStyle={{ flex: 1 }}
+                 text={"Camera"}
+                 textStyle={[commonStyles.textStyle, { fontWeight:"600" }]}
+                 rightImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+                 rightImage={images.permissionAllow}
+                 rightImageStyle={{height:16,width:16,resizeMode:"contain"}}
+               />:  
+               <HomeButton
+               buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
+               leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+               leftImage={images.cameraPermission}
+               leftImageStyle={{height:20,width:20,resizeMode:"contain"}}
+               textViewStyle={{ flex: 1 }}
+               text={"Camera"}
+               textStyle={[commonStyles.textStyle, { fontWeight:"600" }]}
+             />
+               }
+             {
+               locationPermission?
+               <HomeButton
+               buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
+               leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+               leftImage={images.locationPermission}
+               leftImageStyle={{height:21,width:16,resizeMode:"contain"}}
+               textViewStyle={{ flex: 1 }}
+               text={"Location"}
+               textStyle={[commonStyles.textStyle, {fontWeight:"600" }]}
+               rightImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+               rightImage={images.permissionAllow}
+               rightImageStyle={{height:16,width:16,resizeMode:"contain"}}
+             />:
+             <HomeButton
+             buttonStyle={[commonStyles.WhiteButtonStyle, { backgroundColor: state.themeChangeReducer.secondaryColor,height:48,borderRadius:8 }]}
+             leftImageViewStyle={[commonStyles.leftImageViewStyle, { backgroundColor: colors.whiteColor,width:20 }]}
+             leftImage={images.locationPermission}
+             leftImageStyle={{height:21,width:16,resizeMode:"contain"}}
+             textViewStyle={{ flex: 1 }}
+             text={"Location"}
+             textStyle={[commonStyles.textStyle, {fontWeight:"600" }]}
+             onAllowPress={()=>{}}
+             buttonText={"Allow"}
+             button1Style={{ backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20,height:28,width:71 }}
+           />
+             }
+                
           </View>
         </View>
         <View style={{ flex: 1, width: "100%", alignItems: "center", marginBottom: 10, justifyContent: "flex-end" }}>
