@@ -17,13 +17,14 @@ import { StackActions } from "@react-navigation/native";
 import AvatarComponent from "../Component/AvatarComponent";
 import Preference from 'react-native-preference';
 import HomeButton from "../Component/HomeButton";
+import { PERMISSIONS, check, request, RESULTS } from 'react-native-permissions';
 const login = StackActions.replace("OnBoarding", { screen: "Welcom" })
 const SettingScreen = (props) => {
   const [loading, setLoading] = useState(false)
   const state = useSelector(state => state)
   const user = useSelector(state => state.authenticationReducer.user)
   const [switchValue, setSwitchValue] = useState(false);
-  const [cameraPermission,setCameraPermission] =useState(true)
+  const [cameraPermission,setCameraPermission] =useState(false)
   const [locationPermission,setLocationPermission] =useState(false)
   const [userData, setUserData] = useState({})
   const dispatch = useDispatch()
@@ -35,9 +36,215 @@ const SettingScreen = (props) => {
   useEffect(() => {
     const unsubscribe = props.navigation.addListener("focus", () => {
       getUserDetail()
+      requestCameraPermission()
+      requestLocationPermission()
     });
     return unsubscribe;
   }, [props.navigation]);
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "Cool Photo App Camera Permission",
+            message:
+              "Cool Photo App needs access to your camera " +
+              "so you can take awesome pictures.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("You can use the camera");
+        } else {
+          console.log("Camera permission denied");
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      const res = await check(PERMISSIONS.IOS.CAMERA);
+      if (res === RESULTS.GRANTED) {
+        console.log('You can use camera');
+        setCameraPermission(true)
+
+      } else if (res === RESULTS.DENIED) {
+        const res2 = await request(PERMISSIONS.IOS.CAMERA);
+        if (res2 === RESULTS.GRANTED) {
+          console.log('You can use camera');
+          setCameraPermission(true)
+        }
+        else if (res2 === RESULTS.BLOCKED) {
+          setCameraPermission(false)
+        }
+      }
+      else if (res === RESULTS.BLOCKED) {
+        setCameraPermission(false)
+      }
+    }
+  };
+  const allowRequestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "Cool Photo App Camera Permission",
+            message:
+              "Cool Photo App needs access to your camera " +
+              "so you can take awesome pictures.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("You can use the camera");
+        } else {
+          console.log("Camera permission denied");
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      const res = await check(PERMISSIONS.IOS.CAMERA);
+      if (res === RESULTS.GRANTED) {
+        console.log('You can use camera');
+        setCameraPermission(true)
+
+      } else if (res === RESULTS.DENIED) {
+        const res2 = await request(PERMISSIONS.IOS.CAMERA);
+        if (res2 === RESULTS.GRANTED) {
+          console.log('You can use camera');
+          setCameraPermission(true)
+        }
+        else if (res2 === RESULTS.BLOCKED) {
+          props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+        }
+      }
+      else if (res === RESULTS.BLOCKED) {
+        props.navigation.navigate("UnablePermisssion", { for: "Camera" })
+      }
+    }
+  };
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      console.log(res)
+      if (res === RESULTS.GRANTED) {
+        console.log('You can use locations ');
+       setLocationPermission(true)
+      } else if (res === RESULTS.DENIED) {
+        const res2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        res2 === RESULTS.GRANTED;
+        if (res2 === RESULTS.GRANTED) {
+          setLocationPermission(true)
+        }
+        else if (res2 === RESULTS.BLOCKED) {
+          setLocationPermission(false)
+         }
+      }
+      else if (res === RESULTS.BLOCKED) {
+        setLocationPermission(false)
+      }
+    }
+    else {
+      try {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        // If CAMERA Permission is granted
+        
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setLocationPermission(true)
+        }
+        else if(granted===PermissionsAndroid.RESULTS.DENIED){
+            try {
+                const granted = await PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+                
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                  setLocationPermission(true)
+                }
+                else if(granted===PermissionsAndroid.RESULTS.DENIED){
+                  setLocationPermission(false)
+                }
+                else if(granted==="never_ask_again"){
+                  setLocationPermission(false)
+                }
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        else if(granted==="never_ask_again"){
+          setLocationPermission(false)
+        }
+    } catch (err) {
+        console.warn(err);
+        return false;
+    }
+    }
+  }
+  const allowRequestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      const res = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      console.log(res)
+      if (res === RESULTS.GRANTED) {
+        console.log('You can use locations ');
+       setLocationPermission(true)
+      } else if (res === RESULTS.DENIED) {
+        const res2 = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        res2 === RESULTS.GRANTED;
+        if (res2 === RESULTS.GRANTED) {
+          setLocationPermission(true)
+        }
+        else if (res2 === RESULTS.BLOCKED) {
+          props.navigation.navigate("UnablePermisssion",{for:"Location"})
+         }
+      }
+      else if (res === RESULTS.BLOCKED) {
+       props.navigation.navigate("UnablePermisssion",{for:"Location"})
+      }
+    }
+    else {
+      try {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        // If CAMERA Permission is granted
+        
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setLocationPermission(true)
+        }
+        else if(granted===PermissionsAndroid.RESULTS.DENIED){
+            try {
+                const granted = await PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+                
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                  setLocationPermission(true)
+                }
+                else if(granted===PermissionsAndroid.RESULTS.DENIED){
+                    return false
+                }
+                else if(granted==="never_ask_again"){
+                    props.navigation.navigate("UnablePermisssion", { for: "Location" })
+                }
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        else if(granted==="never_ask_again"){
+            props.navigation.navigate("UnablePermisssion", { for: "Location" })
+        }
+    } catch (err) {
+        console.warn(err);
+        return false;
+    }
+    }
+  }
   const getUserDetail = () => {
     setLoading(true)
     var config = {
@@ -116,6 +323,9 @@ const SettingScreen = (props) => {
                textViewStyle={{ flex: 1 }}
                text={"Camera"}
                textStyle={[commonStyles.textStyle, { fontWeight:"600" }]}
+               onAllowPress={()=>{allowRequestCameraPermission()}}
+               buttonText={"Allow"}
+               button1Style={{ backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20,height:28,width:71,borderRadius:5 }}
              />
                }
              {
@@ -140,9 +350,9 @@ const SettingScreen = (props) => {
              textViewStyle={{ flex: 1 }}
              text={"Location"}
              textStyle={[commonStyles.textStyle, {fontWeight:"600" }]}
-             onAllowPress={()=>{}}
+             onAllowPress={()=>{allowRequestLocationPermission()}}
              buttonText={"Allow"}
-             button1Style={{ backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20,height:28,width:71 }}
+             button1Style={{ backgroundColor: state.themeChangeReducer.primaryColor, marginVertical: 20,height:28,width:71,borderRadius:5  }}
            />
              }
                 

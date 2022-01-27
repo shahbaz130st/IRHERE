@@ -85,21 +85,6 @@ const SecureIdVerification = (props) => {
       } catch (err) {
         console.warn(err);
       }
-      // try {
-      //   const granted = await PermissionsAndroid.request(
-      //     PermissionsAndroid.PERMISSIONS.CAMERA,
-      //     {
-      //       title: 'Camera Permission',
-      //       message: 'App needs camera permission',
-      //     },
-      //   );
-      //   // If CAMERA Permission is granted
-      //   console.log("granted",PermissionsAndroid.RESULTS.GRANTED)
-      //   return granted === PermissionsAndroid.RESULTS.GRANTED;
-      // } catch (err) {
-      //   console.warn(err);
-      //   return false;
-      // }
     } else {
       const res = await check(PERMISSIONS.IOS.CAMERA);
       if (res === RESULTS.GRANTED) {

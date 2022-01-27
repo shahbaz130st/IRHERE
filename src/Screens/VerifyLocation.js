@@ -124,17 +124,6 @@ const VerifyLocation = (props) => {
         console.warn(err);
         return false;
     }
-      // try {
-      //   const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-      //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      //     console.log("You can use locations ")
-      //     getLocation()
-      //   } else {
-      //     console.log("Location permission denied")
-      //   }
-      // } catch (err) {
-      //   console.warn(err)
-      // }
     }
   }
   const getLocation = () => {

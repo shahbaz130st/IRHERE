@@ -68,6 +68,7 @@ const Register = (props) => {
   useEffect(() => {
     if (filePath !== null) {
       if (validation() === true) {
+        setLoadingProgress(0)
         register()
       }
     }
@@ -537,6 +538,7 @@ const Register = (props) => {
             text={"Sign Up"}
             onPress={() => {
               if (validation() === true) {
+                setLoadingProgress(0)
                 register()
               }/* validation()  */
             }}
