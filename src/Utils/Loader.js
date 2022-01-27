@@ -1,7 +1,8 @@
 import React from "react";
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text,Image } from "react-native";
 import { colors } from "../Themes/colors";
 import ProgressCircle from 'react-native-progress-circle'
+import { images } from "../Assets/Images";
 
 
 const Loader = (props) => {
@@ -18,6 +19,7 @@ const Loader = (props) => {
                             shadowColor={colors.whiteColor}
                             bgColor={colors.whiteColor}
                         >
+                            <Image source={props?.statusText==="Processing"?images.processingIcon:props?.statusText==="Uploading your document"?images.uploadingIcon:props?.statusText==="Uploading"?images?.uploadingIcon:images.checkingIcon} style={{height:20,width:20,resizeMode:"contain"}}/>
                             <Text style={{ fontSize: 15,color:"#5C81E4",fontWeight:"500",textAlign:"center" }}>{props.statusText}</Text>
                         </ProgressCircle>
                     </View>

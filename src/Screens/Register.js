@@ -540,7 +540,7 @@ const Register = (props) => {
               if (validation() === true) {
                 setLoadingProgress(0)
                 register()
-              }/* validation()  */
+              }
             }}
           />
           <View style={{ alignItems: "center", width: "100%" }}>

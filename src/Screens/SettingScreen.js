@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert,PermissionsAndroid } from "react-native";
 import { colors } from "../Themes/colors";
 import commonStyles from "../Themes/commonStyles";
 import InputField from "../Component/InputField";
@@ -57,6 +57,7 @@ const SettingScreen = (props) => {
           }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setCameraPermission(true)
           console.log("You can use the camera");
         } else {
           console.log("Camera permission denied");

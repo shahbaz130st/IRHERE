@@ -48,5 +48,8 @@ export const images = {
     unableCamera:require("./unableCamera.png"),
     cameraPermission:require("./cameraPermission.png"),
     locationPermission:require("./locationPermission.png"),
-    permissionAllow:require("./permissionAllow.png")
+    permissionAllow:require("./permissionAllow.png"),
+    processingIcon:require("./processing.png"),
+    uploadingIcon:require("./uploading.png"),
+    checkingIcon:require("./checking.png")
 }
